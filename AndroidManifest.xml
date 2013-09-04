@@ -22,6 +22,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="cepw.contactmanager.NewContactActivity"
+            android:label="@string/title_activity_new_contact"
+            android:parentActivityName="cepw.contactmanager.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="cepw.contactmanager.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
