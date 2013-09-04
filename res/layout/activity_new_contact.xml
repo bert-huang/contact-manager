@@ -6,11 +6,125 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@drawable/grad_bg"
+    android:orientation="vertical"
     tools:context=".NewContactActivity" >
+    
+    <ScrollView
+        android:id="@+id/scrollView_new_contact_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+	
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content" >
+	
+	            <ImageButton
+	                android:id="@+id/button_change_avatar"
+	                android:layout_width="0dp"
+	                android:layout_height="96dp"
+	                android:layout_weight="30"
+	                android:contentDescription="@string/disc_avatar"
+	                android:src="@drawable/ic_face" />
+	
+	            <LinearLayout
+	                android:layout_width="0dp"
+	                android:layout_height="wrap_content"
+	                android:layout_weight="55"
+	                android:orientation="vertical" >
+	
+	                <EditText
+	                    android:id="@+id/textfield_name_full"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="wrap_content"
+	                    android:ems="10"
+	                    android:hint="@string/text_name"
+	                    android:textColor="@color/Azure"
+	                    android:inputType="textPersonName" >
+	
+	                    <requestFocus />
+	                </EditText>
+	
+	                <EditText
+	                    android:id="@+id/textfield_name_prefix"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="wrap_content"
+	                    android:ems="10"
+	                    android:hint="@string/text_name_prefix"
+	                    android:textColor="@color/Azure"
+	                    android:inputType="textPersonName" />
+	                
+	                <EditText
+	                    android:id="@+id/textfield_name_given"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="wrap_content"
+	                    android:ems="10"
+	                    android:hint="@string/text_name_given"
+	                    android:textColor="@color/Azure"
+	                    android:inputType="textPersonName" />
+	                
+	                <EditText
+	                    android:id="@+id/textfield_name_middle"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="wrap_content"
+	                    android:ems="10"
+	                    android:hint="@string/text_name_middle"
+	                    android:textColor="@color/Azure"
+	                    android:inputType="textPersonName" />
+	                
+	                <EditText
+	                    android:id="@+id/textfield_name_surname"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="wrap_content"
+	                    android:ems="10"
+	                    android:hint="@string/text_name_surname"
+	                    android:textColor="@color/Azure"
+	                    android:inputType="textPersonName" />
+	                
+	                <EditText
+	                    android:id="@+id/textfield_name_suffix"
+	                    android:layout_width="match_parent"
+	                    android:layout_height="wrap_content"
+	                    android:ems="10"
+	                    android:hint="@string/text_name_suffix"
+	                    android:textColor="@color/Azure"
+	                    android:inputType="textPersonName" />
+	
+	            </LinearLayout>
+	
+	            <LinearLayout
+	                android:layout_width="0dp"
+	                android:layout_height="wrap_content"
+	                android:layout_weight="15"
+	                android:orientation="vertical" >
+	
+	                <ImageButton
+	                    android:id="@+id/button_name_expand"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:contentDescription="@string/disc_expand"
+	                    android:onClick="expandNameField"
+	                    android:src="@drawable/ic_action_expand" />
+	
+	                <ImageButton
+	                    android:id="@+id/button_name_collapse"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:contentDescription="@string/disc_collapse"
+	                    android:onClick="collapseNameField"
+	                    android:src="@drawable/ic_action_collapse" />
+	
+	            </LinearLayout>
+	
+	        </LinearLayout>
+	
+	    </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+    </ScrollView>
 
 </RelativeLayout>

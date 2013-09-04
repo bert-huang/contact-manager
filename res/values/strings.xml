@@ -18,13 +18,13 @@
 
     <!-- Add new Activity -->
     <string name="action_create_done">Done</string>
-    <string name="action_discard">Discard</string>
+    <string name="action_create_discard">Discard</string>
     <string name="action_new_field">Add another field</string>
     <string name="text_name">Name</string>
     <string name="text_name_prefix">Name prefix</string>
-    <string name="text_given_name">Given name</string>
-    <string name="text_middle_name">Middle name</string>
-    <string name="text_surname">Family name</string>
+    <string name="text_name_given">Given name</string>
+    <string name="text_name_middle">Middle name</string>
+    <string name="text_name_surname">Family name</string>
     <string name="text_name_suffix">Name suffix</string>
     <string name="text_phone">Phone</string>
     <string name="text_number">Number</string>
