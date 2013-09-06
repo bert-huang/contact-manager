@@ -1,10 +1,13 @@
 package cepw.contactmanager;
 
+import java.lang.reflect.Field;
+
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewConfiguration;
 
 public class MainActivity extends Activity {
 
@@ -12,6 +15,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		forceCreateOverflow();
 		getActionBar().setDisplayShowTitleEnabled(false);
 		
 	}
@@ -43,6 +47,21 @@ public class MainActivity extends Activity {
 		Intent i = new Intent(getApplicationContext(),
 				NewContactActivity.class);
 		startActivity(i);
+	}
+	
+	private void forceCreateOverflow() {
+		// Trick device that have menu button to also have overflow button
+		try {
+			ViewConfiguration config = ViewConfiguration.get(this);
+			Field menuKeyField = ViewConfiguration.class
+					.getDeclaredField("sHasPermanentMenuKey");
+			if (menuKeyField != null) {
+				menuKeyField.setAccessible(true);
+				menuKeyField.setBoolean(config, false);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	

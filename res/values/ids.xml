@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <!-- ID for menu -->
+    	<!-- main -->
+	    <item type="id" name="action_import_export" />
+	    <item type="id" name="action_multi_select" />
+	    <item type="id" name="action_sort_options" />
+	    <item type="id" name="action_show_options" />
+	    <item type="id" name="action_settings" />
+	    <item type="id" name="action_exit" />
+	    <item type="id" name="action_add_new" />
+    
+    	<!-- new_contact -->
+	    <item type="id" name="action_create_discard" />
+	    <item type="id" name="action_create_done" />
+    
+    <!-- ID for layout -->
+    	<!-- activity_main -->
+    	<item type="id" name="imgview_icon_search" />
+	    <item type="id" name="textfield_searchbar" />
+	    
+	    <!-- activity_new_contact -->
+		<item type="id" name="layout_new_contact_root"/>
+			<item type="id" name="layout_fields"/>
+			
+				<!-- layout_avatar_name_fields -->
+					<item type="id" name="button_change_avatar"/>
+					<item type="id" name="layout_namefields"/>
+						<item type="id" name="textfield_name_full"/>
+						<item type="id" name="textfield_name_prefix"/>
+						<item type="id" name="textfield_name_given"/>
+						<item type="id" name="textfield_name_middle"/>
+						<item type="id" name="textfield_name_last"/>
+						<item type="id" name="textfield_name_suffix"/>
+		   			<item type="id" name="button_name_expand"/>
+		   			<item type="id" name="button_name_collapse"/>
+		   			
+	   			<item type="id" name="layout_phonefields"/>
+	   				<!-- layout_phonefield_header -->
+	   					<item type="id" name="button_new_number"/>
+	   				<item type="id" name="layout_dynamic_phonefield"/>
+	   				
+	   			<item type="id" name="layout_emailfields"/>
+	   				<!-- layout_emailfield_header -->
+	   					<item type="id" name="button_new_email"/>
+	   				<item type="id" name="layout_dynamic_emailfield"/>
+	   				
+	   			<item type="id" name="layout_addressfields"/>
+	   				<!-- layout_addressfield_header -->
+	   					<item type="id" name="button_new_address"/>
+	   				<item type="id" name="layout_dynamic_addressfield"/>
+	   				
+   				<item type="id" name="layout_dobfields"/>
+	   				<!-- layout_dobfield_header -->
+	   				<item type="id" name="textfield_dob"/>
+	   				
+	   	<item type="id" name="button_new_field_category" />
+    
+</resources>
