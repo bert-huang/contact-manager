@@ -33,6 +33,8 @@
     <string name="text_address">Address</string>
     <string name="text_email">E-mail</string>
     <string name="text_dob">Date of Birth</string>
+    
+    <string name="text_date">Date</string>
     <string name="text_notes">Notes</string>
     
     <string name="text_website">Website</string>
@@ -53,6 +55,7 @@
     <string name="disc_mk_field">+</string>
     <string name="disc_rm_field">-</string>
     <string name="disc_search">Search ic</string>
+    <string name="disc_clear">Clear</string>
     <string name="title_activity_new_contact">NewContactActivity</string>
 
 </resources>

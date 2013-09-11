@@ -3,8 +3,6 @@ package cepw.contactmanager;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,14 +12,18 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.support.v4.app.NavUtils;
 
 public class NewContactActivity extends Activity {
 
+	private enum FieldType {PHONE, EMAIL, ADDRESS};
 	private ImageButton expandName, collapseName;
 	private EditText fullName, namePrefix, givenName, middleName, lastName,
 			nameSuffix;
-	LinearLayout dynamicPhoneLinLayout;
+	
+	private LinearLayout phoneLinLayout, emailLinLayout, addressLinLayout, dobLinLayout;
+	private LinearLayout dynamicPhoneLinLayout, dynamicEmailLinLayout, dynamicAddressLinLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +32,22 @@ public class NewContactActivity extends Activity {
 		// Show the Up button in the action bar.
 		setupActionBar();
 		setupNameFields();
-
+		
+		phoneLinLayout = (LinearLayout) findViewById(R.id.layout_phonefields);
 		dynamicPhoneLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
-		createNewPhoneField();
+		emailLinLayout = (LinearLayout) findViewById(R.id.layout_emailfields);
+		dynamicEmailLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
+		addressLinLayout = (LinearLayout) findViewById(R.id.layout_addressfields);
+		dynamicAddressLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_addressfield);
+		dobLinLayout = (LinearLayout) findViewById(R.id.layout_dobfields);
+
+		emailLinLayout.setVisibility(View.GONE);
+		addressLinLayout.setVisibility(View.GONE);
+		dobLinLayout.setVisibility(View.GONE);
+		
+		createNewField(FieldType.PHONE);
+		createNewField(FieldType.EMAIL);
+		createNewField(FieldType.ADDRESS);
 		
 		fullName.setFocusable(true);
 		fullName.requestFocus();
@@ -124,11 +139,26 @@ public class NewContactActivity extends Activity {
 		fullName.requestFocus();
 	}
 
-	public void addPhoneField(View v) {
-		createNewPhoneField();
+	public void addNewField(View v) {
+		ViewGroup vg = (ViewGroup) v.getParent().getParent();
+		FieldType ft = null;
+		switch (vg.getId()) {
+		case R.id.layout_phonefields:
+			ft = FieldType.PHONE;
+			break;
+		case R.id.layout_emailfields:
+			ft = FieldType.EMAIL;
+			break;
+		case R.id.layout_addressfields:
+			ft = FieldType.ADDRESS;
+			break;
+		default:
+			return;	
+		}
+		createNewField(ft);
 	}
 
-	public void removePhoneField(View v) {
+	public void removeCurrentField(View v) {
 		ViewGroup view2rm = (ViewGroup) v.getParent();
 		ViewGroup parent = (ViewGroup) view2rm.getParent();
 		parent.removeView(view2rm);
@@ -136,8 +166,8 @@ public class NewContactActivity extends Activity {
 	}
 	
 	public void openDatePickerDialog(View v) {
-		DialogFragment newFragment = new NewFieldCategoryDialogFragment();
-	    newFragment.show(getFragmentManager(), "newfield");
+		DialogFragment newFragment = new DatePickerDialogFragment();
+	    newFragment.show(getFragmentManager(), "datePicker");
 	}
 	
 	public void openNewFieldCategoryDialog(View v) {
@@ -145,22 +175,49 @@ public class NewContactActivity extends Activity {
 	    newFragment.show(getFragmentManager(), "newfield");
 	}
 
-	private void createNewPhoneField() {
+	private void createNewField(FieldType ft) {
 
-		ViewGroup phoneFieldInfo = (ViewGroup) getLayoutInflater().inflate(
-				R.layout.phone_item, dynamicPhoneLinLayout, false);
+		int infl = 0;
+		int charSeq = 0;
+		LinearLayout ll = null;
+		switch (ft) {
+		case PHONE:
+			infl = R.layout.phone_item;
+			ll = dynamicPhoneLinLayout;
+			charSeq = R.array.phone_type;
+			break;
+		case EMAIL:
+			infl = R.layout.email_item;
+			ll = dynamicEmailLinLayout;
+			charSeq = R.array.email_type;
+			break;
+		case ADDRESS:
+			infl = R.layout.address_item;
+			ll = dynamicAddressLinLayout;
+			charSeq = R.array.address_type;
+			break;
+		default:
+			return;
+		}
+		
+		ViewGroup fieldInfo = (ViewGroup) getLayoutInflater().inflate(
+				infl, ll, false);
 
-		Spinner spinner = (Spinner) phoneFieldInfo.getChildAt(0);
+		Spinner spinner = (Spinner) fieldInfo.getChildAt(0);
 		// Create an ArrayAdapter using the string array and a default spinner
 		// layout
 		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-				this, R.array.phone_type, R.layout.spinner_item);
+				this, charSeq, R.layout.spinner_item);
 		// Specify the layout to use when the list of choices appears
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 		// Apply the adapter to the spinner
 		spinner.setAdapter(adapter);
 
-		dynamicPhoneLinLayout.addView(phoneFieldInfo);
+		ll.addView(fieldInfo);
 	}
 
+	public void clearField(View v) {
+		TextView tv = (TextView)findViewById(R.id.textview_dob);
+		tv.setText("");
+	}
 }

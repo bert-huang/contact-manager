@@ -15,8 +15,8 @@
         android:layout_height="match_parent"
         android:layout_weight="50"
         android:ems="10"
-        android:hint="@string/text_number"
-        android:inputType="phone" >
+        android:hint="@string/text_email"
+        android:inputType="textEmailAddress" >
         <requestFocus />
     </EditText>
     

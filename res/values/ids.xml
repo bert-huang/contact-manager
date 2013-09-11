@@ -18,7 +18,7 @@
     <!-- ID for layout -->
     	<!-- activity_main -->
     	<item type="id" name="imgview_icon_search" />
-	    <item type="id" name="textfield_searchbar" />
+	    <item type="id" name="textfield_searchbar" /> 
 	    
 	    <!-- activity_new_contact -->
 		<item type="id" name="layout_new_contact_root"/>
@@ -53,7 +53,7 @@
 	   				
    				<item type="id" name="layout_dobfields"/>
 	   				<!-- layout_dobfield_header -->
-	   				<item type="id" name="textfield_dob"/>
+	   				<item type="id" name="textview_dob"/>
 	   				
 	   	<item type="id" name="button_new_field_category" />
     

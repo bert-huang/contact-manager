@@ -1,37 +1,68 @@
 package cepw.contactmanager;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 
 public class NewFieldCategoryDialogFragment extends DialogFragment {
     
-	private final CharSequence[] items = 
-		{"Address", "Email", "Date of Birth", "Notes", "Website", "Organisation"};
+/*	private CharSequence[] items = 
+		{"Address", "Email", "Date of Birth", "Notes", "Website", "Organisation"};*/
+	
+	private List<String> item = new ArrayList<String>();
 	
 	@Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
+		
+		if (getActivity().findViewById(R.id.layout_emailfields).getVisibility() == View.GONE) {
+			item.add("E-mail");
+		}
+		
+		if (getActivity().findViewById(R.id.layout_addressfields).getVisibility() == View.GONE) {
+			item.add("Address");
+		}
+		
+		if (getActivity().findViewById(R.id.layout_dobfields).getVisibility() == View.GONE) {
+			item.add("Date of Birth");
+		}
+		
+		if (item.isEmpty()) {
+			dismiss();
+		}
+		
+		final String[] items;
+		items = item.toArray(new String[]{});
+		
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.action_new_field)
 			.setItems(items, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
-					switch(which) {
-					case 0:
-						break;
-					case 1:
-						break;
-					case 2:
-						break;
-					case 3:
-						break;
-					case 4:
-						break;
-					case 5:
-						break;
-					default:
-						break;
+					if (items[which].equals("E-mail")){
+						getActivity().findViewById(R.id.layout_emailfields).setVisibility(View.VISIBLE);
+						item.remove(which);
+					}
+					
+					if (items[which].equals("Address")){
+						getActivity().findViewById(R.id.layout_addressfields).setVisibility(View.VISIBLE);
+						item.remove(which);
+					}
+					
+					if (items[which].equals("Date of Birth")){
+						getActivity().findViewById(R.id.layout_dobfields).setVisibility(View.VISIBLE);
+						item.remove(which);
+					}
+					
+					
+					if (item.isEmpty()) {
+						View view2rm = getActivity().findViewById(R.id.button_new_field_category);
+						((ViewGroup)view2rm.getParent()).removeView(view2rm);
 					}
 				}
 			});

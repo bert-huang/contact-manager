@@ -54,8 +54,7 @@
                             android:layout_height="wrap_content"
                             android:ems="10"
                             android:hint="@string/text_name"
-                            android:inputType="textPersonName"
-                            android:textColor="@color/Azure" >
+                            android:inputType="textPersonName" >
 
                             <requestFocus />
                         </EditText>
@@ -66,8 +65,7 @@
                             android:layout_height="wrap_content"
                             android:ems="10"
                             android:hint="@string/text_name_prefix"
-                            android:inputType="textPersonName"
-                            android:textColor="@color/Azure" />
+                            android:inputType="textPersonName" />
 
                         <EditText
                             android:id="@id/textfield_name_given"
@@ -75,8 +73,7 @@
                             android:layout_height="wrap_content"
                             android:ems="10"
                             android:hint="@string/text_name_given"
-                            android:inputType="textPersonName"
-                            android:textColor="@color/Azure" />
+                            android:inputType="textPersonName" />
 
                         <EditText
                             android:id="@id/textfield_name_middle"
@@ -84,8 +81,7 @@
                             android:layout_height="wrap_content"
                             android:ems="10"
                             android:hint="@string/text_name_middle"
-                            android:inputType="textPersonName"
-                            android:textColor="@color/Azure" />
+                            android:inputType="textPersonName" />
 
                         <EditText
                             android:id="@id/textfield_name_last"
@@ -93,8 +89,7 @@
                             android:layout_height="wrap_content"
                             android:ems="10"
                             android:hint="@string/text_name_surname"
-                            android:inputType="textPersonName"
-                            android:textColor="@color/Azure" />
+                            android:inputType="textPersonName" />
 
                         <EditText
                             android:id="@id/textfield_name_suffix"
@@ -102,8 +97,7 @@
                             android:layout_height="wrap_content"
                             android:ems="10"
                             android:hint="@string/text_name_suffix"
-                            android:inputType="textPersonName"
-                            android:textColor="@color/Azure" />
+                            android:inputType="textPersonName" />
                     </LinearLayout>
 
                     <!-- Expand/Collapse button -->
@@ -167,7 +161,7 @@
                             android:layout_weight="20"
                             android:background="@color/Transparent"
                             android:contentDescription="@string/disc_mk_field"
-                            android:onClick="addPhoneField"
+                            android:onClick="addNewField"
                             android:src="@drawable/ic_action_new" />
                     </LinearLayout>
 
@@ -211,7 +205,7 @@
                             android:layout_weight="20"
                             android:background="@color/Transparent"
                             android:contentDescription="@string/disc_mk_field"
-                            android:onClick="addEmailField"
+                            android:onClick="addNewField"
                             android:src="@drawable/ic_action_new" />
                     </LinearLayout>
 
@@ -255,7 +249,7 @@
                             android:layout_weight="20"
                             android:background="@color/Transparent"
                             android:contentDescription="@string/disc_mk_field"
-                            android:onClick="addAddressField"
+                            android:onClick="addNewField"
                             android:src="@drawable/ic_action_new" />
                     </LinearLayout>
 
@@ -286,20 +280,40 @@
 
                         <TextView
                             android:layout_width="match_parent"
-                            android:layout_height="0dp"
-                            android:layout_weight="80"
+                            android:layout_height="match_parent"
                             android:gravity="center_vertical|left"
                             android:text="@string/text_dob"
                             android:textColor="@color/Azure"
                             android:textSize="18sp" />
 
-                        <TextView
-                            android:id="@id/textfield_dob"
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="@string/text_dob"
-                            android:onClick="openDatePickerDialog"/>
+                            android:layout_height="wrap_content" >
+
+                            <TextView
+                                android:id="@id/textview_dob"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="80"
+                                android:background="@drawable/edit_text_holo_dark"
+                                android:gravity="bottom|left"
+                                android:clickable="true"
+                                android:ems="10"
+                                android:hint="@string/text_date"
+                                android:onClick="openDatePickerDialog"
+                                android:textSize="18sp" />
+
+                            <ImageButton
+                                android:id="@+id/button_clear_dob"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="20"
+                                android:background="@color/Transparent"
+                                android:contentDescription="@string/disc_clear"
+                                android:onClick="clearField"
+                                android:src="@drawable/ic_action_cancel" />
+
+                        </LinearLayout>
 
                     </LinearLayout>
 

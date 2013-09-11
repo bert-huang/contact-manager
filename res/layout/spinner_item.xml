@@ -5,7 +5,7 @@
     android:layout_width="wrap_content" 
     android:layout_height="wrap_content"
     android:gravity="center_horizontal|center_vertical"
-    android:textColor="#DDDDDD"         
-    android:padding="5dip" >
+    android:textColor="@color/Azure"
+    android:padding="5dp" >
 
 </TextView>
