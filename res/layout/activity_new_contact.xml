@@ -60,14 +60,6 @@
                         </EditText>
 
                         <EditText
-                            android:id="@id/textfield_name_prefix"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="@string/text_name_prefix"
-                            android:inputType="textPersonName" />
-
-                        <EditText
                             android:id="@id/textfield_name_given"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

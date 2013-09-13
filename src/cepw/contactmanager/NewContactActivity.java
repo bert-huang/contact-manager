@@ -17,13 +17,17 @@ import android.support.v4.app.NavUtils;
 
 public class NewContactActivity extends Activity {
 
-	private enum FieldType {PHONE, EMAIL, ADDRESS};
+	private enum FieldType {
+		PHONE, EMAIL, ADDRESS
+	};
+
 	private ImageButton expandName, collapseName;
-	private EditText fullName, namePrefix, givenName, middleName, lastName,
-			nameSuffix;
-	
-	private LinearLayout phoneLinLayout, emailLinLayout, addressLinLayout, dobLinLayout;
-	private LinearLayout dynamicPhoneLinLayout, dynamicEmailLinLayout, dynamicAddressLinLayout;
+	private EditText fullName, firstName, middleName, lastName, nameSuffix;
+
+	private LinearLayout phoneLinLayout, emailLinLayout, addressLinLayout,
+			dobLinLayout;
+	private LinearLayout dynamicPhoneLinLayout, dynamicEmailLinLayout,
+			dynamicAddressLinLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +36,7 @@ public class NewContactActivity extends Activity {
 		// Show the Up button in the action bar.
 		setupActionBar();
 		setupNameFields();
-		
+
 		phoneLinLayout = (LinearLayout) findViewById(R.id.layout_phonefields);
 		dynamicPhoneLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
 		emailLinLayout = (LinearLayout) findViewById(R.id.layout_emailfields);
@@ -44,11 +48,11 @@ public class NewContactActivity extends Activity {
 		emailLinLayout.setVisibility(View.GONE);
 		addressLinLayout.setVisibility(View.GONE);
 		dobLinLayout.setVisibility(View.GONE);
-		
+
 		createNewField(FieldType.PHONE);
 		createNewField(FieldType.EMAIL);
 		createNewField(FieldType.ADDRESS);
-		
+
 		fullName.setFocusable(true);
 		fullName.requestFocus();
 	}
@@ -67,15 +71,13 @@ public class NewContactActivity extends Activity {
 		expandName = (ImageButton) findViewById(R.id.button_name_expand);
 		collapseName = (ImageButton) findViewById(R.id.button_name_collapse);
 		fullName = (EditText) findViewById(R.id.textfield_name_full);
-		namePrefix = (EditText) findViewById(R.id.textfield_name_prefix);
-		givenName = (EditText) findViewById(R.id.textfield_name_given);
+		firstName = (EditText) findViewById(R.id.textfield_name_given);
 		middleName = (EditText) findViewById(R.id.textfield_name_middle);
 		lastName = (EditText) findViewById(R.id.textfield_name_last);
 		nameSuffix = (EditText) findViewById(R.id.textfield_name_suffix);
-
+		
 		collapseName.setVisibility(View.GONE);
-		namePrefix.setVisibility(View.GONE);
-		givenName.setVisibility(View.GONE);
+		firstName.setVisibility(View.GONE);
 		middleName.setVisibility(View.GONE);
 		lastName.setVisibility(View.GONE);
 		nameSuffix.setVisibility(View.GONE);
@@ -102,7 +104,7 @@ public class NewContactActivity extends Activity {
 		case R.id.action_create_discard:
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
-			
+
 		case R.id.action_create_done:
 			// TODO
 		}
@@ -113,25 +115,47 @@ public class NewContactActivity extends Activity {
 		expandName.setVisibility(View.GONE);
 		collapseName.setVisibility(View.VISIBLE);
 
+		String[] splits = ContactName.ParseName(
+				fullName.getText().toString(),
+				firstName.getText().toString(),
+				middleName.getText().toString(),
+				lastName.getText().toString(),
+				nameSuffix.getText().toString());
+		fullName.setText("");
+		firstName.setText(splits[0]);
+		middleName.setText(splits[1]);
+		lastName.setText(splits[2]);
+		nameSuffix.setText(splits[3]);
+
 		fullName.setVisibility(View.GONE);
-		namePrefix.setVisibility(View.VISIBLE);
 		nameSuffix.setVisibility(View.VISIBLE);
-		givenName.setVisibility(View.VISIBLE);
+		firstName.setVisibility(View.VISIBLE);
 		middleName.setVisibility(View.VISIBLE);
 		lastName.setVisibility(View.VISIBLE);
-		
-		givenName.setFocusable(true);
-		givenName.requestFocus();
+
+		firstName.setFocusable(true);
+		firstName.requestFocus();
 	}
 
 	public void collapseNameField(View v) {
 		expandName.setVisibility(View.VISIBLE);
 		collapseName.setVisibility(View.GONE);
 
+		String[] combine = ContactName.ParseName(
+				fullName.getText().toString(), 
+				firstName.getText().toString(), 
+				middleName.getText().toString(),
+				lastName.getText().toString(),
+				nameSuffix.getText().toString());
+		fullName.setText(combine[0]);
+		firstName.setText("");
+		middleName.setText("");
+		lastName.setText("");
+		nameSuffix.setText("");
+		
 		fullName.setVisibility(View.VISIBLE);
-		namePrefix.setVisibility(View.GONE);
 		nameSuffix.setVisibility(View.GONE);
-		givenName.setVisibility(View.GONE);
+		firstName.setVisibility(View.GONE);
 		middleName.setVisibility(View.GONE);
 		lastName.setVisibility(View.GONE);
 		
@@ -153,7 +177,7 @@ public class NewContactActivity extends Activity {
 			ft = FieldType.ADDRESS;
 			break;
 		default:
-			return;	
+			return;
 		}
 		createNewField(ft);
 	}
@@ -164,15 +188,15 @@ public class NewContactActivity extends Activity {
 		parent.removeView(view2rm);
 
 	}
-	
+
 	public void openDatePickerDialog(View v) {
 		DialogFragment newFragment = new DatePickerDialogFragment();
-	    newFragment.show(getFragmentManager(), "datePicker");
+		newFragment.show(getFragmentManager(), "datePicker");
 	}
-	
+
 	public void openNewFieldCategoryDialog(View v) {
 		DialogFragment newFragment = new NewFieldCategoryDialogFragment();
-	    newFragment.show(getFragmentManager(), "newfield");
+		newFragment.show(getFragmentManager(), "newfield");
 	}
 
 	private void createNewField(FieldType ft) {
@@ -199,9 +223,9 @@ public class NewContactActivity extends Activity {
 		default:
 			return;
 		}
-		
-		ViewGroup fieldInfo = (ViewGroup) getLayoutInflater().inflate(
-				infl, ll, false);
+
+		ViewGroup fieldInfo = (ViewGroup) getLayoutInflater().inflate(infl, ll,
+				false);
 
 		Spinner spinner = (Spinner) fieldInfo.getChildAt(0);
 		// Create an ArrayAdapter using the string array and a default spinner
@@ -217,7 +241,8 @@ public class NewContactActivity extends Activity {
 	}
 
 	public void clearField(View v) {
-		TextView tv = (TextView)findViewById(R.id.textview_dob);
+		TextView tv = (TextView) findViewById(R.id.textview_dob);
 		tv.setText("");
 	}
+
 }
