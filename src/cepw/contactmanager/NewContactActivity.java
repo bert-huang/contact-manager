@@ -17,9 +17,7 @@ import android.support.v4.app.NavUtils;
 
 public class NewContactActivity extends Activity {
 
-	private enum FieldType {
-		PHONE, EMAIL, ADDRESS
-	};
+	private enum FieldType { PHONE, EMAIL, ADDRESS };
 
 	private ImageButton expandName, collapseName;
 	private EditText fullName, firstName, middleName, lastName, nameSuffix;
@@ -33,7 +31,7 @@ public class NewContactActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_new_contact);
-		// Show the Up button in the action bar.
+		
 		setupActionBar();
 		setupNameFields();
 
@@ -62,7 +60,7 @@ public class NewContactActivity extends Activity {
 	 */
 	private void setupActionBar() {
 
-		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayHomeAsUpEnabled(true); // Show the Up button in the action bar.
 		getActionBar().setDisplayShowTitleEnabled(false);
 
 	}
@@ -94,11 +92,8 @@ public class NewContactActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			NavUtils.navigateUpFromSameTask(this);
+			
+			finish();
 			return true;
 
 		case R.id.action_create_discard:
@@ -111,6 +106,12 @@ public class NewContactActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	
+	//=======================================//
+	//
+	//	Method for individual buttons
+	//
+	//=======================================//
 	public void expandNameField(View v) {
 		expandName.setVisibility(View.GONE);
 		collapseName.setVisibility(View.VISIBLE);

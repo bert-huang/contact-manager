@@ -25,10 +25,9 @@
         <activity
             android:name="cepw.contactmanager.NewContactActivity"
             android:label="@string/title_activity_new_contact"
-            android:parentActivityName="cepw.contactmanager.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="cepw.contactmanager.MainActivity" />
+
+            android:screenOrientation="portrait">
+
         </activity>
     </application>
 
