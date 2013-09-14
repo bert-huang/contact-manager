@@ -116,17 +116,19 @@ public class NewContactActivity extends Activity {
 		expandName.setVisibility(View.GONE);
 		collapseName.setVisibility(View.VISIBLE);
 
-		String[] splits = ContactName.ParseName(
-				fullName.getText().toString(),
-				firstName.getText().toString(),
-				middleName.getText().toString(),
-				lastName.getText().toString(),
-				nameSuffix.getText().toString());
-		fullName.setText("");
-		firstName.setText(splits[0]);
-		middleName.setText(splits[1]);
-		lastName.setText(splits[2]);
-		nameSuffix.setText(splits[3]);
+		if (!fullName.getText().toString().equals("")){
+			String[] splits = ContactName.ParseName(
+					fullName.getText().toString(),
+					firstName.getText().toString(),
+					middleName.getText().toString(),
+					lastName.getText().toString(),
+					nameSuffix.getText().toString());
+			fullName.setText("");
+			firstName.setText(splits[0]);
+			middleName.setText(splits[1]);
+			lastName.setText(splits[2]);
+			nameSuffix.setText(splits[3]);			
+		}
 
 		fullName.setVisibility(View.GONE);
 		nameSuffix.setVisibility(View.VISIBLE);

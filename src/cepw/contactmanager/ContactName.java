@@ -21,7 +21,7 @@ public class ContactName {
 	public static final String[] ParseName(String full,
 			String first, String middle, String last, String suffix) {
 		
-		if (full.equals("") || full == null) {
+		if (full.equals("")) {
 			String fullName = "";
 			if (!first.trim().equals("") && first != null)
 				fullName += first + " ";
@@ -40,27 +40,31 @@ public class ContactName {
 			String nameSuffix = "";
 			
 			int lastCommaIndex = fullName.lastIndexOf(",");
-			int lastSpaceIndex = fullName.lastIndexOf(" ");
 			
-			if (lastSpaceIndex > lastCommaIndex) { // Name without suffix
-				lastName = fullName.substring(lastSpaceIndex+1); // Assign last name
-				fullName = fullName.substring(0, lastSpaceIndex);
-				String[] split = fullName.split("[\\W+]");
-				if (split.length > 1) { //Name with middle name
-					middleName = split[split.length-1]; //Assign middle name
-					
-					for (int i = 0; i < split.length-1; i++) {
-						firstName += split[i] + " "; 
+			if (lastCommaIndex == -1) { // Name without suffix
+				int lastSpaceIndex = fullName.lastIndexOf(" ");
+				if (lastSpaceIndex == -1) {
+					firstName = fullName;
+				}else {
+					lastName = fullName.substring(lastSpaceIndex+1); // Assign last name
+					fullName = fullName.substring(0, lastSpaceIndex);
+					String[] split = fullName.split("[\\s+]");
+					if (split.length > 1) { //Name with middle name
+						middleName = split[split.length-1]; //Assign middle name
+						
+						for (int i = 0; i < split.length-1; i++) {
+							firstName += split[i] + " "; 
+						}
+						firstName = firstName.trim(); //Assign first name
+					} else {
+						firstName = split[0]; //Assign first name
 					}
-					firstName = firstName.trim(); //Assign first name
-				} else {
-					firstName = split[0]; //Assign first name
 				}
-			}else if (lastCommaIndex > lastSpaceIndex) { // Name with suffix
+			}else { // Name with suffix
 				nameSuffix = fullName.substring(lastCommaIndex+1);
 				fullName = fullName.substring(0, lastCommaIndex);
 				
-				String[] split = fullName.split("[\\W+]");
+				String[] split = fullName.split("[\\s+]");
 				if (split.length >= 3) {
 					lastName = split[split.length-1]; //Assign last name
 					middleName = split[split.length-2]; //Assign middle name
@@ -75,8 +79,6 @@ public class ContactName {
 				} else {
 					firstName = split[0]; //Assign first name
 				}
-			}else { // If no space and no comma found, assign it to first name
-				firstName = fullName;
 			}
 			return new String[] { firstName, middleName, lastName, nameSuffix };
 		}
