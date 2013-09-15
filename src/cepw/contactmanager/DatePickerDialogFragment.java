@@ -12,20 +12,29 @@ import android.widget.TextView;
 public class DatePickerDialogFragment extends DialogFragment implements
 		DatePickerDialog.OnDateSetListener {
 
+	private TextView v;
+	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		// Use the current date as the default date in the picker
+		v = (TextView)getActivity().findViewById(R.id.textview_dob);
 		final Calendar c = Calendar.getInstance();
 		int year = c.get(Calendar.YEAR);
 		int month = c.get(Calendar.MONTH);
 		int day = c.get(Calendar.DAY_OF_MONTH);
+		
+		if (!v.getText().toString().equals("")){
+			String[] split = v.getText().toString().split("-");			
+			year = Integer.parseInt(split[2]);
+			month = Integer.parseInt(split[1])-1;
+			day = Integer.parseInt(split[0]);
+		}
 
 		// Create a new instance of DatePickerDialog and return it
 		return new DatePickerDialog(getActivity(), this, year, month, day);
 	}
 
 	public void onDateSet(DatePicker view, int year, int month, int day) {
-		TextView v= (TextView)getActivity().findViewById(R.id.textview_dob);
 		String sday = "";
 		String smonth = "";
 		

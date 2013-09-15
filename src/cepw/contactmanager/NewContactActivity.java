@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -19,11 +20,11 @@ public class NewContactActivity extends Activity {
 
 	private enum FieldType { PHONE, EMAIL, ADDRESS };
 
-	private ImageButton expandName, collapseName;
+	private Button newFieldCategoryBtn;
+	private ImageButton expandName, collapseName, clearDob;
 	private EditText fullName, firstName, middleName, lastName, nameSuffix;
-
-	private LinearLayout phoneLinLayout, emailLinLayout, addressLinLayout,
-			dobLinLayout;
+	private TextView dobField;
+	private LinearLayout emailLinLayout, addressLinLayout, dobLinLayout;
 	private LinearLayout dynamicPhoneLinLayout, dynamicEmailLinLayout,
 			dynamicAddressLinLayout;
 
@@ -34,18 +35,27 @@ public class NewContactActivity extends Activity {
 		
 		setupActionBar();
 		setupNameFields();
+		setupDobField();
 
-		phoneLinLayout = (LinearLayout) findViewById(R.id.layout_phonefields);
 		dynamicPhoneLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
 		emailLinLayout = (LinearLayout) findViewById(R.id.layout_emailfields);
 		dynamicEmailLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
 		addressLinLayout = (LinearLayout) findViewById(R.id.layout_addressfields);
 		dynamicAddressLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_addressfield);
 		dobLinLayout = (LinearLayout) findViewById(R.id.layout_dobfields);
+		newFieldCategoryBtn = (Button) findViewById(R.id.button_new_field_category);
 
 		emailLinLayout.setVisibility(View.GONE);
 		addressLinLayout.setVisibility(View.GONE);
 		dobLinLayout.setVisibility(View.GONE);
+		newFieldCategoryBtn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				DialogFragment newFragment = new NewFieldCategoryDialogFragment();
+				newFragment.show(getFragmentManager(), "newfield");
+			}
+		});
 
 		createNewField(FieldType.PHONE);
 		createNewField(FieldType.EMAIL);
@@ -53,6 +63,7 @@ public class NewContactActivity extends Activity {
 
 		fullName.setFocusable(true);
 		fullName.requestFocus();
+		
 	}
 
 	/**
@@ -79,8 +90,92 @@ public class NewContactActivity extends Activity {
 		middleName.setVisibility(View.GONE);
 		lastName.setVisibility(View.GONE);
 		nameSuffix.setVisibility(View.GONE);
+		
+		expandName.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				expandName.setVisibility(View.GONE);
+				collapseName.setVisibility(View.VISIBLE);
+
+				if (!fullName.getText().toString().equals("")){
+					String[] splits = ContactName.ParseName(
+							fullName.getText().toString(),
+							firstName.getText().toString(),
+							middleName.getText().toString(),
+							lastName.getText().toString(),
+							nameSuffix.getText().toString());
+					fullName.setText("");
+					firstName.setText(splits[0]);
+					middleName.setText(splits[1]);
+					lastName.setText(splits[2]);
+					nameSuffix.setText(splits[3]);			
+				}
+
+				fullName.setVisibility(View.GONE);
+				nameSuffix.setVisibility(View.VISIBLE);
+				firstName.setVisibility(View.VISIBLE);
+				middleName.setVisibility(View.VISIBLE);
+				lastName.setVisibility(View.VISIBLE);
+
+				firstName.setFocusable(true);
+				firstName.requestFocus();
+				
+			}
+		});
+		collapseName.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				expandName.setVisibility(View.VISIBLE);
+				collapseName.setVisibility(View.GONE);
+
+				String[] combine = ContactName.ParseName(
+						fullName.getText().toString(), 
+						firstName.getText().toString(), 
+						middleName.getText().toString(),
+						lastName.getText().toString(),
+						nameSuffix.getText().toString());
+				fullName.setText(combine[0]);
+				firstName.setText("");
+				middleName.setText("");
+				lastName.setText("");
+				nameSuffix.setText("");
+				
+				fullName.setVisibility(View.VISIBLE);
+				nameSuffix.setVisibility(View.GONE);
+				firstName.setVisibility(View.GONE);
+				middleName.setVisibility(View.GONE);
+				lastName.setVisibility(View.GONE);
+				
+				fullName.setFocusable(true);
+				fullName.requestFocus();
+				
+			}
+		});
+		
 	}
 
+	private void setupDobField() {
+		dobField = (TextView) findViewById(R.id.textview_dob);
+		clearDob = (ImageButton) findViewById(R.id.button_clear_dob);
+		
+		dobField.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				DialogFragment newFragment = new DatePickerDialogFragment();
+				newFragment.show(getFragmentManager(), "datePicker");
+			}
+		});
+		clearDob.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				dobField.setText("");	
+			}
+		});
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -92,12 +187,11 @@ public class NewContactActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			
 			finish();
 			return true;
 
 		case R.id.action_create_discard:
-			NavUtils.navigateUpFromSameTask(this);
+			finish();
 			return true;
 
 		case R.id.action_create_done:
@@ -106,66 +200,12 @@ public class NewContactActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 
-	
 	//=======================================//
 	//
-	//	Method for individual buttons
+	//	Method for general buttons
+	//	(or buttons without ID)
 	//
 	//=======================================//
-	public void expandNameField(View v) {
-		expandName.setVisibility(View.GONE);
-		collapseName.setVisibility(View.VISIBLE);
-
-		if (!fullName.getText().toString().equals("")){
-			String[] splits = ContactName.ParseName(
-					fullName.getText().toString(),
-					firstName.getText().toString(),
-					middleName.getText().toString(),
-					lastName.getText().toString(),
-					nameSuffix.getText().toString());
-			fullName.setText("");
-			firstName.setText(splits[0]);
-			middleName.setText(splits[1]);
-			lastName.setText(splits[2]);
-			nameSuffix.setText(splits[3]);			
-		}
-
-		fullName.setVisibility(View.GONE);
-		nameSuffix.setVisibility(View.VISIBLE);
-		firstName.setVisibility(View.VISIBLE);
-		middleName.setVisibility(View.VISIBLE);
-		lastName.setVisibility(View.VISIBLE);
-
-		firstName.setFocusable(true);
-		firstName.requestFocus();
-	}
-
-	public void collapseNameField(View v) {
-		expandName.setVisibility(View.VISIBLE);
-		collapseName.setVisibility(View.GONE);
-
-		String[] combine = ContactName.ParseName(
-				fullName.getText().toString(), 
-				firstName.getText().toString(), 
-				middleName.getText().toString(),
-				lastName.getText().toString(),
-				nameSuffix.getText().toString());
-		fullName.setText(combine[0]);
-		firstName.setText("");
-		middleName.setText("");
-		lastName.setText("");
-		nameSuffix.setText("");
-		
-		fullName.setVisibility(View.VISIBLE);
-		nameSuffix.setVisibility(View.GONE);
-		firstName.setVisibility(View.GONE);
-		middleName.setVisibility(View.GONE);
-		lastName.setVisibility(View.GONE);
-		
-		fullName.setFocusable(true);
-		fullName.requestFocus();
-	}
-
 	public void addNewField(View v) {
 		ViewGroup vg = (ViewGroup) v.getParent().getParent();
 		FieldType ft = null;
@@ -183,23 +223,6 @@ public class NewContactActivity extends Activity {
 			return;
 		}
 		createNewField(ft);
-	}
-
-	public void removeCurrentField(View v) {
-		ViewGroup view2rm = (ViewGroup) v.getParent();
-		ViewGroup parent = (ViewGroup) view2rm.getParent();
-		parent.removeView(view2rm);
-
-	}
-
-	public void openDatePickerDialog(View v) {
-		DialogFragment newFragment = new DatePickerDialogFragment();
-		newFragment.show(getFragmentManager(), "datePicker");
-	}
-
-	public void openNewFieldCategoryDialog(View v) {
-		DialogFragment newFragment = new NewFieldCategoryDialogFragment();
-		newFragment.show(getFragmentManager(), "newfield");
 	}
 
 	private void createNewField(FieldType ft) {
@@ -242,10 +265,15 @@ public class NewContactActivity extends Activity {
 
 		ll.addView(fieldInfo);
 	}
+	
+	public void removeCurrentField(View v) {
+		ViewGroup view2rm = (ViewGroup) v.getParent();
+		ViewGroup parent = (ViewGroup) view2rm.getParent();
+		parent.removeView(view2rm);
 
-	public void clearField(View v) {
-		TextView tv = (TextView) findViewById(R.id.textview_dob);
-		tv.setText("");
 	}
 
+
+
+	
 }

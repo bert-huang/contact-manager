@@ -107,7 +107,6 @@
                             android:layout_height="wrap_content"
                             android:background="@color/Transparent"
                             android:contentDescription="@string/disc_expand"
-                            android:onClick="expandNameField"
                             android:src="@drawable/ic_action_expand" />
 
                         <ImageButton
@@ -116,7 +115,6 @@
                             android:layout_height="wrap_content"
                             android:background="@color/Transparent"
                             android:contentDescription="@string/disc_collapse"
-                            android:onClick="collapseNameField"
                             android:src="@drawable/ic_action_collapse" />
                     </LinearLayout>
                 </LinearLayout>
@@ -292,7 +290,6 @@
                                 android:clickable="true"
                                 android:ems="10"
                                 android:hint="@string/text_date"
-                                android:onClick="openDatePickerDialog"
                                 android:textSize="18sp" />
 
                             <ImageButton
@@ -302,7 +299,6 @@
                                 android:layout_weight="20"
                                 android:background="@color/Transparent"
                                 android:contentDescription="@string/disc_clear"
-                                android:onClick="clearField"
                                 android:src="@drawable/ic_action_cancel" />
 
                         </LinearLayout>
@@ -323,8 +319,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/action_new_field"
-                android:textColor="@color/Azure"
-                android:onClick="openNewFieldCategoryDialog"/>
+                android:textColor="@color/Azure" />
 
         </LinearLayout>
 </ScrollView>
