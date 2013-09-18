@@ -1,0 +1,292 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/bg"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+    tools:context=".ContactInfoActivty" >
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:orientation="vertical">
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="horizontal" >
+	
+	        <ImageView
+	            android:id="@+id/info_avatar"
+	            android:layout_width="100dp"
+	            android:layout_height="100dp"
+	            android:scaleType="centerCrop"
+	            android:src="@drawable/ic_face"
+	            android:contentDescription="@string/disc_avatar" />
+	
+	        <LinearLayout
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:layout_marginLeft="20dp"
+				android:gravity="center_vertical"
+	            android:orientation="vertical" >
+	
+	            <TextView
+	                android:id="@+id/info_first_name"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:gravity="center_vertical"
+	                android:textSize="25sp" 
+	                android:text="@string/text_name_given" />
+	
+	            <TextView
+	                android:id="@+id/info_middle_name"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:gravity="center_vertical"
+	                android:textSize="18sp" 
+	                android:text="@string/text_name_middle" />
+	
+	            <TextView
+	                android:id="@+id/info_last_name"
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:gravity="center_vertical"
+	                android:textSize="18sp" 
+	                android:text="@string/text_name_surname" />
+	
+	            <TextView
+	                android:id="@+id/info_name_suffix"
+	                android:layout_width="wrap_content"
+	                android:layout_height="wrap_content"
+	                android:gravity="center_vertical"
+	                android:textSize="15sp" 
+	                android:text="@string/text_name_suffix" />
+	
+	        </LinearLayout>
+	
+	    </LinearLayout>
+		<View style="@style/style_separator" />
+	
+		<!-- ===================================================================== -->
+		<!-- Phone -->
+	    <LinearLayout
+	        android:id="@+id/layout_phone_info"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+	
+	        <TextView
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:textSize="20sp"
+	            android:text="@string/text_phone" />
+	
+	        <LinearLayout
+	            android:id="@+id/layout_dynamic_phone_info"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dp"
+	            android:orientation="vertical" >
+	
+	            <!-- Dynamically Added items -->
+	            <!-- 01 -->
+	            <LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical" >
+		            <View style="@style/style_separator"/>
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="Mobile" />
+	
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_marginLeft="10dp"
+	                    android:textSize="18sp"
+	                    android:text="0211557760" />
+	            </LinearLayout>
+	            <!-- 02 -->
+	            <LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical" >
+					<View style="@style/style_separator"/>
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="Home" />
+	
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_marginLeft="10dp"
+	                    android:textSize="18sp"
+	                    android:text="095376635" />
+	            </LinearLayout>
+	            
+	        </LinearLayout>
+			<View style="@style/style_separator"/>
+	    </LinearLayout>
+
+	    <!-- ===================================================================== -->
+	    <!-- Email -->
+	    <LinearLayout
+	        android:id="@+id/layout_email_info"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+			
+	        <TextView
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:textSize="20sp"
+	            android:text="@string/text_email" />
+	
+	        <LinearLayout
+	            android:id="@+id/layout_dynamic_email_info"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dp"
+	            android:orientation="vertical" >
+	
+	            <!-- Dynamically Added items -->
+	            <!-- 01 -->
+	            <LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical" >
+		            <View style="@style/style_separator"/>
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="Home" />
+	
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_marginLeft="10dp"
+	                    android:textSize="18sp"
+	                    android:text="dendeer82@gmail.com" />
+	            </LinearLayout>
+	            <!-- 02 -->
+	            <LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical" >
+					<View style="@style/style_separator"/>
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="Work" />
+	
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_marginLeft="10dp"
+	                    android:textSize="18sp"
+	                    android:text="ihua164@aucklanduni.ac.nz" />
+	            </LinearLayout>
+	            
+	        </LinearLayout>
+			<View style="@style/style_separator"/>
+	    </LinearLayout>
+	    
+	    <!-- ===================================================================== -->
+	    <!-- Address -->
+	    <LinearLayout
+	        android:id="@+id/layout_address_info"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+			
+	        <TextView
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:textSize="20sp"
+	            android:text="@string/text_address" />
+	
+	        <LinearLayout
+	            android:id="@+id/layout_dynamic_address_info"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dp"
+	            android:orientation="vertical" >
+	
+	            <!-- Dynamically Added items -->
+	            <!-- 01 -->
+	            <LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical" >
+		            <View style="@style/style_separator"/>
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="Home" />
+	
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_marginLeft="10dp"
+	                    android:textSize="18sp"
+	                    android:text="51 Evelyn Road, Cockle Bay, Auckland" />
+	            </LinearLayout>
+	            <!-- 02 -->
+	            <LinearLayout
+	                android:layout_width="match_parent"
+	                android:layout_height="wrap_content"
+	                android:orientation="vertical" >
+					<View style="@style/style_separator"/>
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:text="Work" />
+	
+	                <TextView
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_marginLeft="10dp"
+	                    android:textSize="18sp"
+	                    android:text="some random auckland uni address" />
+	            </LinearLayout>
+	            
+	        </LinearLayout>
+			<View style="@style/style_separator"/>
+	    </LinearLayout>
+	    
+	    <!-- ===================================================================== -->
+	    <!-- Date of Birth -->
+	    <LinearLayout
+	        android:id="@+id/layout_dob_info"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:orientation="vertical" >
+			
+	        <TextView
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:textSize="20sp"
+	            android:text="@string/text_dob" />
+	        
+	        <View 
+	            style="@style/style_separator"
+	            android:layout_marginLeft="40dp"/>
+	        <TextView
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:textSize="18sp"
+	            android:layout_marginLeft="40dp"
+	            android:text="27-01-1993" />
+	
+
+			<View style="@style/style_separator"/>
+	    </LinearLayout>
+	    
+	    
+	</LinearLayout>
+</ScrollView>

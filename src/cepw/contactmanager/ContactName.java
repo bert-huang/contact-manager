@@ -1,10 +1,9 @@
 package cepw.contactmanager;
 
-/**
- * @author cookie-paw
- * 
- */
-public class ContactName {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class ContactName implements Parcelable{
 
 	private String firstName, middleName, lastName, suffix;
 
@@ -124,5 +123,44 @@ public class ContactName {
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
 	}
+
+	@Override
+	public int describeContents() {
+		return this.hashCode();
+	}
+
+	@Override
+	public void writeToParcel(Parcel out, int flags) {
+		out.writeString(this.firstName);
+		out.writeString(this.middleName);
+		out.writeString(this.lastName);
+		out.writeString(this.suffix);
+	}
+	
+	/**
+	 * @see android.os.Parcelable.Creator
+	 */
+	public static final Parcelable.Creator<ContactName> CREATOR = new Parcelable.Creator<ContactName>() {
+		public ContactName createFromParcel(Parcel in) {
+			return new ContactName(in);
+		}
+
+		public ContactName[] newArray(int size) {
+			return new ContactName[size];
+		}
+	};
+	
+	/**
+	 * Private constructor for Parcelable.Creater
+	 * @param in Parcel that contains data
+	 */
+	private ContactName(Parcel in) {
+        this.firstName = in.readString();
+        this.middleName = in.readString();
+        this.lastName = in.readString();
+        this.suffix = in.readString();
+    }
+	
+	
 
 }

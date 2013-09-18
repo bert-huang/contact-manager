@@ -1,14 +1,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
         
         <item 
-            android:id="@+id/action_create_discard"
+            android:id="@id/action_create_discard"
             android:icon="@drawable/ic_action_discard"
             android:orderInCategory="1"
             android:showAsAction="ifRoom"
             android:title="@string/action_create_discard"/>
         
         <item 
-            android:id="@+id/action_create_done"
+            android:id="@id/action_create_done"
             android:icon="@drawable/ic_action_done"
             android:orderInCategory="2"
             android:showAsAction="ifRoom"

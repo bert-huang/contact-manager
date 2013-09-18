@@ -26,20 +26,15 @@
     <string name="text_name_middle">Middle name</string>
     <string name="text_name_surname">Family name</string>
     <string name="text_name_suffix">Name suffix</string>
-    
     <string name="text_phone">Phone</string>
     <string name="text_number">Number</string>
-    
     <string name="text_address">Address</string>
     <string name="text_email">E-mail</string>
     <string name="text_dob">Date of Birth</string>
-    
     <string name="text_date">Date</string>
     <string name="text_notes">Notes</string>
-    
     <string name="text_website">Website</string>
     <string name="text_url">URL</string>
-    
     <string name="text_org">Organisation</string>
     <string name="text_company">Company</string>
     <string name="text_job">Job Title</string>
@@ -57,5 +52,6 @@
     <string name="disc_search">Search ic</string>
     <string name="disc_clear">Clear</string>
     <string name="title_activity_new_contact">NewContactActivity</string>
+    <string name="title_activity_contact_info_activty">ContactInfoActivty</string>
 
 </resources>
