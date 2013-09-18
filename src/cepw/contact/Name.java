@@ -1,9 +1,9 @@
-package cepw.contactmanager;
+package cepw.contact;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ContactName implements Parcelable{
+public class Name implements Parcelable{
 
 	private String firstName, middleName, lastName, suffix;
 
@@ -84,7 +84,7 @@ public class ContactName implements Parcelable{
 
 	}
 
-	public ContactName(String firstName, String middleName,
+	public Name(String firstName, String middleName,
 			String lastName, String suffix) {
 		this.firstName = firstName;
 		this.middleName = middleName;
@@ -140,13 +140,13 @@ public class ContactName implements Parcelable{
 	/**
 	 * @see android.os.Parcelable.Creator
 	 */
-	public static final Parcelable.Creator<ContactName> CREATOR = new Parcelable.Creator<ContactName>() {
-		public ContactName createFromParcel(Parcel in) {
-			return new ContactName(in);
+	public static final Parcelable.Creator<Name> CREATOR = new Parcelable.Creator<Name>() {
+		public Name createFromParcel(Parcel in) {
+			return new Name(in);
 		}
 
-		public ContactName[] newArray(int size) {
-			return new ContactName[size];
+		public Name[] newArray(int size) {
+			return new Name[size];
 		}
 	};
 	
@@ -154,7 +154,7 @@ public class ContactName implements Parcelable{
 	 * Private constructor for Parcelable.Creater
 	 * @param in Parcel that contains data
 	 */
-	private ContactName(Parcel in) {
+	private Name(Parcel in) {
         this.firstName = in.readString();
         this.middleName = in.readString();
         this.lastName = in.readString();

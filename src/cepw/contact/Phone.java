@@ -1,9 +1,9 @@
-package cepw.contactmanager;
+package cepw.contact;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ContactPhone implements Parcelable {
+public class Phone implements Parcelable {
 
 	private String type;
 	private String number;
@@ -14,7 +14,7 @@ public class ContactPhone implements Parcelable {
 	 * @param number
 	 * @throws InvalidPhoneException 
 	 */
-	public ContactPhone(String type, String number) {
+	public Phone(String type, String number) {
 		this.type = type;
 		String temp = number.replaceAll("[^0-9]", "");
 		this.number = temp;
@@ -73,13 +73,13 @@ public class ContactPhone implements Parcelable {
 	/**
 	 * @see android.os.Parcelable.Creator
 	 */
-	public static final Parcelable.Creator<ContactPhone> CREATOR = new Parcelable.Creator<ContactPhone>() {
-		public ContactPhone createFromParcel(Parcel in) {
-			return new ContactPhone(in);
+	public static final Parcelable.Creator<Phone> CREATOR = new Parcelable.Creator<Phone>() {
+		public Phone createFromParcel(Parcel in) {
+			return new Phone(in);
 		}
 
-		public ContactPhone[] newArray(int size) {
-			return new ContactPhone[size];
+		public Phone[] newArray(int size) {
+			return new Phone[size];
 		}
 	};
 	
@@ -87,7 +87,7 @@ public class ContactPhone implements Parcelable {
 	 * Private constructor for Parcelable.Creater
 	 * @param in Parcel that contains data
 	 */
-	private ContactPhone(Parcel in) {
+	private Phone(Parcel in) {
         this.type = in.readString();
         this.number = in.readString();
     }

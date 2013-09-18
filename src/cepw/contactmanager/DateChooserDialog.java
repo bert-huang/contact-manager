@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.widget.DatePicker;
 import android.widget.TextView;
 
-public class DatePickerDialogFragment extends DialogFragment implements
+public class DateChooserDialog extends DialogFragment implements
 		DatePickerDialog.OnDateSetListener {
 
 	private TextView v;

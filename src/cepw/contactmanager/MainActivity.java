@@ -9,11 +9,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.TextureView;
-import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import cepw.contact.*;
 
 public class MainActivity extends Activity {
 
@@ -56,7 +56,7 @@ public class MainActivity extends Activity {
 	
 	private void gotoCreateNewContact() {
 		Intent i = new Intent(getApplicationContext(),
-				NewContactActivity.class);
+				EditActivity.class);
 		startActivityForResult(i, CREATE_CONTACT_REQUEST);
 	}
 	

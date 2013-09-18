@@ -1,9 +1,9 @@
-package cepw.contactmanager;
+package cepw.contact;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ContactAddress implements Parcelable {
+public class Address implements Parcelable {
 	private String type;
 	private String address;
 
@@ -12,7 +12,7 @@ public class ContactAddress implements Parcelable {
 	 * @param type
 	 * @param address
 	 */
-	public ContactAddress(String type, String address) {
+	public Address(String type, String address) {
 		this.type = type;
 		this.address = address;
 	}
@@ -70,13 +70,13 @@ public class ContactAddress implements Parcelable {
 	/**
 	 * @see android.os.Parcelable.Creator
 	 */
-	public static final Parcelable.Creator<ContactAddress> CREATOR = new Parcelable.Creator<ContactAddress>() {
-		public ContactAddress createFromParcel(Parcel in) {
-			return new ContactAddress(in);
+	public static final Parcelable.Creator<Address> CREATOR = new Parcelable.Creator<Address>() {
+		public Address createFromParcel(Parcel in) {
+			return new Address(in);
 		}
 
-		public ContactAddress[] newArray(int size) {
-			return new ContactAddress[size];
+		public Address[] newArray(int size) {
+			return new Address[size];
 		}
 	};
 	
@@ -84,7 +84,7 @@ public class ContactAddress implements Parcelable {
 	 * Private constructor for Parcelable.Creater
 	 * @param in Parcel that contains data
 	 */
-	private ContactAddress(Parcel in) {
+	private Address(Parcel in) {
         this.type = in.readString();
         this.address = in.readString();
     }

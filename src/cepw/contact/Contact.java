@@ -1,4 +1,4 @@
-package cepw.contactmanager;
+package cepw.contact;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,15 +7,15 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Contact implements Parcelable{
-	private ContactName name;
-	private List<ContactPhone> phones;
-	private List<ContactEmail> emails;
-	private List<ContactAddress> addresses;
-	private ContactDateOfBirth dateOfBirth;
+	private Name name;
+	private List<Phone> phones;
+	private List<Email> emails;
+	private List<Address> addresses;
+	private DateOfBirth dateOfBirth;
 
-	public Contact(ContactName name, List<ContactPhone> phones,
-			List<ContactEmail> emails, List<ContactAddress> addresses,
-			ContactDateOfBirth dateOfBirth) {
+	public Contact(Name name, List<Phone> phones,
+			List<Email> emails, List<Address> addresses,
+			DateOfBirth dateOfBirth) {
 		
 		this.name = name;
 		this.phones = phones;
@@ -25,11 +25,11 @@ public class Contact implements Parcelable{
 
 	}
 
-	public ContactName getName() {
+	public Name getName() {
 		return name;
 	}
 
-	public void setName(ContactName name) {
+	public void setName(Name name) {
 		this.name = name;
 	}
 
@@ -41,39 +41,39 @@ public class Contact implements Parcelable{
 		this.dateOfBirth.setDateOfBirth(dateOfBirth);
 	}
 	
-	public List<ContactPhone> getPhones() {
+	public List<Phone> getPhones() {
 		return phones;
 	}
 	
-	public void addPhone(ContactPhone phone) {
+	public void addPhone(Phone phone) {
 		this.phones.add(phone);
 	}
 	
-	public void removePhone(ContactPhone phone) {
+	public void removePhone(Phone phone) {
 		this.phones.remove(phone);
 	}
 	
-	public List<ContactEmail> getEmails() {
+	public List<Email> getEmails() {
 		return emails;
 	}
 	
-	public void addEmail(ContactEmail email) {
+	public void addEmail(Email email) {
 		this.emails.add(email);
 	}
 	
-	public void removeEmail(ContactEmail email) {
+	public void removeEmail(Email email) {
 		this.emails.remove(email);
 	}
 	
-	public List<ContactAddress> getAddresses() {
+	public List<Address> getAddresses() {
 		return addresses;
 	}
 	
-	public void addAddress(ContactAddress address) {
+	public void addAddress(Address address) {
 		this.addresses.add(address);
 	}
 	
-	public void removeAddress(ContactAddress address) {
+	public void removeAddress(Address address) {
 		this.addresses.remove(address);
 	}
 
@@ -110,14 +110,14 @@ public class Contact implements Parcelable{
 	 * @param in Parcel that contains data
 	 */
 	private Contact(Parcel in) {
-		phones = new ArrayList<ContactPhone>();
-		emails = new ArrayList<ContactEmail>();
-		addresses = new ArrayList<ContactAddress>();
+		phones = new ArrayList<Phone>();
+		emails = new ArrayList<Email>();
+		addresses = new ArrayList<Address>();
 		
-		this.name = (ContactName)in.readValue(ContactName.class.getClassLoader());
-		in.readList(phones, ContactPhone.class.getClassLoader());
-		in.readList(emails, ContactEmail.class.getClassLoader());
-		in.readList(addresses, ContactAddress.class.getClassLoader());
-		this.dateOfBirth = (ContactDateOfBirth)in.readValue(ContactDateOfBirth.class.getClassLoader());
+		this.name = (Name)in.readValue(Name.class.getClassLoader());
+		in.readList(phones, Phone.class.getClassLoader());
+		in.readList(emails, Email.class.getClassLoader());
+		in.readList(addresses, Address.class.getClassLoader());
+		this.dateOfBirth = (DateOfBirth)in.readValue(DateOfBirth.class.getClassLoader());
     }
 }

@@ -11,7 +11,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class NewFieldCategoryDialogFragment extends DialogFragment {
+public class FieldCategoryDialog extends DialogFragment {
     
 /*	private CharSequence[] items = 
 		{"Address", "Email", "Date of Birth", "Notes", "Website", "Organisation"};*/

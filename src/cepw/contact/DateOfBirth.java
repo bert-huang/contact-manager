@@ -1,9 +1,9 @@
-package cepw.contactmanager;
+package cepw.contact;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ContactDateOfBirth implements Parcelable {
+public class DateOfBirth implements Parcelable {
 	
 	private String dateOfBirth;
 
@@ -11,7 +11,7 @@ public class ContactDateOfBirth implements Parcelable {
 	 * Constructor of a DateOfBirth object
 	 * @param type
 	 */
-	public ContactDateOfBirth(String dob) {
+	public DateOfBirth(String dob) {
 		this.dateOfBirth = dob;
 	}
 
@@ -50,13 +50,13 @@ public class ContactDateOfBirth implements Parcelable {
 	/**
 	 * @see android.os.Parcelable.Creator
 	 */
-	public static final Parcelable.Creator<ContactDateOfBirth> CREATOR = new Parcelable.Creator<ContactDateOfBirth>() {
-		public ContactDateOfBirth createFromParcel(Parcel in) {
-			return new ContactDateOfBirth(in);
+	public static final Parcelable.Creator<DateOfBirth> CREATOR = new Parcelable.Creator<DateOfBirth>() {
+		public DateOfBirth createFromParcel(Parcel in) {
+			return new DateOfBirth(in);
 		}
 
-		public ContactDateOfBirth[] newArray(int size) {
-			return new ContactDateOfBirth[size];
+		public DateOfBirth[] newArray(int size) {
+			return new DateOfBirth[size];
 		}
 	};
 	
@@ -64,7 +64,7 @@ public class ContactDateOfBirth implements Parcelable {
 	 * Private constructor for Parcelable.Creater
 	 * @param in Parcel that contains data
 	 */
-	private ContactDateOfBirth(Parcel in) {
+	private DateOfBirth(Parcel in) {
         this.dateOfBirth = in.readString();
     }
 }

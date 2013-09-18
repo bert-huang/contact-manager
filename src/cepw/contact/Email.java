@@ -1,9 +1,9 @@
-package cepw.contactmanager;
+package cepw.contact;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class ContactEmail implements Parcelable {
+public class Email implements Parcelable {
 	private String type;
 	private String email;
 
@@ -13,7 +13,7 @@ public class ContactEmail implements Parcelable {
 	 * @param email
 	 * @throws InvalidEmailException 
 	 */
-	public ContactEmail(String type, String email) throws InvalidEmailException {
+	public Email(String type, String email) throws InvalidEmailException {
 		this.type = type;
 		if (!email.isEmpty() && !email.matches("(.+)[@]([A-Za-z]+[\\.])+[A-Za-z]+"))
 			throw new InvalidEmailException("Not a valid E-mail address");
@@ -73,13 +73,13 @@ public class ContactEmail implements Parcelable {
 	/**
 	 * @see android.os.Parcelable.Creator
 	 */
-	public static final Parcelable.Creator<ContactEmail> CREATOR = new Parcelable.Creator<ContactEmail>() {
-		public ContactEmail createFromParcel(Parcel in) {
-			return new ContactEmail(in);
+	public static final Parcelable.Creator<Email> CREATOR = new Parcelable.Creator<Email>() {
+		public Email createFromParcel(Parcel in) {
+			return new Email(in);
 		}
 
-		public ContactEmail[] newArray(int size) {
-			return new ContactEmail[size];
+		public Email[] newArray(int size) {
+			return new Email[size];
 		}
 	};
 	
@@ -87,7 +87,7 @@ public class ContactEmail implements Parcelable {
 	 * Private constructor for Parcelable.Creater
 	 * @param in Parcel that contains data
 	 */
-	private ContactEmail(Parcel in) {
+	private Email(Parcel in) {
         this.type = in.readString();
         this.email = in.readString();
     }
@@ -95,7 +95,7 @@ public class ContactEmail implements Parcelable {
 	/**
 	 * Exception for when invalid phone number is detected
 	 */
-	class InvalidEmailException extends Exception {
+	public class InvalidEmailException extends Exception {
 		private static final long serialVersionUID = 705798288431081538L;
 
 		public InvalidEmailException (String msg) {

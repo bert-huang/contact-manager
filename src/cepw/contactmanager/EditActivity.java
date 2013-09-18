@@ -3,7 +3,6 @@ package cepw.contactmanager;
 import java.util.ArrayList;
 import java.util.List;
 
-import cepw.contactmanager.ContactEmail.InvalidEmailException;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -23,7 +22,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class NewContactActivity extends Activity {
+import cepw.contact.*;
+import cepw.contact.Email.InvalidEmailException;
+
+public class EditActivity extends Activity {
 
 	private enum FieldType { PHONE, EMAIL, ADDRESS };
 
@@ -38,7 +40,7 @@ public class NewContactActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_new_contact);
+		setContentView(R.layout.activity_edit);
 		
 		setupActionBar();
 		setupNameFields();
@@ -59,7 +61,7 @@ public class NewContactActivity extends Activity {
 			
 			@Override
 			public void onClick(View v) {
-				DialogFragment newFragment = new NewFieldCategoryDialogFragment();
+				DialogFragment newFragment = new FieldCategoryDialog();
 				newFragment.show(getFragmentManager(), "newfield");
 			}
 		});
@@ -129,7 +131,7 @@ public class NewContactActivity extends Activity {
 				collapseName.setVisibility(View.VISIBLE);
 
 				if (!fullName.getText().toString().equals("")){
-					String[] splits = ContactName.ParseName(
+					String[] splits = Name.ParseName(
 							fullName.getText().toString(),
 							firstName.getText().toString(),
 							middleName.getText().toString(),
@@ -160,7 +162,7 @@ public class NewContactActivity extends Activity {
 				expandName.setVisibility(View.VISIBLE);
 				collapseName.setVisibility(View.GONE);
 
-				String[] combine = ContactName.ParseName(
+				String[] combine = Name.ParseName(
 						fullName.getText().toString(), 
 						firstName.getText().toString(), 
 						middleName.getText().toString(),
@@ -193,7 +195,7 @@ public class NewContactActivity extends Activity {
 		dobField.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				DialogFragment newFragment = new DatePickerDialogFragment();
+				DialogFragment newFragment = new DateChooserDialog();
 				newFragment.show(getFragmentManager(), "datePicker");
 			}
 		});
@@ -209,7 +211,7 @@ public class NewContactActivity extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.new_contact, menu);
+		getMenuInflater().inflate(R.menu.edit, menu);
 		return true;
 	}
 
@@ -229,32 +231,32 @@ public class NewContactActivity extends Activity {
 			
 			Intent intent = new Intent();
 			Contact contact = null;
-			ContactName name = null;
+			Name name = null;
 			int childCount = 0;
-			List<ContactPhone> phones = new ArrayList<ContactPhone>();
-			List<ContactEmail> emails = new ArrayList<ContactEmail>();
-			List<ContactAddress> addresses = new ArrayList<ContactAddress>();
-			ContactDateOfBirth dob = null;
+			List<Phone> phones = new ArrayList<Phone>();
+			List<Email> emails = new ArrayList<Email>();
+			List<Address> addresses = new ArrayList<Address>();
+			DateOfBirth dob = null;
 			
 			// Parsing contact name
 			if (fullName.getVisibility() == View.VISIBLE) {
 				if (!fullName.getText().toString().equals("")){
-					String[] splits = ContactName.ParseName(
+					String[] splits = Name.ParseName(
 							fullName.getText().toString(),
 							firstName.getText().toString(),
 							middleName.getText().toString(),
 							lastName.getText().toString(),
 							nameSuffix.getText().toString());
-					name = new ContactName(
+					name = new Name(
 							splits[0], 
 							splits[1], 
 							splits[2], 
 							splits[3]);
 				}else {
-					name = new ContactName("", "", "", "");
+					name = new Name("", "", "", "");
 				}
 			}else {
-				name = new ContactName(
+				name = new Name(
 						firstName.getText().toString(), 
 						middleName.getText().toString(), 
 						lastName.getText().toString(), 
@@ -268,7 +270,7 @@ public class NewContactActivity extends Activity {
 				String type = ((Spinner)vg.getChildAt(0)).getSelectedItem().toString();
 				String number = ((EditText)vg.getChildAt(1)).getText().toString();
 				
-				ContactPhone phoneObject = new ContactPhone(type, number);
+				Phone phoneObject = new Phone(type, number);
 				if(phoneObject.getNumber().isEmpty())
 					continue;
 				phones.add(phoneObject);
@@ -282,9 +284,9 @@ public class NewContactActivity extends Activity {
 				String type = ((Spinner)vg.getChildAt(0)).getSelectedItem().toString();
 				String email = ((EditText)vg.getChildAt(1)).getText().toString();
 				
-				ContactEmail emailObject = null;
+				Email emailObject = null;
 				try {
-					emailObject = new ContactEmail(type, email);
+					emailObject = new Email(type, email);
 					
 					if(emailObject.getEmail().isEmpty())
 						continue;
@@ -304,7 +306,7 @@ public class NewContactActivity extends Activity {
 				String type = ((Spinner)vg.getChildAt(0)).getSelectedItem().toString();
 				String address = ((EditText)vg.getChildAt(1)).getText().toString();
 				
-				ContactAddress addressObject = new ContactAddress(type, address);
+				Address addressObject = new Address(type, address);
 				if(addressObject.getAddress().isEmpty())
 					continue;
 				addresses.add(addressObject);
@@ -312,14 +314,14 @@ public class NewContactActivity extends Activity {
 			}
 			
 			// Get Date of Birth
-			dob = new ContactDateOfBirth(dobField.getText().toString());
+			dob = new DateOfBirth(dobField.getText().toString());
 			
 			contact = new Contact(name, phones, emails, addresses, dob);
 			
 			
 			intent.putExtra("NEW_CONTACT", contact);
 			setResult(RESULT_OK, intent);
-			Toast.makeText(this, "Contact created!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, " created!", Toast.LENGTH_SHORT).show();
 			finish();
 			return true;
 		}
@@ -364,17 +366,17 @@ public class NewContactActivity extends Activity {
 		LinearLayout ll = null;
 		switch (ft) {
 		case PHONE:
-			infl = R.layout.phone_item;
+			infl = R.layout.phone_field_item;
 			ll = dynamicPhoneLinLayout;
 			charSeq = R.array.phone_type;
 			break;
 		case EMAIL:
-			infl = R.layout.email_item;
+			infl = R.layout.email_field_item;
 			ll = dynamicEmailLinLayout;
 			charSeq = R.array.email_type;
 			break;
 		case ADDRESS:
-			infl = R.layout.address_item;
+			infl = R.layout.address_field_item;
 			ll = dynamicAddressLinLayout;
 			charSeq = R.array.address_type;
 			break;

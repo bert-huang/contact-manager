@@ -51,7 +51,7 @@
     <string name="disc_rm_field">-</string>
     <string name="disc_search">Search ic</string>
     <string name="disc_clear">Clear</string>
-    <string name="title_activity_new_contact">NewContactActivity</string>
-    <string name="title_activity_contact_info_activty">ContactInfoActivty</string>
+    <string name="title_activity_edit">EditActivity</string>
+    <string name="title_activity_info">InfoActivty</string>
 
 </resources>
