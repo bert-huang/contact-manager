@@ -7,9 +7,14 @@ import java.util.List;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewConfiguration;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -18,7 +23,9 @@ import cepw.contact.*;
 public class MainActivity extends Activity {
 
 	static final int CREATE_CONTACT_REQUEST = 1;  // The request code
+	
 	private List<Contact> contacts;
+	private Button infoBtn;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +35,19 @@ public class MainActivity extends Activity {
 		getActionBar().setDisplayShowTitleEnabled(false);
 		
 		contacts = new ArrayList<Contact>();
+		
+		// Testing button
+		infoBtn = (Button)findViewById(R.id.info_button);
+		infoBtn.setVisibility(View.INVISIBLE);
+		infoBtn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(getApplicationContext(), InfoActivity.class);
+				i.putExtra("CONTACT", contacts.get(0));
+				startActivity(i);
+			}
+		});
 		
 	}
 
@@ -68,11 +88,22 @@ public class MainActivity extends Activity {
 //	        	 contacts.add((Contact)data.getExtras().getParcelable("NEW_CONTACT"));
 	        	 
 	        	 // TESTING!
+	        	 infoBtn.setVisibility(View.VISIBLE);
 	        	 contacts.clear();
 	        	 contacts.add((Contact)data.getExtras().getParcelable("NEW_CONTACT"));
 
 	        	 LinearLayout testLayout = (LinearLayout)findViewById(R.id.testing_layout);
 	        	 testLayout.removeAllViews();
+	        	 
+	        	 ImageView photo = new ImageView(getApplicationContext());
+	        	 photo.setMinimumWidth(120);
+	        	 photo.setMinimumHeight(120);
+	        	 photo.setImageBitmap(Bitmap.createScaledBitmap(
+	        			 contacts.get(0).getImage(), 
+	        			 100, 
+	        			 100, 
+	        			 false));
+	        	 testLayout.addView(photo);
 	        	 
 	        	 TextView firstName = new TextView(getApplicationContext());
 	        	 firstName.setText("First Name: " + contacts.get(0).getName().getFirstName());
@@ -96,7 +127,8 @@ public class MainActivity extends Activity {
 	        	 for(int i = 0; i < contacts.get(0).getPhones().size(); i++) {
 	        		 TextView phoneNum = new TextView(getApplicationContext());
 	        		 phoneNum.setText("Phone " + (i+1) + ": " + contacts.get(0).getPhones().get(i).getType() + 
-	        				 " - " + contacts.get(0).getPhones().get(i).getNumber());
+	        				 " - " + contacts.get(0).getPhones().get(i).getNumber() + 
+	        				 " (" + contacts.get(0).getPhones().get(i).isDefault() + ")");
 	        		 testLayout.addView(phoneNum);
 	        	 }
 	        	 

@@ -3,10 +3,11 @@ package cepw.contact;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class Phone implements Parcelable {
+public class Phone implements Parcelable, Comparable<Phone>{
 
 	private String type;
 	private String number;
+	private boolean defaultNumber;
 
 	/**
 	 * Constructor of a phone object
@@ -14,10 +15,11 @@ public class Phone implements Parcelable {
 	 * @param number
 	 * @throws InvalidPhoneException 
 	 */
-	public Phone(String type, String number) {
+	public Phone(String type, String number, boolean defaultNumber) {
 		this.type = type;
 		String temp = number.replaceAll("[^0-9]", "");
 		this.number = temp;
+		this.defaultNumber = defaultNumber;
 	}
 	
 	/**
@@ -51,8 +53,20 @@ public class Phone implements Parcelable {
 	public void setNumber(String number) {
 		this.number = number;
 	}
+	
+	public boolean isDefault() {
+		return defaultNumber;
+	}
+	
+	public void setDefault() {
+		defaultNumber = true;
+	}
+	
+	public void unsetDefault() {
+		defaultNumber = false;
+	}
 
-	/**
+	/**`
 	 * A description of this Parcelable object 
 	 */
 	@Override
@@ -67,6 +81,7 @@ public class Phone implements Parcelable {
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeString(type);
 		out.writeString(number);
+		out.writeByte((byte) (defaultNumber ? 1 : 0));
 
 	}
 
@@ -90,6 +105,7 @@ public class Phone implements Parcelable {
 	private Phone(Parcel in) {
         this.type = in.readString();
         this.number = in.readString();
+        this.defaultNumber = in.readByte() == 1;
     }
 	
 	/**
@@ -102,4 +118,67 @@ public class Phone implements Parcelable {
 			super(msg);
 		}
 	}
+
+	@Override
+	public int compareTo(Phone another) {
+		if (this.defaultNumber){
+			return -1;
+		} else if (another.defaultNumber) {
+			return 1;
+		} else {
+			if (this.type.equals("Mobile") && this.type.equals(another.type)) {
+				return this.number.compareTo(another.number);
+			} else if (this.type.equals("Mobile")){
+				return -1;
+			} else if (another.type.equals("Mobile")){
+				return 1;
+			}else {
+				if (this.type.equals("Home") && this.type.equals(another.type)) {
+					return this.number.compareTo(another.number);
+				} else if (this.type.equals("Home")){
+					return -1;
+				} else if (another.type.equals("Home")){
+					return 1;
+				}else {
+					if (this.type.equals("Work") && this.type.equals(another.type)) {
+						return this.number.compareTo(another.number);
+					} else if (this.type.equals("Work")){
+						return -1;
+					} else if (another.type.equals("Work")){
+						return 1;
+					}else {
+						if (this.type.equals("Home Fax") && this.type.equals(another.type)) {
+							return this.number.compareTo(another.number);
+						} else if (this.type.equals("Home Fax")){
+							return -1;
+						} else if (another.type.equals("Home Fax")){
+							return 1;
+						}else {
+							if (this.type.equals("Work Fax") && this.type.equals(another.type)) {
+								return this.number.compareTo(another.number);
+							} else if (this.type.equals("Work Fax")){
+								return -1;
+							} else if (another.type.equals("Work Fax")){
+								return 1;
+							}else {
+								if (this.type.equals("Other") && this.type.equals(another.type)) {
+									return this.number.compareTo(another.number);
+								} else if (this.type.equals("Other")){
+									return -1;
+								} else if (another.type.equals("Other")){
+									return 1;
+								}else {
+									return 0;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+			
+	}
+	
+	
+	
 }

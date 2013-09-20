@@ -9,29 +9,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <ImageView
-        android:id="@id/imgview_icon_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:contentDescription="@string/disc_search"
-        android:src="@drawable/ic_action_search" />
-
-    <EditText
-        android:id="@id/textfield_searchbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@id/imgview_icon_search"
-        android:layout_toRightOf="@id/imgview_icon_search"
-        android:textColor="@color/white"
-        android:hint="@string/text_search"
-        android:ems="10" >
-
-        <requestFocus />
-    </EditText>
-
-<!--     <ListView
+    <!--
+         <ListView
         android:id="@+id/listView1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -39,19 +18,57 @@
         android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true" >
 
-    </ListView> -->
-
+    </ListView>
+    -->
+    
     <LinearLayout
-        android:id="@+id/testing_layout"
-        android:layout_width="wrap_content"
+        android:id="@+id/search_pane"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true" >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/disc_search"
+            android:src="@drawable/ic_action_search" />
+
+        <EditText
+            android:id="@id/textfield_searchbar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:hint="@string/text_search"
+            android:textColor="@color/white" >
+
+            <requestFocus />
+        </EditText>
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/info_button"
+        android:layout_below="@+id/search_pane" 
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:id="@+id/testing_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+        </LinearLayout>
+    </ScrollView>
+
+    <Button
+        android:id="@+id/info_button"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="16dp"
-        android:orientation="vertical"
-        android:layout_below="@id/textfield_searchbar" >
-
-    </LinearLayout>
-
+        android:text="Info" />
+    
 </RelativeLayout>

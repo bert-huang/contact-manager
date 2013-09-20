@@ -1,14 +1,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
+	<!-- 
+    <item android:id="@+id/action_search"
+      android:title="@string/disc_search"
+      android:icon="@drawable/ic_action_search"
+      android:showAsAction="always|collapseActionView"
+      android:actionViewClass="android.widget.SearchView"/>  -->
+    
     <item android:id="@id/action_add_new"
           android:icon="@drawable/ic_action_new"
           android:title="@string/action_create_new"
-          android:showAsAction="ifRoom" />
+          android:showAsAction="always" />
+    
     <item 
         android:icon="@drawable/ic_action_overflow"
         android:title="@string/action_main_menu"
-        android:showAsAction="ifRoom">
-        <menu >
+        android:showAsAction="always">
+        <menu>
             <item
 		        android:id="@id/action_import_export"
 		        android:icon="@drawable/ic_action_import_export"
