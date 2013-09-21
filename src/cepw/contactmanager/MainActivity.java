@@ -6,49 +6,49 @@ import java.util.List;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
-import android.widget.Button;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import cepw.contact.*;
 
 public class MainActivity extends Activity {
 
-	static final int CREATE_CONTACT_REQUEST = 1;  // The request code
-	
+	static final int CREATE_CONTACT_REQUEST = 1; // The request code
+
 	private List<Contact> contacts;
-	private Button infoBtn;
-	
+	private ListView list;
+	private ArrayAdapter<Contact> adapter;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		forceCreateOverflow();
 		getActionBar().setDisplayShowTitleEnabled(false);
-		
+
 		contacts = new ArrayList<Contact>();
-		
-		// Testing button
-		infoBtn = (Button)findViewById(R.id.info_button);
-		infoBtn.setVisibility(View.INVISIBLE);
-		infoBtn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(getApplicationContext(), InfoActivity.class);
-				i.putExtra("SELECTED_CONTACT", contacts.get(0));
-				startActivity(i);
-			}
-		});
-		
+		list = (ListView) findViewById(R.id.listview_contact_list);
+		adapter = new ContactListAdapter(MainActivity.this, contacts);
+		list.setAdapter(adapter);
+		list.setOnItemClickListener(new ListItemClickedListener());
+		list.setOnItemLongClickListener(new ListItemClickedListener());
+
 	}
 
 	@Override
@@ -57,111 +57,39 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle presses on the action bar items
 		switch (item.getItemId()) {
 		case R.id.action_add_new:
 			gotoCreateNewContact();
 			return true;
-		
+
 		case R.id.action_exit:
 			finish();
-			
+
 		default:
 			return true;
 		}
 	}
 
-	
 	private void gotoCreateNewContact() {
-		Intent i = new Intent(getApplicationContext(),
-				EditActivity.class);
+		Intent i = new Intent(getApplicationContext(), EditActivity.class);
 		startActivityForResult(i, CREATE_CONTACT_REQUEST);
 	}
-	
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-	    if (requestCode == CREATE_CONTACT_REQUEST) {
-	         if(resultCode == RESULT_OK){
-	        	 
-//	        	 contacts.add((Contact)data.getExtras().getParcelable("NEW_CONTACT"));
-	        	 
-	        	 // TESTING!
-	        	 infoBtn.setVisibility(View.VISIBLE);
-	        	 contacts.clear();
-	        	 contacts.add((Contact)data.getExtras().getParcelable("NEW_CONTACT"));
+		if (requestCode == CREATE_CONTACT_REQUEST) {
+			if (resultCode == RESULT_OK) {
 
-	        	 LinearLayout testLayout = (LinearLayout)findViewById(R.id.testing_layout);
-	        	 testLayout.removeAllViews();
-	        	 
-	        	 ImageView photo = new ImageView(getApplicationContext());
-	        	 photo.setMinimumWidth(120);
-	        	 photo.setMinimumHeight(120);
-	        	 photo.setImageBitmap(Bitmap.createScaledBitmap(
-	        			 contacts.get(0).getImage(), 
-	        			 100, 
-	        			 100, 
-	        			 false));
-	        	 testLayout.addView(photo);
-	        	 
-	        	 TextView firstName = new TextView(getApplicationContext());
-	        	 firstName.setText("First Name: " + contacts.get(0).getName().getFirstName());
-	        	 testLayout.addView(firstName);
-	        	 
-	        	 TextView middleName = new TextView(getApplicationContext());
-	        	 middleName.setText("Middle Name: " + contacts.get(0).getName().getMiddleName());
-	        	 testLayout.addView(middleName);
-	        	 
-	        	 TextView lastName = new TextView(getApplicationContext());
-	        	 lastName.setText("Last Name: " + contacts.get(0).getName().getLastName());
-	        	 testLayout.addView(lastName);
-	        	 
-	        	 TextView suffix = new TextView(getApplicationContext());
-	        	 suffix.setText("Suffix: " + contacts.get(0).getName().getSuffix());
-	        	 testLayout.addView(suffix);
-	        	 
-	        	 TextView box = new TextView(getApplicationContext());
-	        	 testLayout.addView(box);
-	        	 
-	        	 for(int i = 0; i < contacts.get(0).getPhones().size(); i++) {
-	        		 TextView phoneNum = new TextView(getApplicationContext());
-	        		 phoneNum.setText("Phone " + (i+1) + ": " + contacts.get(0).getPhones().get(i).getType() + 
-	        				 " - " + contacts.get(0).getPhones().get(i).getNumber() + 
-	        				 " (" + contacts.get(0).getPhones().get(i).isDefault() + ")");
-	        		 testLayout.addView(phoneNum);
-	        	 }
-	        	 
-	        	 box = new TextView(getApplicationContext());
-	        	 testLayout.addView(box);
-	        	 
-	        	 for(int i = 0; i < contacts.get(0).getEmails().size(); i++) {
-	        		 TextView email = new TextView(getApplicationContext());
-	        		 email.setText("Email " + (i+1) + ": " + contacts.get(0).getEmails().get(i).getType() + 
-	        				 " - " + contacts.get(0).getEmails().get(i).getEmail());
-	        		 testLayout.addView(email);
-	        	 }
-	        	 
-	        	 box = new TextView(getApplicationContext());
-	        	 testLayout.addView(box);
-	        	 
-	        	 for(int i = 0; i < contacts.get(0).getAddresses().size(); i++) {
-	        		 TextView address = new TextView(getApplicationContext());
-	        		 address.setText("Address " + (i+1) + ": " + contacts.get(0).getAddresses().get(i).getType() + 
-	        				 " - " + contacts.get(0).getAddresses().get(i).getAddress());
-	        		 testLayout.addView(address);
-	        	 }
-	        	 
-	        	 box = new TextView(getApplicationContext());
-	        	 testLayout.addView(box);
-	        	 
-	        	 TextView dob = new TextView(getApplicationContext());
-	        	 dob.setText("Date of Birth: " + contacts.get(0).getDateOfBirth());
-	        	 testLayout.addView(dob);
-	         }
-	    }
-	} 
-	
+				contacts.add((Contact) data.getExtras().getParcelable(
+						"NEW_CONTACT"));
+				adapter.notifyDataSetChanged();
+			}
+		}
+	}
+
 	private void forceCreateOverflow() {
 		// Trick device that have menu button to also have overflow button
 		try {
@@ -176,6 +104,78 @@ public class MainActivity extends Activity {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+	private class ContactListAdapter extends ArrayAdapter<Contact> {
+
+		private Context context;
+		private List<Contact> contacts;
+
+		public ContactListAdapter(Context context, List<Contact> contacts) {
+			super(context, android.R.layout.simple_expandable_list_item_1,
+					contacts);
+
+			this.context = context;
+			this.contacts = contacts;
+		}
+
+		public View getView(int position, View convertView, ViewGroup parent) {
+			// Create a layout inflater to inflate our xml layout for each item
+			// in the list
+			LayoutInflater inflater = (LayoutInflater) context
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+			// Inflate the list item layout. Keep a reference to the inflated
+			// view
+			ViewGroup vg = (ViewGroup) inflater.inflate(
+					R.layout.contact_list_item, null);
+
+			Contact curContact = contacts.get(position);
+			String fullName = Name.ParseName("", curContact.getName()
+					.getFirstName(), curContact.getName().getMiddleName(),
+					curContact.getName().getLastName(), curContact.getName()
+							.getSuffix())[0];
+
+			ImageView iv = (ImageView) vg.getChildAt(0);
+			TextView nameTag = (TextView) vg.getChildAt(1);
+
+			iv.setImageBitmap(Bitmap.createScaledBitmap(curContact.getImage(),
+					dpToPx(50), dpToPx(50), false));
+			nameTag.setText(fullName);
+
+			return (View) vg;
+
+		}
+
+		private int dpToPx(int dp) {
+			DisplayMetrics displayMetrics = getContext().getResources()
+					.getDisplayMetrics();
+			int px = Math.round(dp
+					* (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+			return px;
+		}
+	}
+
+	private class ListItemClickedListener implements
+			AdapterView.OnItemLongClickListener,
+			AdapterView.OnItemClickListener {
+
+		@Override
+		public boolean onItemLongClick(AdapterView<?> parent, View view,
+				int position, long id) {
+			contacts.remove(position);
+			adapter.notifyDataSetChanged();
+			Toast.makeText(getApplicationContext(), "Contact Removed!", Toast.LENGTH_SHORT).show();
+			return true;
+		}
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, int position,
+				long id) {
+			Intent i = new Intent(getApplicationContext(), InfoActivity.class);
+			i.putExtra("SELECTED_CONTACT", contacts.get(position));
+			startActivity(i);
+			
+		}
+
+	}
 }

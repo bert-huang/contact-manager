@@ -18,8 +18,9 @@
     <!-- ID for layout -->
     	<!-- =============================================================================== -->
     	<!-- activity_main -->
-    	<item type="id" name="imgview_icon_search" />
+    	<item type="id" name="imageview_ic_searchbar" /> 
 	    <item type="id" name="textfield_searchbar" /> 
+	    <item type="id" name="listview_contact_list" />
 	    
 	    <!-- =============================================================================== -->
 	    <!-- activity_new_contact -->
@@ -27,7 +28,7 @@
 			<item type="id" name="layout_fields"/>
 			
 				<!-- layout_avatar_name_fields -->
-					<item type="id" name="button_change_avatar"/>
+					<item type="id" name="button_change_display_image"/>
 					<item type="id" name="layout_namefields"/>
 						<item type="id" name="textfield_name_full"/>
 						<item type="id" name="textfield_name_prefix"/>

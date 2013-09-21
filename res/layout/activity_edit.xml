@@ -34,10 +34,10 @@
                 <!-- Avatar icon -->
 
                 <ImageButton
-                    android:id="@id/button_change_avatar"
+                    android:id="@id/button_change_display_image"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:contentDescription="@string/disc_avatar"
+                    android:contentDescription="@string/disc_display_image"
                     android:src="@drawable/ic_face" />
 
                 <!-- Name fields -->

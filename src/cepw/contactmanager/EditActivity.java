@@ -65,7 +65,7 @@ public class EditActivity extends Activity {
 		setupNameFields();
 		setupDobField();
 
-		imageBtn = (ImageButton) findViewById(R.id.button_change_avatar);
+		imageBtn = (ImageButton) findViewById(R.id.button_change_display_image);
 		displayPhoto = BitmapFactory.decodeResource(getResources(),
 				R.drawable.ic_face);
 		dynamicPhoneLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);

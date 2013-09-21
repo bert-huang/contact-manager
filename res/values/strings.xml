@@ -44,7 +44,7 @@
     <string name="action_delete">Delete</string>
 
     <!-- Icon content descriptions -->
-    <string name="disc_avatar">Avatar ic</string>
+    <string name="disc_display_image">Display image</string>
     <string name="disc_expand">Expand</string>
     <string name="disc_collapse">Collapse</string>
     <string name="disc_mk_field">+</string>

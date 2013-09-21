@@ -24,7 +24,7 @@
 	            android:layout_height="100dp"
 	            android:scaleType="centerCrop"
 	            android:src="@drawable/ic_face"
-	            android:contentDescription="@string/disc_avatar" />
+	            android:contentDescription="@string/disc_display_image" />
 	
 	        <LinearLayout
 	            android:layout_width="match_parent"
