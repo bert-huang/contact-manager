@@ -42,6 +42,5 @@ public class DateChooserDialog extends DialogFragment implements
 		sday = (day < 10) ? "0" + day : "" + day;
 		
 		v.setText(sday + "-" + smonth + "-" + year);
-		v.setTextColor(getResources().getColor(R.color.Azure));
 	}
 }

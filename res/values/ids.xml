@@ -62,6 +62,7 @@
 	   	
 	   	<!-- =============================================================================== -->
 	   	<!-- activity_contact_info -->
+	   	<item type="id" name="scrollview_info" />
 	   	<!-- layout_root -->
 	   		<!-- layout_avatar_name_fields -->
 	   			<item type="id" name="info_display_image" />
@@ -72,13 +73,13 @@
 	   				<item type="id" name="info_name_suffix" />
     		
 	   		<item type="id" name="layout_phone_info" />
-	   			<item type="id" name="layout_dynamic_phone_info" />
+	   			<item type="id" name="listview_phone_info" />
 	   			
 	   		<item type="id" name="layout_email_info" />
-	   			<item type="id" name="layout_dynamic_email_info" />
+	   			<item type="id" name="listview_email_info" />
 	   			
 	   		<item type="id" name="layout_address_info" />
-	   			<item type="id" name="layout_dynamic_address_info" />
+	   			<item type="id" name="listview_address_info" />
 	   			
 	   		<item type="id" name="layout_dob_info" />
 	   			<item type="id" name="info_dob" />

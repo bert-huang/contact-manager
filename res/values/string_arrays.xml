@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string-array name="phone_type">
         <item>Mobile</item>
         <item>Home</item>
@@ -20,4 +21,23 @@
         <item>Work</item>
         <item>Other</item>
     </string-array>
+    
+    <string-array name="sort_type">
+        <item>Given Name</item>
+        <item>Last Name</item>
+        <item>Phone Number</item>
+    </string-array>
+    
+    <string-array name="phone_actions">
+        <item>Call</item>
+        <item>Message</item>
+        <item>Copy to Clipboard</item>
+        <item>Set Default</item>
+    </string-array>
+    
+    <string-array name="email_actions">
+        <item>Mail</item>
+        <item>Copy to Clipboard</item>
+    </string-array>
+
 </resources>

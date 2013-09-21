@@ -135,9 +135,9 @@ public class Contact implements Parcelable {
 		in.readList(addresses, Address.class.getClassLoader());
     }
 
-	public class Comparators {
+	public static class Comparators {
 
-		public class CompareByFirstName implements Comparator<Contact> {
+		public static class CompareByFirstName implements Comparator<Contact> {
 
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
@@ -174,7 +174,7 @@ public class Contact implements Parcelable {
 			
 		}
 		
-		public class CompareByLastsName implements Comparator<Contact> {
+		public static class CompareByLastName implements Comparator<Contact> {
 
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
@@ -209,12 +209,13 @@ public class Contact implements Parcelable {
 			}
 		}
 		
-		public class CompareByPhone implements Comparator<Contact> {
+		public static class CompareByPhone implements Comparator<Contact> {
 
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
 				Phone lhsPh = null;
 				Phone rhsPh = null;
+
 				for (Phone p : lhs.phones){
 					if (p.isDefault()){
 						lhsPh = p;
@@ -228,8 +229,17 @@ public class Contact implements Parcelable {
 						break;
 					}
 				}
+				if (lhsPh == null && rhsPh == null) {
+					return 0;
+				}else if (lhsPh == null) {
+					return 1;
+				}else if (rhsPh == null) {
+					return -1;
+				}else {
+					return lhsPh.compareTo(rhsPh);
+				}
 				
-				return lhsPh.compareTo(rhsPh);
+				
 			}
 		}
 	}

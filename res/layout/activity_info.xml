@@ -1,14 +1,16 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/scrollview_info"
     style="@style/bg"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
     tools:context=".ContactInfoActivty" >
+
 	<LinearLayout 
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
@@ -30,6 +32,7 @@
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:layout_marginLeft="20dp"
+	            android:layout_gravity="center_vertical"
 				android:gravity="center_vertical"
 	            android:orientation="vertical" >
 	
@@ -38,7 +41,7 @@
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
 	                android:gravity="center_vertical"
-	                android:textSize="25sp" 
+	                android:textSize="30sp" 
 	                android:text="@string/text_name_given" />
 	
 	            <TextView
@@ -54,7 +57,7 @@
 	                android:layout_width="match_parent"
 	                android:layout_height="wrap_content"
 	                android:gravity="center_vertical"
-	                android:textSize="18sp" 
+	                android:textSize="22sp" 
 	                android:text="@string/text_name_surname" />
 	
 	            <TextView
@@ -83,53 +86,21 @@
 	            android:layout_height="wrap_content"
 	            android:textSize="20sp"
 	            android:text="@string/text_phone" />
-	
-	        <LinearLayout
-	            android:id="@id/layout_dynamic_phone_info"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
+	        
+	        <View
+	            android:layout_width="fill_parent"
+        		android:layout_height="1px"
+        		android:background="#333333"
+        		android:layout_marginTop="15dp"
+	            android:layout_marginLeft="40dp"/>
+	        
+	        <ListView
+	            android:id="@id/listview_phone_info"
 	            android:layout_marginLeft="40dp"
-	            android:orientation="vertical" >
-	
-	            <!-- Dynamically Added items -->
-	            <!-- 01 -->
-	            <LinearLayout
-	                android:layout_width="match_parent"
-	                android:layout_height="wrap_content"
-	                android:orientation="vertical" >
-		            <View style="@style/style_separator_thin"/>
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:text="Mobile" />
-	
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_marginLeft="10dp"
-	                    android:textSize="18sp"
-	                    android:text="0211557760" />
-	            </LinearLayout>
-	            <!-- 02 -->
-	            <LinearLayout
-	                android:layout_width="match_parent"
-	                android:layout_height="wrap_content"
-	                android:orientation="vertical" >
-					<View style="@style/style_separator_thin"/>
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:text="Home" />
-	
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_marginLeft="10dp"
-	                    android:textSize="18sp"
-	                    android:text="095376635" />
-	            </LinearLayout>
-	            
-	        </LinearLayout>
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content" >
+	        </ListView>
+
 			<View style="@style/style_separator_thick"/>
 	    </LinearLayout>
 
@@ -146,53 +117,21 @@
 	            android:layout_height="wrap_content"
 	            android:textSize="20sp"
 	            android:text="@string/text_email" />
-	
-	        <LinearLayout
-	            android:id="@id/layout_dynamic_email_info"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
+			
+	        <View
+	            android:layout_width="fill_parent"
+        		android:layout_height="1px"
+        		android:background="#333333"
+        		android:layout_marginTop="15dp"
+	            android:layout_marginLeft="40dp"/>
+	        
+	        <ListView
+	            android:id="@id/listview_email_info"
 	            android:layout_marginLeft="40dp"
-	            android:orientation="vertical" >
-	
-	            <!-- Dynamically Added items -->
-	            <!-- 01 -->
-	            <LinearLayout
-	                android:layout_width="match_parent"
-	                android:layout_height="wrap_content"
-	                android:orientation="vertical" >
-		            <View style="@style/style_separator_thin"/>
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:text="Home" />
-	
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_marginLeft="10dp"
-	                    android:textSize="18sp"
-	                    android:text="dendeer82@gmail.com" />
-	            </LinearLayout>
-	            <!-- 02 -->
-	            <LinearLayout
-	                android:layout_width="match_parent"
-	                android:layout_height="wrap_content"
-	                android:orientation="vertical" >
-					<View style="@style/style_separator_thin"/>
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:text="Work" />
-	
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_marginLeft="10dp"
-	                    android:textSize="18sp"
-	                    android:text="ihua164@aucklanduni.ac.nz" />
-	            </LinearLayout>
-	            
-	        </LinearLayout>
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content" >
+	        </ListView>
+	        
 			<View style="@style/style_separator_thick"/>
 	    </LinearLayout>
 	    
@@ -210,52 +149,20 @@
 	            android:textSize="20sp"
 	            android:text="@string/text_address" />
 	
-	        <LinearLayout
-	            android:id="@id/layout_dynamic_address_info"
-	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content"
+    	    <View
+	            android:layout_width="fill_parent"
+        		android:layout_height="1px"
+        		android:background="#333333"
+        		android:layout_marginTop="15dp"
+	            android:layout_marginLeft="40dp"/>
+	        
+	        <ListView
+	            android:id="@id/listview_address_info"
 	            android:layout_marginLeft="40dp"
-	            android:orientation="vertical" >
-	
-	            <!-- Dynamically Added items -->
-	            <!-- 01 -->
-	            <LinearLayout
-	                android:layout_width="match_parent"
-	                android:layout_height="wrap_content"
-	                android:orientation="vertical" >
-		            <View style="@style/style_separator_thin"/>
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:text="Home" />
-	
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_marginLeft="10dp"
-	                    android:textSize="18sp"
-	                    android:text="51 Evelyn Road, Cockle Bay, Auckland" />
-	            </LinearLayout>
-	            <!-- 02 -->
-	            <LinearLayout
-	                android:layout_width="match_parent"
-	                android:layout_height="wrap_content"
-	                android:orientation="vertical" >
-					<View style="@style/style_separator_thin"/>
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:text="Work" />
-	
-	                <TextView
-	                    android:layout_width="wrap_content"
-	                    android:layout_height="wrap_content"
-	                    android:layout_marginLeft="10dp"
-	                    android:textSize="18sp"
-	                    android:text="some random auckland uni address" />
-	            </LinearLayout>
-	            
-	        </LinearLayout>
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content" >
+	        </ListView>
+	        
 			<View style="@style/style_separator_thick"/>
 	    </LinearLayout>
 	    
@@ -281,7 +188,8 @@
 	            android:layout_width="match_parent"
 	            android:layout_height="wrap_content"
 	            android:textSize="18sp"
-	            android:layout_marginLeft="40dp"
+	            android:layout_marginLeft="55dp"
+	            android:hint="@string/text_date"
 	            android:text="" />
 	
 

@@ -1,7 +1,6 @@
 package cepw.contactmanager;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,7 +24,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -38,7 +35,7 @@ import cepw.contact.Email.InvalidEmailException;
 public class EditActivity extends Activity {
 
 	static final int RESULT_LOAD_IMAGE = 1;
-	final int PIC_CROP = 2;
+	static final int PIC_CROP = 2;
 
 	private final int BTN_BORDER = 11;
 
@@ -66,8 +63,9 @@ public class EditActivity extends Activity {
 		setupDobField();
 
 		imageBtn = (ImageButton) findViewById(R.id.button_change_display_image);
-		displayPhoto = BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face);
+		displayPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.ic_face);
+//		displayPhoto = Utilities.scaleDownBitmap(
+//				BitmapFactory.decodeResource(getResources(), R.drawable.ic_face), 200, this);
 		dynamicPhoneLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
 		emailLinLayout = (LinearLayout) findViewById(R.id.layout_emailfields);
 		dynamicEmailLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
@@ -76,19 +74,21 @@ public class EditActivity extends Activity {
 		dobLinLayout = (LinearLayout) findViewById(R.id.layout_dobfields);
 		newFieldCategoryBtn = (Button) findViewById(R.id.button_new_field_category);
 
-		emailLinLayout.setVisibility(View.GONE);
-		addressLinLayout.setVisibility(View.GONE);
-		dobLinLayout.setVisibility(View.GONE);
-		newFieldCategoryBtn.setOnClickListener(new View.OnClickListener() {
+		newFieldCategoryBtn.setVisibility(View.GONE);
+//		emailLinLayout.setVisibility(View.GONE);
+//		addressLinLayout.setVisibility(View.GONE);
+//		dobLinLayout.setVisibility(View.GONE);
+//		newFieldCategoryBtn.setOnClickListener(new View.OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				DialogFragment newFragment = new FieldCategoryDialog();
+//				newFragment.show(getFragmentManager(), "New Field Category");
+//			}
+//		});
 
-			@Override
-			public void onClick(View v) {
-				DialogFragment newFragment = new FieldCategoryDialog();
-				newFragment.show(getFragmentManager(), "newfield");
-			}
-		});
-
-		imageBtn.setImageBitmap(displayPhoto);
+		imageBtn.setImageBitmap(Bitmap.createScaledBitmap(displayPhoto,
+				Utilities.dpToPx(this, 80), Utilities.dpToPx(this, 80), false));
 		imageBtn.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -100,19 +100,19 @@ public class EditActivity extends Activity {
 			}
 		});
 
-		createNewField(FieldType.PHONE, dynamicPhoneLinLayout);
-		createNewField(FieldType.EMAIL, dynamicEmailLinLayout);
-		createNewField(FieldType.ADDRESS, dynamicAddressLinLayout);
+//		createNewField(FieldType.PHONE, dynamicPhoneLinLayout);
+//		createNewField(FieldType.EMAIL, dynamicEmailLinLayout);
+//		createNewField(FieldType.ADDRESS, dynamicAddressLinLayout);
 
 		fullName.setFocusable(true);
 		fullName.requestFocus();
 
 		// DUMMY!
-		createNewField(FieldType.PHONE, dynamicPhoneLinLayout);
-		createNewField(FieldType.EMAIL, dynamicEmailLinLayout);
-		createNewField(FieldType.ADDRESS, dynamicAddressLinLayout);
+//		createNewField(FieldType.PHONE, dynamicPhoneLinLayout);
+//		createNewField(FieldType.EMAIL, dynamicEmailLinLayout);
+//		createNewField(FieldType.ADDRESS, dynamicAddressLinLayout);
 
-		fullName.setText("Bert DERP Huang, #YOLOSWAG");
+/*		fullName.setText("Bert DERP Huang, #YOLOSWAG");
 
 		((Spinner) ((ViewGroup) dynamicPhoneLinLayout.getChildAt(0))
 				.getChildAt(0)).setSelection(0);
@@ -138,13 +138,14 @@ public class EditActivity extends Activity {
 				.getChildAt(1)).setText("彰化縣溪湖鎮西還路205號");
 
 		dobField.setText("27-01-1993");
-
+*/
+		
 	}
 
 	private void setupActionBar() {
-		
+
 		// Show the Up button in the action bar.
-		getActionBar().setDisplayHomeAsUpEnabled(true); 
+		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setDisplayShowTitleEnabled(false);
 
 	}
@@ -315,7 +316,7 @@ public class EditActivity extends Activity {
 				phones.add(phoneObject);
 
 			}
-			Collections.sort(phones);
+			Collections.sort(phones, new Phone.ComparePhoneWithDefault());
 
 			// Populating emails
 			childCount = dynamicEmailLinLayout.getChildCount();
@@ -368,7 +369,7 @@ public class EditActivity extends Activity {
 
 			intent.putExtra("NEW_CONTACT", contact);
 			setResult(RESULT_OK, intent);
-			Toast.makeText(this, " created!", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Created!", Toast.LENGTH_SHORT).show();
 			finish();
 			return true;
 		}
@@ -442,8 +443,10 @@ public class EditActivity extends Activity {
 	//
 	// =======================================//
 	public void addNewField(View v) {
+		
 		ViewGroup vg = (ViewGroup) v.getParent().getParent();
 		FieldType ft = null;
+		
 		switch (vg.getId()) {
 		case R.id.layout_phonefields:
 			ft = FieldType.PHONE;
@@ -530,8 +533,7 @@ public class EditActivity extends Activity {
 						new DialogInterface.OnClickListener() {
 
 							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
+							public void onClick(DialogInterface dialog, int which) {
 								finish();
 							}
 						});
@@ -551,8 +553,8 @@ public class EditActivity extends Activity {
 			cropIntent.putExtra("aspectX", 1);
 			cropIntent.putExtra("aspectY", 1);
 			// indicate output X and Y
-			cropIntent.putExtra("outputX", 128);
-			cropIntent.putExtra("outputY", 128);
+			cropIntent.putExtra("outputX", 300);
+			cropIntent.putExtra("outputY", 300);
 			// retrieve data on return
 			cropIntent.putExtra("return-data", true);
 			// start the activity - we handle returning in onActivityResult
@@ -569,4 +571,6 @@ public class EditActivity extends Activity {
 			return false;
 		}
 	}
+
+
 }

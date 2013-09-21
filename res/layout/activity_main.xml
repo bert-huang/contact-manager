@@ -23,16 +23,22 @@
         android:layout_alignTop="@id/imageview_ic_searchbar"
         android:layout_toRightOf="@id/imageview_ic_searchbar"
         android:ems="10"
-        android:hint="@string/text_search"
-        android:textColor="@color/Azure" />
+        android:hint="@string/text_search" />
 
+	<View
+	    android:id="@+id/main_activity_separator_1"
+		android:layout_width="fill_parent"
+		android:layout_height="1px"
+		android:background="#333333"
+        android:layout_below="@id/textfield_searchbar"
+		android:layout_marginTop="16dp"/>
+    
     <ListView
         android:id="@id/listview_contact_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textfield_searchbar"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="16dp" >
+        android:layout_below="@+id/main_activity_separator_1" >
     </ListView>
 
 </RelativeLayout>

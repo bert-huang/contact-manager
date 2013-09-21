@@ -6,12 +6,12 @@
     android:layout_margin="10dp">
 
     <ImageView
-	    android:layout_marginTop="10dp"
-	    android:layout_marginBottom="10dp"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:src="@drawable/ic_face"
-        android:contentDescription="@string/disc_display_image"/>
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:contentDescription="@string/disc_display_image"
+        android:src="@drawable/ic_face" />
 
     <TextView
         android:layout_width="match_parent"
