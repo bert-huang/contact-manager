@@ -2,14 +2,14 @@
 
         <item 
             android:id="@+id/action_contact_remove"
-            android:icon="@drawable/ic_action_remove"
+            android:icon="@android:drawable/ic_menu_delete"
             android:orderInCategory="1"
             android:showAsAction="ifRoom"
             android:title="@string/action_delete"/>
         
         <item 
             android:id="@+id/action_contact_edit"
-            android:icon="@drawable/ic_action_edit"
+            android:icon="@android:drawable/ic_menu_edit"
             android:orderInCategory="2"
             android:showAsAction="ifRoom"
             android:title="@string/action_edit"/>

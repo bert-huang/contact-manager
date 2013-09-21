@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				Intent i = new Intent(getApplicationContext(), InfoActivity.class);
-				i.putExtra("CONTACT", contacts.get(0));
+				i.putExtra("SELECTED_CONTACT", contacts.get(0));
 				startActivity(i);
 			}
 		});

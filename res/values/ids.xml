@@ -61,6 +61,24 @@
 	   	
 	   	<!-- =============================================================================== -->
 	   	<!-- activity_contact_info -->
-	   	
-    
+	   	<!-- layout_root -->
+	   		<!-- layout_avatar_name_fields -->
+	   			<item type="id" name="info_display_image" />
+	   			<!-- layout_name_fields -->
+	   				<item type="id" name="info_first_name" />
+	   				<item type="id" name="info_middle_name" />
+	   				<item type="id" name="info_last_name" />
+	   				<item type="id" name="info_name_suffix" />
+    		
+	   		<item type="id" name="layout_phone_info" />
+	   			<item type="id" name="layout_dynamic_phone_info" />
+	   			
+	   		<item type="id" name="layout_email_info" />
+	   			<item type="id" name="layout_dynamic_email_info" />
+	   			
+	   		<item type="id" name="layout_address_info" />
+	   			<item type="id" name="layout_dynamic_address_info" />
+	   			
+	   		<item type="id" name="layout_dob_info" />
+	   			<item type="id" name="info_dob" />
 </resources>

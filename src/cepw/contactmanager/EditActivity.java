@@ -39,9 +39,8 @@ public class EditActivity extends Activity {
 
 	static final int RESULT_LOAD_IMAGE = 1;
 	final int PIC_CROP = 2;
-	
+
 	private final int BTN_BORDER = 11;
-	
 
 	private enum FieldType {
 		PHONE, EMAIL, ADDRESS
@@ -54,7 +53,7 @@ public class EditActivity extends Activity {
 	private LinearLayout emailLinLayout, addressLinLayout, dobLinLayout;
 	private LinearLayout dynamicPhoneLinLayout, dynamicEmailLinLayout,
 			dynamicAddressLinLayout;
-	
+
 	private Bitmap displayPhoto;
 
 	@Override
@@ -67,7 +66,8 @@ public class EditActivity extends Activity {
 		setupDobField();
 
 		imageBtn = (ImageButton) findViewById(R.id.button_change_avatar);
-		displayPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.ic_face);
+		displayPhoto = BitmapFactory.decodeResource(getResources(),
+				R.drawable.ic_face);
 		dynamicPhoneLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
 		emailLinLayout = (LinearLayout) findViewById(R.id.layout_emailfields);
 		dynamicEmailLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
@@ -87,7 +87,7 @@ public class EditActivity extends Activity {
 				newFragment.show(getFragmentManager(), "newfield");
 			}
 		});
-		
+
 		imageBtn.setImageBitmap(displayPhoto);
 		imageBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -141,13 +141,10 @@ public class EditActivity extends Activity {
 
 	}
 
-	/**
-	 * Set up the {@link android.app.ActionBar}.
-	 */
 	private void setupActionBar() {
-
-		getActionBar().setDisplayHomeAsUpEnabled(true); // Show the Up button in
-														// the action bar.
+		
+		// Show the Up button in the action bar.
+		getActionBar().setDisplayHomeAsUpEnabled(true); 
 		getActionBar().setDisplayShowTitleEnabled(false);
 
 	}
@@ -297,7 +294,7 @@ public class EditActivity extends Activity {
 						.getText().toString(), lastName.getText().toString(),
 						nameSuffix.getText().toString());
 			}
-			
+
 			// Get Photo
 			photo = new Photo(displayPhoto);
 
@@ -310,8 +307,8 @@ public class EditActivity extends Activity {
 				String number = ((EditText) vg.getChildAt(1)).getText()
 						.toString();
 
-				
-				Phone phoneObject = new Phone(type, number, false);
+				Phone phoneObject = (i == 0) ? new Phone(type, number, true)
+						: new Phone(type, number, false);
 
 				if (phoneObject.getNumber().isEmpty())
 					continue;
@@ -319,7 +316,6 @@ public class EditActivity extends Activity {
 
 			}
 			Collections.sort(phones);
-			phones.get(0).setDefault();
 
 			// Populating emails
 			childCount = dynamicEmailLinLayout.getChildCount();
@@ -384,8 +380,9 @@ public class EditActivity extends Activity {
 			if (resultCode == RESULT_OK) {
 				if (data != null) {
 					Uri selectedImage = data.getData();
-					
-					// If phone does not support image cropping, then simply squeeze image
+
+					// If phone does not support image cropping, then simply
+					// squeeze image
 					if (!performCrop(selectedImage)) {
 						String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
@@ -402,11 +399,12 @@ public class EditActivity extends Activity {
 						Bitmap b = BitmapFactory.decodeFile(picturePath);
 						if (b != null) {
 							displayPhoto = b;
-							imageBtn.setImageBitmap(Bitmap.createScaledBitmap(b,
-									imageBtn.getWidth() - BTN_BORDER,
+							imageBtn.setImageBitmap(Bitmap.createScaledBitmap(
+									b, imageBtn.getWidth() - BTN_BORDER,
 									imageBtn.getHeight() - BTN_BORDER, false));
 						} else {
-							Toast.makeText(this, "Failed to load image!", Toast.LENGTH_LONG).show();
+							Toast.makeText(this, "Failed to load image!",
+									Toast.LENGTH_LONG).show();
 						}
 					}
 				}
@@ -420,7 +418,7 @@ public class EditActivity extends Activity {
 					Bundle extras = data.getExtras();
 					// get the cropped bitmap
 					Bitmap b = extras.getParcelable("data");
-					
+
 					if (b != null) {
 						displayPhoto = b;
 						imageBtn.setImageBitmap(Bitmap.createScaledBitmap(b,

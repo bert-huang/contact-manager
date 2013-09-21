@@ -10,316 +10,322 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".NewContactActivity" >
 
-        <!-- Root Pane -->
+    <!-- Root Pane -->
+
+    <LinearLayout
+        android:id="@id/layout_new_contact_root"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
         <LinearLayout
-            android:id="@id/layout_new_contact_root"
+            android:id="@id/layout_fields"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:orientation="vertical">
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
+
+            <!-- Avatar icon and name fields -->
 
             <LinearLayout
-                android:id="@id/layout_fields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" >
+
+                <!-- Avatar icon -->
+
+                <ImageButton
+                    android:id="@id/button_change_avatar"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:contentDescription="@string/disc_avatar"
+                    android:src="@drawable/ic_face" />
+
+                <!-- Name fields -->
+
+                <LinearLayout
+                    android:id="@id/layout_namefields"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="85"
+                    android:orientation="vertical"
+                    android:paddingTop="30dp" >
+
+                    <EditText
+                        android:id="@id/textfield_name_full"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/text_name"
+                        android:inputType="textPersonName" >
+
+                        <requestFocus />
+                    </EditText>
+
+                    <EditText
+                        android:id="@id/textfield_name_given"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/text_name_given"
+                        android:inputType="textPersonName" />
+
+                    <EditText
+                        android:id="@id/textfield_name_middle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/text_name_middle"
+                        android:inputType="textPersonName" />
+
+                    <EditText
+                        android:id="@id/textfield_name_last"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/text_name_surname"
+                        android:inputType="textPersonName" />
+
+                    <EditText
+                        android:id="@id/textfield_name_suffix"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:ems="10"
+                        android:hint="@string/text_name_suffix"
+                        android:inputType="textPersonName" />
+                </LinearLayout>
+
+                <!-- Expand/Collapse button -->
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="15"
+                    android:orientation="vertical"
+                    android:paddingTop="30dp" >
+
+                    <ImageButton
+                        android:id="@id/button_name_expand"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/Transparent"
+                        android:contentDescription="@string/disc_expand"
+                        android:src="@android:drawable/ic_menu_more" />
+
+                    <ImageButton
+                        android:id="@id/button_name_collapse"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:background="@color/Transparent"
+                        android:contentDescription="@string/disc_collapse"
+                        android:rotation="180"
+                        android:src="@android:drawable/ic_menu_more" />
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Separator -->
+
+            <View style="@style/style_separator_thin" />
+
+            <!-- Phone fields -->
+
+            <LinearLayout
+                android:id="@id/layout_phonefields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical" >
-
-                <!-- Avatar icon and name fields -->
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal" >
 
-                    <!-- Avatar icon -->
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="80"
+                        android:gravity="center_vertical|left"
+                        android:text="@string/text_phone"
+                        android:textColor="@color/Azure"
+                        android:textSize="18sp" />
+
                     <ImageButton
-                        android:id="@id/button_change_avatar"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:contentDescription="@string/disc_avatar"
-                        android:src="@drawable/ic_face" />
-
-                    <!-- Name fields -->
-
-                    <LinearLayout
-                        android:id="@id/layout_namefields"
+                        android:id="@id/button_new_number"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="85"
-                        android:orientation="vertical"
-                        android:paddingTop="30dp" >
-
-                        <EditText
-                            android:id="@id/textfield_name_full"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="@string/text_name"
-                            android:inputType="textPersonName" >
-
-                            <requestFocus />
-                        </EditText>
-
-                        <EditText
-                            android:id="@id/textfield_name_given"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="@string/text_name_given"
-                            android:inputType="textPersonName" />
-
-                        <EditText
-                            android:id="@id/textfield_name_middle"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="@string/text_name_middle"
-                            android:inputType="textPersonName" />
-
-                        <EditText
-                            android:id="@id/textfield_name_last"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="@string/text_name_surname"
-                            android:inputType="textPersonName" />
-
-                        <EditText
-                            android:id="@id/textfield_name_suffix"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:ems="10"
-                            android:hint="@string/text_name_suffix"
-                            android:inputType="textPersonName" />
-                    </LinearLayout>
-
-                    <!-- Expand/Collapse button -->
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="15"
-                        android:orientation="vertical"
-                        android:paddingTop="30dp" >
-
-                        <ImageButton
-                            android:id="@id/button_name_expand"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@color/Transparent"
-                            android:contentDescription="@string/disc_expand"
-                            android:src="@drawable/ic_action_expand" />
-
-                        <ImageButton
-                            android:id="@id/button_name_collapse"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@color/Transparent"
-                            android:contentDescription="@string/disc_collapse"
-                            android:src="@drawable/ic_action_collapse" />
-                    </LinearLayout>
+                        android:layout_weight="20"
+                        android:background="@color/Transparent"
+                        android:contentDescription="@string/disc_mk_field"
+                        android:onClick="addNewField"
+                        android:src="@android:drawable/ic_menu_add" />
                 </LinearLayout>
 
-                <!-- Separator -->
+                <!-- This layout can change dynamically -->
 
-                <View style="@style/style_separator" />
-
-                <!-- Phone fields -->
                 <LinearLayout
-                    android:id="@id/layout_phonefields"
+                    android:id="@id/layout_dynamic_phonefield"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical" >
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="80"
-                            android:gravity="center_vertical|left"
-                            android:text="@string/text_phone"
-                            android:textColor="@color/Azure"
-                            android:textSize="18sp" />
-
-                        <ImageButton
-                            android:id="@id/button_new_number"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="20"
-                            android:background="@color/Transparent"
-                            android:contentDescription="@string/disc_mk_field"
-                            android:onClick="addNewField"
-                            android:src="@drawable/ic_action_new" />
-                    </LinearLayout>
-
-                    <!-- This layout can change dynamically -->
-                    <LinearLayout
-                        android:id="@id/layout_dynamic_phonefield"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingTop="5dp" >
-                    </LinearLayout>
-
-                    <View style="@style/style_separator" />
+                    android:orientation="vertical"
+                    android:paddingTop="5dp" >
                 </LinearLayout>
-                
-                <!-- Email fields -->
-                <LinearLayout
-                    android:id="@id/layout_emailfields"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="80"
-                            android:gravity="center_vertical|left"
-                            android:text="@string/text_email"
-                            android:textColor="@color/Azure"
-                            android:textSize="18sp" />
-
-                        <ImageButton
-                            android:id="@id/button_new_email"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="20"
-                            android:background="@color/Transparent"
-                            android:contentDescription="@string/disc_mk_field"
-                            android:onClick="addNewField"
-                            android:src="@drawable/ic_action_new" />
-                    </LinearLayout>
-
-                    <!-- This layout can change dynamically -->
-                    <LinearLayout
-                        android:id="@id/layout_dynamic_emailfield"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingTop="5dp" >
-                    </LinearLayout>
-
-                    <View style="@style/style_separator" />
-                </LinearLayout>
-                
-                <!-- Address fields -->
-                <LinearLayout
-                    android:id="@id/layout_addressfields"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="80"
-                            android:gravity="center_vertical|left"
-                            android:text="@string/text_address"
-                            android:textColor="@color/Azure"
-                            android:textSize="18sp" />
-
-                        <ImageButton
-                            android:id="@id/button_new_address"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="20"
-                            android:background="@color/Transparent"
-                            android:contentDescription="@string/disc_mk_field"
-                            android:onClick="addNewField"
-                            android:src="@drawable/ic_action_new" />
-                    </LinearLayout>
-
-                    <!-- This layout can change dynamically -->
-                    <LinearLayout
-                        android:id="@id/layout_dynamic_addressfield"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:paddingTop="5dp" >
-                    </LinearLayout>
-
-                    <View style="@style/style_separator" />
-                </LinearLayout>
-                
-                <!-- DOB fields -->
-               <LinearLayout
-                    android:id="@id/layout_dobfields"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
-					
-                   
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical" >
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center_vertical|left"
-                            android:text="@string/text_dob"
-                            android:textColor="@color/Azure"
-                            android:textSize="18sp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" >
-
-                            <TextView
-                                android:id="@id/textview_dob"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="80"
-                                android:background="@drawable/edit_text_holo_dark"
-                                android:gravity="bottom|left"
-                                android:clickable="true"
-                                android:ems="10"
-                                android:hint="@string/text_date"
-                                android:textSize="18sp" />
-
-                            <ImageButton
-                                android:id="@+id/button_clear_dob"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="20"
-                                android:background="@color/Transparent"
-                                android:contentDescription="@string/disc_clear"
-                                android:src="@drawable/ic_action_cancel" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-
-
-                    <View style="@style/style_separator" />
-
-                </LinearLayout>
-                
-                
+                <View style="@style/style_separator_thin" />
             </LinearLayout>
 
-            <Button
-                android:id="@id/button_new_field_category"
+            <!-- Email fields -->
+
+            <LinearLayout
+                android:id="@id/layout_emailfields"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/action_new_field"
-                android:textColor="@color/Azure" />
+                android:orientation="vertical" >
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="80"
+                        android:gravity="center_vertical|left"
+                        android:text="@string/text_email"
+                        android:textColor="@color/Azure"
+                        android:textSize="18sp" />
+
+                    <ImageButton
+                        android:id="@id/button_new_email"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="20"
+                        android:background="@color/Transparent"
+                        android:contentDescription="@string/disc_mk_field"
+                        android:onClick="addNewField"
+                        android:src="@android:drawable/ic_menu_add" />
+                </LinearLayout>
+
+                <!-- This layout can change dynamically -->
+
+                <LinearLayout
+                    android:id="@id/layout_dynamic_emailfield"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="5dp" >
+                </LinearLayout>
+
+                <View style="@style/style_separator_thin" />
+            </LinearLayout>
+
+            <!-- Address fields -->
+
+            <LinearLayout
+                android:id="@id/layout_addressfields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" >
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="80"
+                        android:gravity="center_vertical|left"
+                        android:text="@string/text_address"
+                        android:textColor="@color/Azure"
+                        android:textSize="18sp" />
+
+                    <ImageButton
+                        android:id="@id/button_new_address"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="20"
+                        android:background="@color/Transparent"
+                        android:contentDescription="@string/disc_mk_field"
+                        android:onClick="addNewField"
+                        android:src="@android:drawable/ic_menu_add" />
+                </LinearLayout>
+
+                <!-- This layout can change dynamically -->
+
+                <LinearLayout
+                    android:id="@id/layout_dynamic_addressfield"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="5dp" >
+                </LinearLayout>
+
+                <View style="@style/style_separator_thin" />
+            </LinearLayout>
+
+            <!-- DOB fields -->
+
+            <LinearLayout
+                android:id="@id/layout_dobfields"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center_vertical|left"
+                        android:text="@string/text_dob"
+                        android:textColor="@color/Azure"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" >
+
+                        <TextView
+                            android:id="@id/textview_dob"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="80"
+                            android:background="@drawable/edit_text_holo_dark"
+                            android:clickable="true"
+                            android:ems="10"
+                            android:gravity="bottom|left"
+                            android:hint="@string/text_date"
+                            android:textSize="18sp" />
+
+                        <ImageButton
+                            android:id="@+id/button_clear_dob"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="20"
+                            android:background="@color/Transparent"
+                            android:contentDescription="@string/disc_clear"
+                            android:src="@android:drawable/ic_input_delete" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View style="@style/style_separator_thin" />
+            </LinearLayout>
         </LinearLayout>
+
+        <Button
+            android:id="@id/button_new_field_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/action_new_field"
+            android:textColor="@color/Azure" />
+    </LinearLayout>
+
 </ScrollView>

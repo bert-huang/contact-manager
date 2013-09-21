@@ -142,15 +142,26 @@ public class Contact implements Parcelable {
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
 				
+				// Sort by first name first
 				if (lhs.name.getFirstName().equals(rhs.name.getFirstName())){
-					if (lhs.name.getLastName().equals(rhs.name.getLastName())){
-						return 0;
-					}else if (lhs.name.getLastName().equals("")){
+					// Then by middle name
+					if (lhs.name.getMiddleName().equals(rhs.name.getMiddleName())){
+						// Then by last name
+						if (lhs.name.getLastName().equals(rhs.name.getLastName())){
+							return 0;
+						}else if (lhs.name.getLastName().equals("")){
+							return -1;
+						}else if (rhs.name.getLastName().equals("")){
+							return 1;
+						}else {
+							return lhs.name.getLastName().compareTo(rhs.name.getLastName());
+						}
+					}else if (lhs.name.getMiddleName().equals("")){
 						return -1;
-					}else if (rhs.name.getLastName().equals("")){
+					}else if (rhs.name.getMiddleName().equals("")){
 						return 1;
 					}else {
-						return lhs.name.getLastName().compareTo(rhs.name.getLastName());
+						return lhs.name.getMiddleName().compareTo(rhs.name.getMiddleName());
 					}
 				}else if (lhs.name.getFirstName().equals("")){
 					return -1;
@@ -167,10 +178,20 @@ public class Contact implements Parcelable {
 
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
-				
+				// Sort by last name first
 				if (lhs.name.getLastName().equals(rhs.name.getLastName())){
+					// then by first name
 					if (lhs.name.getFirstName().equals(rhs.name.getFirstName())){
-						return 0;
+						// then by middle name
+						if (lhs.name.getMiddleName().equals(rhs.name.getMiddleName())){
+							return 0;
+						}else if (lhs.name.getMiddleName().equals("")){
+							return -1;
+						}else if (rhs.name.getMiddleName().equals("")){
+							return 1;
+						}else {
+							return lhs.name.getMiddleName().compareTo(rhs.name.getMiddleName());
+						}
 					}else if (lhs.name.getFirstName().equals("")){
 						return -1;
 					}else if (rhs.name.getFirstName().equals("")){
