@@ -10,7 +10,9 @@ import cepw.contact.Phone;
 import cepw.contact.Utilities;
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -28,11 +30,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class InfoActivity extends Activity {
+	
 
 	static final String NONE = "NONE";
 	static final String DELETE_CONTACT = "DELETE_CONTACT";
-	static final String EDIT_CONTACT = "DELETE_CONTACT";
-	static final String MODIFIED_CONTACT = "DELETE_CONTACT";
+	static final String MODIFIED_CONTACT = "MODIFIED_CONTACT";
+	
+	static final int EDIT_CONTACT_REQUEST = 1;
 
 	private Contact contact = null;
 	private int position;
@@ -52,16 +56,19 @@ public class InfoActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_info);
 		setupActionBar();
-		ACTION = "NONE";
+		ACTION = NONE;
 
 		// Getting Data
 		if (savedInstanceState == null) {
 			Bundle extras = getIntent().getExtras();
-			if (extras == null)
+			if (extras == null){
+				Toast.makeText(InfoActivity.this, 
+						"Error loading this contact!", Toast.LENGTH_LONG).show();
 				finish();
-			else
+			}else{
 				contact = extras.getParcelable("SELECTED_CONTACT");
-			position = extras.getInt("POSITION");
+				position = extras.getInt("POSITION");
+			}
 		} else {
 			contact = (Contact) savedInstanceState
 					.getSerializable("SELECTED_CONTACT");
@@ -87,79 +94,8 @@ public class InfoActivity extends Activity {
 		emailList = (ListView) findViewById(R.id.listview_email_info);
 		addressList = (ListView) findViewById(R.id.listview_address_info);
 
-		// Set image
-		image.setImageBitmap(contact.getImage());
-
-		// Set name
-		if (!contact.getName().getFirstName().equals("")) {
-			firstName.setText(contact.getName().getFirstName());
-		} else {
-			firstName.setText("(Unknown)");
-		}
-
-		if (!contact.getName().getMiddleName().equals("")) {
-			middleName.setText(contact.getName().getMiddleName());
-		} else {
-			middleName.setVisibility(View.GONE);
-		}
-
-		if (!contact.getName().getLastName().equals("")) {
-			lastName.setText(contact.getName().getLastName());
-		} else {
-			lastName.setVisibility(View.GONE);
-		}
-
-		if (!contact.getName().getSuffix().equals("")) {
-			suffix.setText("[ " + contact.getName().getSuffix() + " ]");
-		} else {
-			suffix.setVisibility(View.GONE);
-		}
-
-		// Set phone
-		List<Phone> phones = contact.getPhones();
-		if (phones.isEmpty()) {
-			phoneInfo.setVisibility(View.GONE);
-		} else {
-			Collections.sort(phones);
-			phoneAdapter = new PhoneListAdapter(InfoActivity.this, phones);
-			phoneList.setAdapter(phoneAdapter);
-			phoneList.setOnItemLongClickListener(new ListItemClickedListener());
-			Utilities.setNoCollapseListView(phoneList);
-		}
-
-		// Set email
-		List<Email> emails = contact.getEmails();
-		if (emails.isEmpty()) {
-			emailInfo.setVisibility(View.GONE);
-		} else {
-			emailAdapter = new EmailListAdapter(InfoActivity.this, emails);
-			emailList.setAdapter(emailAdapter);
-			emailList.setOnItemLongClickListener(new ListItemClickedListener());
-			Utilities.setNoCollapseListView(emailList);
-		}
-
-		// Set address
-		List<Address> addresses = contact.getAddresses();
-		if (addresses.isEmpty()) {
-			addressInfo.setVisibility(View.GONE);
-		} else {
-			addressAdapter = new AddressListAdapter(InfoActivity.this,
-					addresses);
-			addressList.setAdapter(addressAdapter);
-			addressList
-					.setOnItemLongClickListener(new ListItemClickedListener());
-			Utilities.setNoCollapseListView(addressList);
-		}
-
-		// Set Date of Birth
-
-		if (contact.getDateOfBirth().equals("")) {
-			dobInfo.setVisibility(View.GONE);
-		} else {
-			dobDate.setText(contact.getDateOfBirth());
-		}
-
-		scrollView.smoothScrollTo(0, 0);
+		
+		populateData();
 	}
 
 	private void setupActionBar() {
@@ -180,22 +116,156 @@ public class InfoActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			finish();
+			onBackPressed();
 			return true;
 
 		case R.id.action_contact_remove:
-			Intent intent = new Intent();
-			ACTION = DELETE_CONTACT;
-			intent.putExtra("ACTION", ACTION);
-			intent.putExtra("POSITION", position);
-			setResult(RESULT_OK, intent);
-			Toast.makeText(this, "Deleted!", Toast.LENGTH_SHORT).show();
-			finish();
+			showDeleteDialog();
 			return true;
+			
+		case R.id.action_contact_edit:
+			Intent intent = new Intent(this, EditActivity.class);
+			ACTION = MODIFIED_CONTACT;
+			intent.putExtra("SELECTED_CONTACT", contact);
+			startActivityForResult(intent, EDIT_CONTACT_REQUEST);
+			
 		}
 		return super.onOptionsItemSelected(item);
 	}
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == EDIT_CONTACT_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				contact = (Contact) data.getExtras().getParcelable("EDITED_CONTACT");
+				populateData();
+			}
+		}
+	}
+	
+	// Dialog to show prompt before delete
+	public void showDeleteDialog() {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Are you sure you want to delete this contact?")
+				.setTitle("Delete?")
+				.setNegativeButton("Cancel", null)
+				.setPositiveButton("Confirm",
+						new DialogInterface.OnClickListener() {
 
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								Intent intent = new Intent();
+								ACTION = DELETE_CONTACT;
+								intent.putExtra("ACTION", ACTION);
+								intent.putExtra("POSITION", position);
+								setResult(RESULT_OK, intent);
+								Toast.makeText(InfoActivity.this, "Contact Removed!", Toast.LENGTH_SHORT).show();
+								finish();
+							}
+						});
+		AlertDialog alert = builder.create();
+		alert.show();
+	}
+	
+	// Make the BACK button and the UP button behave the same
+	public void onBackPressed() {
+		Intent intent = new Intent();
+		intent.putExtra("ACTION", ACTION);
+		if (ACTION.equals(MODIFIED_CONTACT)){
+			intent.putExtra(MODIFIED_CONTACT, contact);
+			intent.putExtra("POSITION", position);
+			setResult(RESULT_OK, intent);
+		}else if (ACTION.equals(NONE)){
+//			intent.putExtra(NONE, contact);
+			setResult(RESULT_CANCELED, intent);
+		}
+		
+		finish();
+	}
+
+	// POPULATE DATA
+	private void populateData() {
+		// Set image
+		image.setImageBitmap(contact.getImage());
+
+		// Set name
+		if (!contact.getName().getFirstName().equals("")) {
+			firstName.setText(contact.getName().getFirstName());
+		} else {
+			firstName.setText("(Unknown)");
+		}
+
+		if (!contact.getName().getMiddleName().equals("")) {
+			middleName.setVisibility(View.VISIBLE);
+			middleName.setText(contact.getName().getMiddleName());
+		} else {
+			middleName.setVisibility(View.GONE);
+		}
+
+		if (!contact.getName().getLastName().equals("")) {
+			lastName.setVisibility(View.VISIBLE);
+			lastName.setText(contact.getName().getLastName());
+		} else {
+			lastName.setVisibility(View.GONE);
+		}
+
+		if (!contact.getName().getSuffix().equals("")) {
+			suffix.setVisibility(View.VISIBLE);
+			suffix.setText("[ " + contact.getName().getSuffix() + " ]");
+		} else {
+			suffix.setVisibility(View.GONE);
+		}
+
+		// Set phone
+		List<Phone> phones = contact.getPhones();
+		if (phones.isEmpty()) {
+			phoneInfo.setVisibility(View.GONE);
+		} else {
+			phoneInfo.setVisibility(View.VISIBLE);
+			Collections.sort(phones);
+			phoneAdapter = new PhoneListAdapter(InfoActivity.this, phones);
+			phoneList.setAdapter(phoneAdapter);
+			phoneList.setOnItemLongClickListener(new ListItemClickedListener());
+			Utilities.setNoCollapseListView(phoneList);
+		}
+
+		// Set email
+		List<Email> emails = contact.getEmails();
+		if (emails.isEmpty()) {
+			emailInfo.setVisibility(View.GONE);
+		} else {
+			emailInfo.setVisibility(View.VISIBLE);
+			emailAdapter = new EmailListAdapter(InfoActivity.this, emails);
+			emailList.setAdapter(emailAdapter);
+			emailList.setOnItemLongClickListener(new ListItemClickedListener());
+			Utilities.setNoCollapseListView(emailList);
+		}
+
+		// Set address
+		List<Address> addresses = contact.getAddresses();
+		if (addresses.isEmpty()) {
+			addressInfo.setVisibility(View.GONE);
+		} else {
+			addressInfo.setVisibility(View.VISIBLE);
+			addressAdapter = new AddressListAdapter(InfoActivity.this,
+					addresses);
+			addressList.setAdapter(addressAdapter);
+			addressList
+					.setOnItemLongClickListener(new ListItemClickedListener());
+			Utilities.setNoCollapseListView(addressList);
+		}
+
+		// Set Date of Birth
+
+		if (contact.getDateOfBirth().equals("")) {
+			dobInfo.setVisibility(View.GONE);
+		} else {
+			dobDate.setText(contact.getDateOfBirth());
+		}
+
+		scrollView.smoothScrollTo(0, 0);
+	}
+	
+	// CLASSES
 	private class PhoneListAdapter extends ArrayAdapter<Phone> {
 
 		private Context context;

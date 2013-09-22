@@ -38,43 +38,53 @@ public class EditActivity extends Activity {
 	static final int PIC_CROP = 2;
 
 	private final int BTN_BORDER = 11;
-
+	
 	private enum FieldType {
 		PHONE, EMAIL, ADDRESS
 	};
 
-	private Button newFieldCategoryBtn;
+	
 	private ImageButton imageBtn, expandName, collapseName, clearDob;
 	private EditText fullName, firstName, middleName, lastName, nameSuffix;
 	private TextView dobField;
 	private LinearLayout emailLinLayout, addressLinLayout, dobLinLayout;
-	private LinearLayout dynamicPhoneLinLayout, dynamicEmailLinLayout,
-			dynamicAddressLinLayout;
-
+	private LinearLayout dynamicPhoneLayout, dynamicEmailLayout,
+			dynamicAddressLayout;
 	private Bitmap displayPhoto;
+
+	// Fields for Bundles
+	private Contact contact = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit);
 
+		// Initializing
 		setupActionBar();
 		setupNameFields();
 		setupDobField();
 
 		imageBtn = (ImageButton) findViewById(R.id.button_change_display_image);
 		displayPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.ic_face);
-//		displayPhoto = Utilities.scaleDownBitmap(
-//				BitmapFactory.decodeResource(getResources(), R.drawable.ic_face), 200, this);
-		dynamicPhoneLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
+		dynamicPhoneLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
 		emailLinLayout = (LinearLayout) findViewById(R.id.layout_emailfields);
-		dynamicEmailLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
+		dynamicEmailLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
 		addressLinLayout = (LinearLayout) findViewById(R.id.layout_addressfields);
-		dynamicAddressLinLayout = (LinearLayout) findViewById(R.id.layout_dynamic_addressfield);
+		dynamicAddressLayout = (LinearLayout) findViewById(R.id.layout_dynamic_addressfield);
 		dobLinLayout = (LinearLayout) findViewById(R.id.layout_dobfields);
-		newFieldCategoryBtn = (Button) findViewById(R.id.button_new_field_category);
 
-		newFieldCategoryBtn.setVisibility(View.GONE);
+		imageBtn.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent i = new Intent(
+						Intent.ACTION_PICK,
+						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+				startActivityForResult(i, RESULT_LOAD_IMAGE);
+			}
+		});
+		
 //		emailLinLayout.setVisibility(View.GONE);
 //		addressLinLayout.setVisibility(View.GONE);
 //		dobLinLayout.setVisibility(View.GONE);
@@ -86,60 +96,112 @@ public class EditActivity extends Activity {
 //				newFragment.show(getFragmentManager(), "New Field Category");
 //			}
 //		});
+//		createNewField(FieldType.EMAIL, dynamicEmailLayout);
+//		createNewField(FieldType.ADDRESS, dynamicAddressLayout);
 
+		// Getting Data
+		
+		Bundle extras = getIntent().getExtras();
+		
+		// IMPORTANT!
+		// If extras is null, means it's coming from the ADD NEW menu button.
+		// If extras is NOT null, means it's coming from the EDIT menu button.
+		if (extras != null){
+			contact = extras.getParcelable("SELECTED_CONTACT");
+		}
+		
+		
+		//Setting data (If possible)
+		if (contact != null) {
+			
+			// Set up image
+			displayPhoto = contact.getImage();
+
+			// Set up name
+			String full = Name.ParseName(
+					null, 
+					contact.getName().getFirstName(), 
+					contact.getName().getMiddleName(),
+					contact.getName().getLastName(),
+					contact.getName().getSuffix())[0];
+			fullName.setText(full);
+			
+			// Set up phone
+			for (int i = 0; i < contact.getPhones().size(); i++){
+				Phone p = contact.getPhones().get(i);
+				// Get type (for spinner selection index
+				int type = 0;
+				if (p.getType().equals("Mobile")) {
+					type = 0;
+				} else if (p.getType().equals("Home")) {
+					type = 1;
+				} else if (p.getType().equals("Work")) {
+					type = 2;
+				} else if (p.getType().equals("Home Fax")) {
+					type = 3;
+				} else if (p.getType().equals("Work Fax")) {
+					type = 4;
+				} else if (p.getType().equals("Other")) {
+					type = 5;
+				}
+				
+				createNewField(FieldType.PHONE, dynamicPhoneLayout);
+				((Spinner)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(0)).setSelection(type);
+				((EditText)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(1)).setText(p.getNumber());
+			}
+			
+			// Set up email
+			for (int i = 0; i < contact.getEmails().size(); i++){
+				Email e = contact.getEmails().get(i);
+				// Get type (for spinner selection index
+				int type = 0;
+				if (e.getType().equals("Home")) {
+					type = 0;
+				} else if (e.getType().equals("Work")) {
+					type = 1;
+				} else if (e.getType().equals("Other")) {
+					type = 2;
+				}
+				
+				createNewField(FieldType.EMAIL, dynamicEmailLayout);
+				((Spinner)((ViewGroup)dynamicEmailLayout.getChildAt(i)).getChildAt(0)).setSelection(type);
+				((EditText)((ViewGroup)dynamicEmailLayout.getChildAt(i)).getChildAt(1)).setText(e.getEmail());
+			}
+			
+			// Set up address
+			for (int i = 0; i < contact.getAddresses().size(); i++){
+				Address a = contact.getAddresses().get(i);
+				// Get type (for spinner selection index
+				int type = 0;
+				if (a.getType().equals("Home")) {
+					type = 0;
+				} else if (a.getType().equals("Work")) {
+					type = 1;
+				} else if (a.getType().equals("Other")) {
+					type = 2;
+				}
+				
+				createNewField(FieldType.ADDRESS, dynamicAddressLayout);
+				((Spinner)((ViewGroup)dynamicAddressLayout.getChildAt(i)).getChildAt(0)).setSelection(type);
+				((EditText)((ViewGroup)dynamicAddressLayout.getChildAt(i)).getChildAt(1)).setText(a.getAddress());
+			}
+			
+			// Set up date of birth
+			dobField.setText(contact.getDateOfBirth());
+			
+		}else {
+			createNewField(FieldType.PHONE, dynamicPhoneLayout);
+		}
+		
+		
+		// Placing The data in
 		imageBtn.setImageBitmap(Bitmap.createScaledBitmap(displayPhoto,
 				Utilities.dpToPx(this, 80), Utilities.dpToPx(this, 80), false));
-		imageBtn.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(
-						Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-				startActivityForResult(i, RESULT_LOAD_IMAGE);
-			}
-		});
-
-//		createNewField(FieldType.PHONE, dynamicPhoneLinLayout);
-//		createNewField(FieldType.EMAIL, dynamicEmailLinLayout);
-//		createNewField(FieldType.ADDRESS, dynamicAddressLinLayout);
-
+		
 		fullName.setFocusable(true);
 		fullName.requestFocus();
-
-		// DUMMY!
-//		createNewField(FieldType.PHONE, dynamicPhoneLinLayout);
-//		createNewField(FieldType.EMAIL, dynamicEmailLinLayout);
-//		createNewField(FieldType.ADDRESS, dynamicAddressLinLayout);
-
-/*		fullName.setText("Bert DERP Huang, #YOLOSWAG");
-
-		((Spinner) ((ViewGroup) dynamicPhoneLinLayout.getChildAt(0))
-				.getChildAt(0)).setSelection(0);
-		((EditText) ((ViewGroup) dynamicPhoneLinLayout.getChildAt(0))
-				.getChildAt(1)).setText("0211557760");
-		((Spinner) ((ViewGroup) dynamicPhoneLinLayout.getChildAt(1))
-				.getChildAt(0)).setSelection(1);
-		((EditText) ((ViewGroup) dynamicPhoneLinLayout.getChildAt(1))
-				.getChildAt(1)).setText("095376635");
-
-		((Spinner) ((ViewGroup) dynamicEmailLinLayout.getChildAt(0))
-				.getChildAt(0)).setSelection(0);
-		((EditText) ((ViewGroup) dynamicEmailLinLayout.getChildAt(0))
-				.getChildAt(1)).setText("dendeer82@gmail.com");
-		((Spinner) ((ViewGroup) dynamicEmailLinLayout.getChildAt(1))
-				.getChildAt(0)).setSelection(1);
-		((EditText) ((ViewGroup) dynamicEmailLinLayout.getChildAt(1))
-				.getChildAt(1)).setText("ihua164@aucklanduni.ac.nz");
-
-		((EditText) ((ViewGroup) dynamicAddressLinLayout.getChildAt(0))
-				.getChildAt(1)).setText("51 Evelyn Road, Cockle Bay, Auckland");
-		((EditText) ((ViewGroup) dynamicAddressLinLayout.getChildAt(1))
-				.getChildAt(1)).setText("彰化縣溪湖鎮西還路205號");
-
-		dobField.setText("27-01-1993");
-*/
 		
+		fullName.setSelection(0);
 	}
 
 	private void setupActionBar() {
@@ -172,18 +234,14 @@ public class EditActivity extends Activity {
 				expandName.setVisibility(View.GONE);
 				collapseName.setVisibility(View.VISIBLE);
 
-				if (!fullName.getText().toString().equals("")) {
-					String[] splits = Name.ParseName(fullName.getText()
-							.toString(), firstName.getText().toString(),
-							middleName.getText().toString(), lastName.getText()
-									.toString(), nameSuffix.getText()
-									.toString());
-					fullName.setText("");
-					firstName.setText(splits[0]);
-					middleName.setText(splits[1]);
-					lastName.setText(splits[2]);
-					nameSuffix.setText(splits[3]);
-				}
+				String[] splits = Name.ParseName(
+						fullName.getText().toString(), 
+						null, null, null, null);
+				fullName.setText("");
+				firstName.setText(splits[0]);
+				middleName.setText(splits[1]);
+				lastName.setText(splits[2]);
+				nameSuffix.setText(splits[3]);
 
 				fullName.setVisibility(View.GONE);
 				nameSuffix.setVisibility(View.VISIBLE);
@@ -204,10 +262,11 @@ public class EditActivity extends Activity {
 				collapseName.setVisibility(View.GONE);
 
 				String[] combine = Name.ParseName(
-						fullName.getText().toString(), firstName.getText()
-								.toString(), middleName.getText().toString(),
-						lastName.getText().toString(), nameSuffix.getText()
-								.toString());
+						null, 
+						firstName.getText().toString(), 
+						middleName.getText().toString(),
+						lastName.getText().toString(), 
+						nameSuffix.getText().toString());
 				fullName.setText(combine[0]);
 				firstName.setText("");
 				middleName.setText("");
@@ -259,7 +318,7 @@ public class EditActivity extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case android.R.id.home:
-			showDiscardDialog();
+			onBackPressed();
 			return true;
 
 		case R.id.action_create_discard:
@@ -280,19 +339,16 @@ public class EditActivity extends Activity {
 
 			// Parsing contact name
 			if (fullName.getVisibility() == View.VISIBLE) {
-				if (!fullName.getText().toString().equals("")) {
-					String[] splits = Name.ParseName(fullName.getText()
-							.toString(), firstName.getText().toString(),
-							middleName.getText().toString(), lastName.getText()
-									.toString(), nameSuffix.getText()
-									.toString());
+					String[] splits = Name.ParseName(
+							fullName.getText().toString(), 
+							null, null, null, null);
 					name = new Name(splits[0], splits[1], splits[2], splits[3]);
-				} else {
-					name = new Name("", "", "", "");
-				}
+
 			} else {
-				name = new Name(firstName.getText().toString(), middleName
-						.getText().toString(), lastName.getText().toString(),
+				name = new Name(
+						firstName.getText().toString(), 
+						middleName.getText().toString(), 
+						lastName.getText().toString(),
 						nameSuffix.getText().toString());
 			}
 
@@ -300,9 +356,9 @@ public class EditActivity extends Activity {
 			photo = new Photo(displayPhoto);
 
 			// Populating phones
-			childCount = dynamicPhoneLinLayout.getChildCount();
+			childCount = dynamicPhoneLayout.getChildCount();
 			for (int i = 0; i < childCount; i++) {
-				ViewGroup vg = (ViewGroup) dynamicPhoneLinLayout.getChildAt(i);
+				ViewGroup vg = (ViewGroup) dynamicPhoneLayout.getChildAt(i);
 				String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
 						.toString();
 				String number = ((EditText) vg.getChildAt(1)).getText()
@@ -319,9 +375,9 @@ public class EditActivity extends Activity {
 			Collections.sort(phones, new Phone.ComparePhoneWithDefault());
 
 			// Populating emails
-			childCount = dynamicEmailLinLayout.getChildCount();
+			childCount = dynamicEmailLayout.getChildCount();
 			for (int i = 0; i < childCount; i++) {
-				ViewGroup vg = (ViewGroup) dynamicEmailLinLayout.getChildAt(i);
+				ViewGroup vg = (ViewGroup) dynamicEmailLayout.getChildAt(i);
 				String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
 						.toString();
 				String email = ((EditText) vg.getChildAt(1)).getText()
@@ -346,9 +402,9 @@ public class EditActivity extends Activity {
 			}
 
 			// Populating addresses
-			childCount = dynamicAddressLinLayout.getChildCount();
+			childCount = dynamicAddressLayout.getChildCount();
 			for (int i = 0; i < childCount; i++) {
-				ViewGroup vg = (ViewGroup) dynamicAddressLinLayout
+				ViewGroup vg = (ViewGroup) dynamicAddressLayout
 						.getChildAt(i);
 				String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
 						.toString();
@@ -365,13 +421,31 @@ public class EditActivity extends Activity {
 			// Get Date of Birth
 			dob = new DateOfBirth(dobField.getText().toString());
 
-			contact = new Contact(name, photo, phones, emails, addresses, dob);
-
-			intent.putExtra("NEW_CONTACT", contact);
-			setResult(RESULT_OK, intent);
-			Toast.makeText(this, "Created!", Toast.LENGTH_SHORT).show();
-			finish();
-			return true;
+			
+			if (this.contact != null) {
+				this.contact.setPhoto(photo);
+				this.contact.setName(name);
+				this.contact.setPhones(phones);
+				this.contact.setEmail(emails);
+				this.contact.setAddresses(addresses);
+				this.contact.setDateOfBirth(dob);
+				
+				
+//				this.contact = new Contact(name, photo, phones, emails, addresses, dob);
+				intent.putExtra("EDITED_CONTACT", this.contact);
+				setResult(RESULT_OK, intent);
+				Toast.makeText(EditActivity.this, "Modified!", Toast.LENGTH_SHORT).show();
+				finish();
+			}else {
+				contact = new Contact(name, photo, phones, emails, addresses, dob);
+				intent.putExtra("NEW_CONTACT", contact);
+				setResult(RESULT_OK, intent);
+				Toast.makeText(EditActivity.this, "Created!", Toast.LENGTH_SHORT).show();
+				finish();
+				return true;
+			}
+			
+			
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -472,17 +546,17 @@ public class EditActivity extends Activity {
 		switch (ft) {
 		case PHONE:
 			infl = R.layout.phone_field_item;
-			ll = dynamicPhoneLinLayout;
+			ll = dynamicPhoneLayout;
 			charSeq = R.array.phone_type;
 			break;
 		case EMAIL:
 			infl = R.layout.email_field_item;
-			ll = dynamicEmailLinLayout;
+			ll = dynamicEmailLayout;
 			charSeq = R.array.email_type;
 			break;
 		case ADDRESS:
 			infl = R.layout.address_field_item;
-			ll = dynamicAddressLinLayout;
+			ll = dynamicAddressLayout;
 			charSeq = R.array.address_type;
 			break;
 		default:
@@ -503,24 +577,13 @@ public class EditActivity extends Activity {
 		spinner.setAdapter(adapter);
 
 		ll.addView(fieldInfo);
-
-		if (ll.getChildCount() >= 5) {
-			v.setVisibility(View.INVISIBLE);
-		}
 	}
 
 	public void removeCurrentField(View v) {
-		int count = 0;
 		ViewGroup view2rm = (ViewGroup) v.getParent();
 		ViewGroup parent = (ViewGroup) view2rm.getParent();
-		ViewGroup mainLayout = (ViewGroup) parent.getParent();
 
 		parent.removeView(view2rm);
-		count = parent.getChildCount();
-		if (count < 5) {
-			((ViewGroup) mainLayout.getChildAt(0)).getChildAt(1).setVisibility(
-					View.VISIBLE);
-		}
 
 	}
 
@@ -571,6 +634,5 @@ public class EditActivity extends Activity {
 			return false;
 		}
 	}
-
 
 }

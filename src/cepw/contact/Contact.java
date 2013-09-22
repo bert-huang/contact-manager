@@ -29,26 +29,39 @@ public class Contact implements Parcelable {
 
 	}
 
+
+
+	// Direct getters setters
+	public void setPhoto(Photo photo) {
+		this.photo = photo;
+	}
+	
 	public Name getName() {
 		return name;
 	}
-
+	
 	public void setName(Name name) {
 		this.name = name;
 	}
 	
-	public Bitmap getImage() {
-		return photo.getImage();
+	public void setPhones(List<Phone> phones) {
+		this.phones = phones;
+	}
+	
+	public void setEmail(List<Email> emails) {
+		this.emails = emails;
+	}
+	
+	public void setAddresses(List<Address> addresses) {
+		this.addresses = addresses;
+	}
+	
+	public void setDateOfBirth(DateOfBirth dob) {
+		this.dateOfBirth = dob;
 	}
 
-	public void setImage(Bitmap photo) {
-		this.photo.setImage(photo);
-	}
-
-	public String getDateOfBirth() {
-		return dateOfBirth.getDateOfBirth();
-	}
-
+	
+	//Indirect Getters and setters
 	public void setDateOfBirth(String dateOfBirth) {
 		this.dateOfBirth.setDateOfBirth(dateOfBirth);
 	}
@@ -88,7 +101,21 @@ public class Contact implements Parcelable {
 	public void removeAddress(Address address) {
 		this.addresses.remove(address);
 	}
+	
+	public Bitmap getImage() {
+		return photo.getImage();
+	}
 
+	public void setImage(Bitmap photo) {
+		this.photo.setImage(photo);
+	}
+	
+	public String getDateOfBirth() {
+		return dateOfBirth.getDateOfBirth();
+	}
+
+	
+	//Parcelable
 	@Override
 	public int describeContents() {
 		return this.hashCode();
@@ -150,23 +177,23 @@ public class Contact implements Parcelable {
 						if (lhs.name.getLastName().equals(rhs.name.getLastName())){
 							return 0;
 						}else if (lhs.name.getLastName().equals("")){
-							return -1;
-						}else if (rhs.name.getLastName().equals("")){
 							return 1;
+						}else if (rhs.name.getLastName().equals("")){
+							return -1;
 						}else {
 							return lhs.name.getLastName().compareTo(rhs.name.getLastName());
 						}
 					}else if (lhs.name.getMiddleName().equals("")){
-						return -1;
-					}else if (rhs.name.getMiddleName().equals("")){
 						return 1;
+					}else if (rhs.name.getMiddleName().equals("")){
+						return -1;
 					}else {
 						return lhs.name.getMiddleName().compareTo(rhs.name.getMiddleName());
 					}
 				}else if (lhs.name.getFirstName().equals("")){
-					return -1;
-				}else if (rhs.name.getFirstName().equals("")){
 					return 1;
+				}else if (rhs.name.getFirstName().equals("")){
+					return -1;
 				}else {
 					return lhs.name.getFirstName().compareTo(rhs.name.getFirstName());
 				}
@@ -186,23 +213,23 @@ public class Contact implements Parcelable {
 						if (lhs.name.getMiddleName().equals(rhs.name.getMiddleName())){
 							return 0;
 						}else if (lhs.name.getMiddleName().equals("")){
-							return -1;
-						}else if (rhs.name.getMiddleName().equals("")){
 							return 1;
+						}else if (rhs.name.getMiddleName().equals("")){
+							return -1;
 						}else {
 							return lhs.name.getMiddleName().compareTo(rhs.name.getMiddleName());
 						}
 					}else if (lhs.name.getFirstName().equals("")){
-						return -1;
-					}else if (rhs.name.getFirstName().equals("")){
 						return 1;
+					}else if (rhs.name.getFirstName().equals("")){
+						return -1;
 					}else {
 						return lhs.name.getFirstName().compareTo(rhs.name.getFirstName());
 					}
 				}else if (lhs.name.getLastName().equals("")){
-					return -1;
-				}else if (rhs.name.getLastName().equals("")){
 					return 1;
+				}else if (rhs.name.getLastName().equals("")){
+					return -1;
 				}else {
 					return lhs.name.getLastName().compareTo(rhs.name.getLastName());
 				}

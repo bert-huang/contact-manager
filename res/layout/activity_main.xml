@@ -14,6 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/disc_search"
+        android:clickable="true"
         android:src="@android:drawable/ic_menu_search" />
 
     <EditText
@@ -22,6 +23,8 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/imageview_ic_searchbar"
         android:layout_toRightOf="@id/imageview_ic_searchbar"
+        android:layout_marginLeft="10dp"
+        android:singleLine="true"
         android:ems="10"
         android:hint="@string/text_search" />
 

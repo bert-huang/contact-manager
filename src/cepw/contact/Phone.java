@@ -2,8 +2,6 @@ package cepw.contact;
 
 import java.util.Comparator;
 
-import cepw.contact.Contact.Comparators;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 

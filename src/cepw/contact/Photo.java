@@ -29,7 +29,7 @@ public class Photo implements Parcelable {
 	 * @param img desired bitmap for Photo
 	 */
 	public void setImage(Bitmap img) {
-		this.image = img;
+		this.image = Bitmap.createScaledBitmap(img, 300, 300, false);
 	}
 	
 	/**

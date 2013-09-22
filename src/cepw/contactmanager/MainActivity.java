@@ -3,29 +3,27 @@ package cepw.contactmanager;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.DisplayMetrics;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.Filter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -43,8 +41,12 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 	static final int CONTACT_INFO_REQUEST = 2;
 
 	private List<Contact> contacts;
+	private List<Contact> contactList;
 	private ListView list;
 	private ArrayAdapter<Contact> adapter;
+	private EditText searchbar;
+	private ImageView searchIcon;
+	
 	private int sortBy;
 
 	@Override
@@ -54,13 +56,29 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		forceCreateOverflow();
 		getActionBar().setDisplayShowTitleEnabled(false);
 
-		sortBy = SORT_BY_FIRST_NAME;
+		searchbar = (EditText) findViewById(R.id.textfield_searchbar);
+		searchbar.addTextChangedListener(new OnSearchListener());
+		searchIcon = (ImageView) findViewById(R.id.imageview_ic_searchbar);
+		searchIcon.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				searchbar.setText("");
+				searchbar.clearFocus();
+				InputMethodManager imm = (InputMethodManager) v.getContext()
+			            .getSystemService(Context.INPUT_METHOD_SERVICE);
+			    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+			}
+		});
+		
 		contacts = new ArrayList<Contact>();
 		list = (ListView) findViewById(R.id.listview_contact_list);
 		adapter = new ContactListAdapter(MainActivity.this, contacts);
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new ListItemClickedListener());
 		list.setOnItemLongClickListener(new ListItemClickedListener());
+		list.setTextFilterEnabled(true);
+		sortBy = SORT_BY_FIRST_NAME;
 		
 		try {
 			createDummyObject();
@@ -100,6 +118,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+		
 		if (requestCode == CREATE_CONTACT_REQUEST) {
 			if (resultCode == RESULT_OK) {
 
@@ -117,22 +136,25 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			if (resultCode == RESULT_OK) {
 
 				String action = data.getStringExtra("ACTION");
+				int pos = data.getExtras().getInt("POSITION");
+				
 				if (action.equals("MODIFIED_CONTACT")){
 					
-					contacts.set(data.getExtras().getInt("POSITION"), 
-							(Contact) data.getExtras().getParcelable("MOD_CONTACT"));
+					contacts.set(pos, 
+							(Contact) data.getExtras().getParcelable("MODIFIED_CONTACT"));
 					
 					sortList(contacts, sortBy);
 					adapter.notifyDataSetChanged();
 					
 				} else if (action.equals("DELETE_CONTACT")){
-					contacts.remove(data.getExtras().getInt("POSITION"));
+					contacts.remove(pos);
 					sortList(contacts, sortBy);
 					adapter.notifyDataSetChanged();
 					
 				}
 			}
 		}
+		searchbar.setText(searchbar.getText().toString());
 	}
 	
 	// Method to other activities
@@ -143,8 +165,8 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 	
 	private void gotoContactInfo(int position) {
 		Intent i = new Intent(getApplicationContext(), InfoActivity.class);
-		i.putExtra("SELECTED_CONTACT", contacts.get(position));
-		i.putExtra("POSITION", position);
+		i.putExtra("SELECTED_CONTACT", contactList.get(position));
+		i.putExtra("POSITION", contacts.indexOf(contactList.get(position)));
 		startActivityForResult(i, CONTACT_INFO_REQUEST);
 	}
 
@@ -184,14 +206,21 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 	private class ContactListAdapter extends ArrayAdapter<Contact> {
 
 		private Context context;
-		private List<Contact> contacts;
+		
+		ContactFilter contactFilter;
 
 		public ContactListAdapter(Context context, List<Contact> contacts) {
 			super(context, android.R.layout.simple_expandable_list_item_1,
 					contacts);
 
 			this.context = context;
-			this.contacts = contacts;
+			contactList = contacts;
+		}
+		
+		
+		public void notifyDataSetChanged() {
+			super.notifyDataSetChanged();
+			
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -205,11 +234,12 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			ViewGroup vg = (ViewGroup) inflater.inflate(
 					R.layout.contact_list_item, null);
 
-			Contact curContact = contacts.get(position);
-			String fullName = Name.ParseName("", curContact.getName()
-					.getFirstName(), curContact.getName().getMiddleName(),
-					curContact.getName().getLastName(), curContact.getName()
-							.getSuffix())[0];
+			Contact curContact = contactList.get(position);
+			String fullName = Name.ParseName(null, 
+					curContact.getName().getFirstName(), 
+					curContact.getName().getMiddleName(),
+					curContact.getName().getLastName(), 
+					curContact.getName().getSuffix())[0];
 
 			ImageView iv = (ImageView) vg.getChildAt(0);
 			TextView nameTag = (TextView) vg.getChildAt(1);
@@ -229,8 +259,82 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			return (View) vg;
 
 		}
-	}
+	
+		public Filter getFilter() {
+			if (contactFilter == null)
+				contactFilter = new ContactFilter();
+			return contactFilter;
+		}
+		
+		public int getCount () {
+		    return contactList.size ();
+		}
+	
+		private class ContactFilter extends Filter{
 
+			@Override
+			protected FilterResults performFiltering(CharSequence constraint) {
+			   FilterResults results = new FilterResults();
+			    // We implement here the filter logic
+			    if (constraint == null || constraint.length() == 0) {
+			        // No filter implemented we return all the list
+			        results.values = contacts;
+			        results.count = contacts.size();
+			    }
+			    else {
+			    	
+			    	int count = 0;
+			    	for (int i = 0; i < constraint.toString().length(); i++) {
+			    		if (constraint.toString().charAt(i) == ' ') {
+			    			count++;
+			    		}
+			    	}
+			    	String[] splitted = constraint.toString().split(" ");
+			        
+			    	// Filter name
+			        List<Contact> nContacts = new ArrayList<Contact>();
+			        for (Contact c : contacts) {
+			        	String fullName = Name.ParseName(
+			        			null, c.getName().getFirstName(), 
+			        			c.getName().getMiddleName(), 
+			        			c.getName().getLastName(), 
+			        			c.getName().getSuffix())[0];
+			        	
+			        	List<String> phoneNum = new ArrayList<String>();
+			        	for (Phone p : c.getPhones()){
+			        		phoneNum.add(p.getNumber());
+			        	}
+			        	
+			        	for (int i = 0; i <= count; i++) {
+			        		if (fullName.toUpperCase().contains((splitted[i].toUpperCase())) && !nContacts.contains(c)){
+		        				nContacts.add(c);
+			        		}else {
+			        			for (String s : phoneNum) {
+			        				if (s.contains((splitted[i])) && !nContacts.contains(c)) {
+			        					nContacts.add(c);
+			        				}
+			        			}
+			        		}
+				    	}
+			        }
+			         
+			        results.values = nContacts;
+			        results.count = nContacts.size();
+			 
+			    }
+			    return results;
+			}
+
+			@Override
+			protected void publishResults(CharSequence constraint,
+					FilterResults results) {
+				// Now we have to inform the adapter about the new list filtered
+		        contactList = (List<Contact>) results.values;
+		        notifyDataSetChanged();
+			}
+		}
+	}
+	
 	private class ListItemClickedListener implements
 			AdapterView.OnItemLongClickListener,
 			AdapterView.OnItemClickListener {
@@ -238,7 +342,8 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
-			contacts.remove(position);
+			contacts.remove(contactList.get(position));
+			contactList.remove(position);
 			adapter.notifyDataSetChanged();
 			Toast.makeText(getApplicationContext(), "Contact Removed!",
 					Toast.LENGTH_SHORT).show();
@@ -252,8 +357,29 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		}
 	}
 
+	private class OnSearchListener implements TextWatcher {
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count,
+				int after) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before,
+				int count) {
+			MainActivity.this.adapter.getFilter().filter(s.toString());
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			// TODO Auto-generated method stub
+		}
+		
+	}
 	
 	//SortingDialog, OnCompleteListener
+	
 	@Override
 	public void onComplete(int sortType) {
 		this.sortBy = sortType;
@@ -297,7 +423,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		DateOfBirth c36 = new DateOfBirth("05-07-1990");
 		Contact c30 = new Contact(c31, c32, c33, c34, c35, c36);
 		
-		Name c41 = new Name("Akshay", "", "Kalayn", "Software Engineer");
+		Name c41 = new Name("Akshay", "", "Kalyan", "Software Engineer");
 		Photo c42 = new Photo(BitmapFactory.decodeResource(getResources(), R.drawable.ic_face));
 		List<Phone> c43 = new ArrayList<Phone>();	
 		c43.add(new Phone("Mobile", "0240000000", true));
@@ -360,6 +486,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		contacts.add(c60);
 		contacts.add(c70);
 		contacts.add(c80);
+		sortList(contacts, sortBy);
 		adapter.notifyDataSetChanged();
 		
 	}

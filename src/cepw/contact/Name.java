@@ -16,11 +16,15 @@ public class Name implements Parcelable{
 
 	/**
 	 * Parse Name from either a string of full name or from several parts of name.
+	 * Put full as NULL if you want to merge.
+	 * Put anything except full as NULL if you want to split
 	 */
 	public static final String[] ParseName(String full,
 			String first, String middle, String last, String suffix) {
 		
-		if (full.equals("")) {
+		
+		//Merge
+		if (full == null) {
 			String fullName = "";
 			if (!first.trim().equals("") && first != null)
 				fullName += first + " ";
@@ -30,8 +34,12 @@ public class Name implements Parcelable{
 				fullName += last;
 			if (!suffix.trim().equals("") && suffix != null)
 				fullName += ", " + suffix;
-			return new String[] { fullName };
+			return new String[] { fullName.trim() };
+		
+		//Split
 		} else {
+			
+			
 			String fullName = full.trim().replaceAll("([\\s]+|)[,]([\\s]+|)", ",");;
 			String firstName = "";
 			String middleName = "";
@@ -79,7 +87,7 @@ public class Name implements Parcelable{
 					firstName = split[0]; //Assign first name
 				}
 			}
-			return new String[] { firstName, middleName, lastName, nameSuffix };
+			return new String[] { firstName.trim(), middleName.trim(), lastName.trim(), nameSuffix.trim() };
 		}
 
 	}
