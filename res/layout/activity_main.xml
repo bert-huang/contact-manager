@@ -12,29 +12,31 @@
     <ImageView
         android:id="@id/imageview_ic_searchbar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/disc_search"
+        android:layout_height="match_parent"
+        android:layout_alignBottom="@id/textfield_searchbar"
+        android:layout_alignLeft="@id/listview_contact_list"
         android:clickable="true"
+        android:contentDescription="@string/disc_search"
         android:src="@android:drawable/ic_menu_search" />
-
+    
     <EditText
         android:id="@id/textfield_searchbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/imageview_ic_searchbar"
         android:layout_toRightOf="@id/imageview_ic_searchbar"
-        android:layout_marginLeft="10dp"
+        android:layout_marginLeft="5dp"
         android:singleLine="true"
         android:ems="10"
         android:hint="@string/text_search" />
 
 	<View
 	    android:id="@+id/main_activity_separator_1"
-		android:layout_width="fill_parent"
-		android:layout_height="1px"
-		android:background="#333333"
-        android:layout_below="@id/textfield_searchbar"
-		android:layout_marginTop="16dp"/>
+	    android:layout_width="fill_parent"
+	    android:layout_height="1dp"
+	    android:layout_below="@id/textfield_searchbar"
+	    android:layout_marginTop="16dp"
+	    android:background="@color/color_dark_grey"
+	    tools:ignore="PxUsage" />
     
     <ListView
         android:id="@id/listview_contact_list"
@@ -43,5 +45,20 @@
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/main_activity_separator_1" >
     </ListView>
+
+    
+    <TextView
+     	android:id="@id/textview_no_friend"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="25sp"
+        android:text="@string/text_forever_alone"
+        android:ellipsize="marquee"
+        android:contentDescription="@string/text_forever_alone" />
+
+
 
 </RelativeLayout>

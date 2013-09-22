@@ -89,16 +89,19 @@
 	        
 	        <View
 	            android:layout_width="fill_parent"
-        		android:layout_height="1px"
-        		android:background="#333333"
-        		android:layout_marginTop="15dp"
-	            android:layout_marginLeft="40dp"/>
+	            android:layout_height="1px"
+	            android:layout_marginLeft="40dp"
+	            android:layout_marginTop="15dp"
+	            android:background="@color/color_dark_grey"
+	            tools:ignore="PxUsage" />
 	        
 	        <ListView
 	            android:id="@id/listview_phone_info"
-	            android:layout_marginLeft="40dp"
 	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content" >
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dp"
+	            tools:ignore="NestedScrolling" >
+
 	        </ListView>
 
 			<View style="@style/style_separator_thick"/>
@@ -120,16 +123,19 @@
 			
 	        <View
 	            android:layout_width="fill_parent"
-        		android:layout_height="1px"
-        		android:background="#333333"
-        		android:layout_marginTop="15dp"
-	            android:layout_marginLeft="40dp"/>
+	            android:layout_height="1px"
+	            android:layout_marginLeft="40dp"
+	            android:layout_marginTop="15dp"
+	            android:background="@color/color_dark_grey"
+	            tools:ignore="PxUsage" />
 	        
 	        <ListView
 	            android:id="@id/listview_email_info"
-	            android:layout_marginLeft="40dp"
 	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content" >
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dp"
+	            tools:ignore="NestedScrolling" >
+
 	        </ListView>
 	        
 			<View style="@style/style_separator_thick"/>
@@ -150,17 +156,20 @@
 	            android:text="@string/text_address" />
 	
     	    <View
-	            android:layout_width="fill_parent"
-        		android:layout_height="1px"
-        		android:background="#333333"
-        		android:layout_marginTop="15dp"
-	            android:layout_marginLeft="40dp"/>
+    	        android:layout_width="fill_parent"
+    	        android:layout_height="1px"
+    	        android:layout_marginLeft="40dp"
+    	        android:layout_marginTop="15dp"
+    	        android:background="@color/color_dark_grey"
+    	        tools:ignore="PxUsage" />
 	        
 	        <ListView
 	            android:id="@id/listview_address_info"
-	            android:layout_marginLeft="40dp"
 	            android:layout_width="match_parent"
-	            android:layout_height="wrap_content" >
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="40dp"
+	            tools:ignore="NestedScrolling" >
+
 	        </ListView>
 	        
 			<View style="@style/style_separator_thick"/>

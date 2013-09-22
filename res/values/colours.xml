@@ -199,6 +199,7 @@
     <color name="color_baby_blue">#646E82</color>
     <color name="color_bluegreen">#00DC96</color>
     <color name="color_deep_grey">#151515</color>
+    <color name="color_dark_grey">#333333</color>
     <color name="Transparent">#00000000</color>
 
 </resources>

@@ -2,8 +2,7 @@
 <resources>
 
     <!-- Default -->
-    <string name="app_name">Contact Manager</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">Cookie Orb</string>
 
     <!-- Main Activity -->
     <string name="action_main_menu">Option Menu</string>
@@ -15,7 +14,9 @@
     <string name="action_exit">Exit</string>
     <string name="action_create_new">Add new</string>
     <string name="text_search">Search</string>
-
+    
+    <string name="text_forever_alone">Hooray!\nNo friends :)</string>
+    
     <!-- Add new Activity -->
     <string name="action_create_done">Done</string>
     <string name="action_create_discard">Discard</string>

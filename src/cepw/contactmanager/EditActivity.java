@@ -21,7 +21,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -47,7 +46,6 @@ public class EditActivity extends Activity {
 	private ImageButton imageBtn, expandName, collapseName, clearDob;
 	private EditText fullName, firstName, middleName, lastName, nameSuffix;
 	private TextView dobField;
-	private LinearLayout emailLinLayout, addressLinLayout, dobLinLayout;
 	private LinearLayout dynamicPhoneLayout, dynamicEmailLayout,
 			dynamicAddressLayout;
 	private Bitmap displayPhoto;
@@ -68,11 +66,8 @@ public class EditActivity extends Activity {
 		imageBtn = (ImageButton) findViewById(R.id.button_change_display_image);
 		displayPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.ic_face);
 		dynamicPhoneLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
-		emailLinLayout = (LinearLayout) findViewById(R.id.layout_emailfields);
 		dynamicEmailLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
-		addressLinLayout = (LinearLayout) findViewById(R.id.layout_addressfields);
 		dynamicAddressLayout = (LinearLayout) findViewById(R.id.layout_dynamic_addressfield);
-		dobLinLayout = (LinearLayout) findViewById(R.id.layout_dobfields);
 
 		imageBtn.setOnClickListener(new View.OnClickListener() {
 
@@ -84,20 +79,6 @@ public class EditActivity extends Activity {
 				startActivityForResult(i, RESULT_LOAD_IMAGE);
 			}
 		});
-		
-//		emailLinLayout.setVisibility(View.GONE);
-//		addressLinLayout.setVisibility(View.GONE);
-//		dobLinLayout.setVisibility(View.GONE);
-//		newFieldCategoryBtn.setOnClickListener(new View.OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				DialogFragment newFragment = new FieldCategoryDialog();
-//				newFragment.show(getFragmentManager(), "New Field Category");
-//			}
-//		});
-//		createNewField(FieldType.EMAIL, dynamicEmailLayout);
-//		createNewField(FieldType.ADDRESS, dynamicAddressLayout);
 
 		// Getting Data
 		

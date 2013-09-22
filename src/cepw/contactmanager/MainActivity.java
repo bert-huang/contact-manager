@@ -6,9 +6,12 @@ import java.util.Collections;
 import java.util.List;
 
 import android.os.Bundle;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.text.Editable;
@@ -17,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -46,6 +50,8 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 	private ArrayAdapter<Contact> adapter;
 	private EditText searchbar;
 	private ImageView searchIcon;
+	private TextView foreverAlone;
+	private View divider;
 	
 	private int sortBy;
 
@@ -54,10 +60,17 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		forceCreateOverflow();
+		
 		getActionBar().setDisplayShowTitleEnabled(false);
 
+		foreverAlone = (TextView) findViewById(R.id.textview_no_friend);
+		divider = (View) findViewById(R.id.main_activity_separator_1);
+		divider.setVisibility(View.GONE);
+		
 		searchbar = (EditText) findViewById(R.id.textfield_searchbar);
 		searchbar.addTextChangedListener(new OnSearchListener());
+		searchbar.setFocusable(false);
+		
 		searchIcon = (ImageView) findViewById(R.id.imageview_ic_searchbar);
 		searchIcon.setOnClickListener(new View.OnClickListener() {
 			
@@ -72,6 +85,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		});
 		
 		contacts = new ArrayList<Contact>();
+		contactList = new ArrayList<Contact>();
 		list = (ListView) findViewById(R.id.listview_contact_list);
 		adapter = new ContactListAdapter(MainActivity.this, contacts);
 		list.setAdapter(adapter);
@@ -80,12 +94,26 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		list.setTextFilterEnabled(true);
 		sortBy = SORT_BY_FIRST_NAME;
 		
-		try {
-			createDummyObject();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		// TESTING PURPOSE
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage("Add data for testing purpose?")
+				.setTitle("Populate data?")
+				.setNegativeButton("No", null)
+				.setPositiveButton("Yes",
+						new DialogInterface.OnClickListener() {
 
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								try {
+									createDummyObject();
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						});
+		AlertDialog alert = builder.create();
+		alert.show();
+		
 	}
 
 	@Override
@@ -220,6 +248,15 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		
 		public void notifyDataSetChanged() {
 			super.notifyDataSetChanged();
+			if (contacts.isEmpty()){
+				searchbar.setFocusable(false);
+				divider.setVisibility(View.GONE);
+				foreverAlone.setVisibility(View.VISIBLE);
+			}else {
+				searchbar.setFocusableInTouchMode(true);
+				divider.setVisibility(View.VISIBLE);
+				foreverAlone.setVisibility(View.GONE);
+			}
 			
 		}
 
@@ -267,7 +304,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		}
 		
 		public int getCount () {
-		    return contactList.size ();
+		    return contactList.size();
 		}
 	
 		private class ContactFilter extends Filter{
@@ -282,7 +319,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			        results.count = contacts.size();
 			    }
 			    else {
-			    	
+			    	constraint = constraint.toString().trim().replaceAll("[\\s+]", " ");
 			    	int count = 0;
 			    	for (int i = 0; i < constraint.toString().length(); i++) {
 			    		if (constraint.toString().charAt(i) == ' ') {
@@ -306,7 +343,10 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			        	}
 			        	
 			        	for (int i = 0; i <= count; i++) {
-			        		if (fullName.toUpperCase().contains((splitted[i].toUpperCase())) && !nContacts.contains(c)){
+			        		
+			        		// TODO NEED FIX SEARCHING 
+			        		if (fullName.toUpperCase().contains((splitted[i]
+			        				.toUpperCase())) && !nContacts.contains(c)){
 		        				nContacts.add(c);
 			        		}else {
 			        			for (String s : phoneNum) {
@@ -325,6 +365,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			    return results;
 			}
 
+			@SuppressWarnings("unchecked")
 			@Override
 			protected void publishResults(CharSequence constraint,
 					FilterResults results) {
@@ -343,7 +384,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
 			contacts.remove(contactList.get(position));
-			contactList.remove(position);
+			searchbar.setText(searchbar.getText().toString());
 			adapter.notifyDataSetChanged();
 			Toast.makeText(getApplicationContext(), "Contact Removed!",
 					Toast.LENGTH_SHORT).show();

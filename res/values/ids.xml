@@ -21,12 +21,11 @@
     	<item type="id" name="imageview_ic_searchbar" /> 
 	    <item type="id" name="textfield_searchbar" /> 
 	    <item type="id" name="listview_contact_list" />
+	    <item type="id" name="textview_no_friend" />
 	    
 	    <!-- =============================================================================== -->
 	    <!-- activity_new_contact -->
 		<item type="id" name="layout_new_contact_root"/>
-			<item type="id" name="layout_fields"/>
-			
 				<!-- layout_avatar_name_fields -->
 					<item type="id" name="button_change_display_image"/>
 					<item type="id" name="layout_namefields"/>
