@@ -3,6 +3,10 @@ package cepw.contact;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * This is an object that represents a Date of Birth for a Contact Manager
+ * @author cookie-paw
+ */
 public class DateOfBirth implements Parcelable {
 	
 	private String dateOfBirth;
@@ -16,19 +20,11 @@ public class DateOfBirth implements Parcelable {
 	}
 
 	/**
-	 * Get the value of dateOfBirth
+	 * Returns the value of dateOfBirth
 	 * @return the value of dateOfBirth
 	 */
-	public String getDateOfBirth() {
+	public String getValue() {
 		return dateOfBirth;
-	}
-
-	/**
-	 * Setter of dateOfBirth
-	 * @param dob desired value for this date of birth
-	 */
-	public void setDateOfBirth(String dob) {
-		this.dateOfBirth = dob;
 	}
 	
 	/**

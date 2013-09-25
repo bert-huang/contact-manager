@@ -4,11 +4,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * This is an object that represents a Contact object for a Contact Manager
+ * It contains all the needed information such as Name, Photo, Phone, Email, Address and Date of Birth
+ * @author cookie-paw
+ */
 public class Contact implements Parcelable {
+	
 	private Name name;
 	private Photo photo;
 	private List<Phone> phones;
@@ -16,6 +21,15 @@ public class Contact implements Parcelable {
 	private List<Address> addresses;
 	private DateOfBirth dateOfBirth;
 
+	/**
+	 * Constructor of a Contact object
+	 * @param name Name object for this contact
+	 * @param photo Photo object for this contact
+	 * @param phones Phone list for this contact
+	 * @param emails Email list for this contact
+	 * @param addresses Address list for this contact
+	 * @param dateOfBirth DateOfBirth object for this contact
+	 */
 	public Contact(Name name, Photo photo, List<Phone> phones,
 			List<Email> emails, List<Address> addresses,
 			DateOfBirth dateOfBirth) {
@@ -29,98 +43,118 @@ public class Contact implements Parcelable {
 
 	}
 
-
-
-	// Direct getters setters
-	public void setPhoto(Photo photo) {
-		this.photo = photo;
+	// Getter
+	
+	/**
+	 * Returns the contacts Photo object
+	 * @return A Photo object for this contact
+	 */
+	public Photo getPhoto() {
+		return photo;
 	}
 	
+	/**
+	 * Returns the contacts Name object
+	 * @return A Name object for this contact
+	 */
 	public Name getName() {
 		return name;
 	}
 	
+	/**
+	 * Returns the contacts Phone List
+	 * @return A Phone list for this contact
+	 */
+	public List<Phone> getPhones() {
+		return phones;
+	}
+	
+	/**
+	 * Returns the contacts Email List
+	 * @return A Email list for this contact
+	 */
+	public List<Email> getEmails() {
+		return emails;
+	}
+	
+	/**
+	 * Returns the contacts Address List
+	 * @return A Address list for this contact
+	 */
+	public List<Address> getAddresses() {
+		return addresses;
+	}
+	
+	/**
+	 * Returns the contacts DateOfBirth object
+	 * @return A DateOfBirth object for this contact
+	 */
+	public DateOfBirth getDateOfBirth() {
+		return dateOfBirth;
+	}
+	
+	// Setters
+	/**
+	 * Overwrites the current Photo object to another
+	 * @param photo
+	 */
+	public void setPhoto(Photo photo) {
+		this.photo = photo;
+	}
+	
+	/**
+	 * Overwrites the current Name object to another
+	 * @param photo
+	 */
 	public void setName(Name name) {
 		this.name = name;
 	}
 	
+	/**
+	 * Overwrites the current Phone List to another
+	 * @param photo
+	 */
 	public void setPhones(List<Phone> phones) {
 		this.phones = phones;
 	}
 	
+	/**
+	 * Overwrites the current Email List to another
+	 * @param photo
+	 */
 	public void setEmail(List<Email> emails) {
 		this.emails = emails;
 	}
 	
+	/**
+	 * Overwrites the current Address List to another
+	 * @param photo
+	 */
 	public void setAddresses(List<Address> addresses) {
 		this.addresses = addresses;
 	}
 	
+	/**
+	 * Overwrites the current DateOfBirth object to another
+	 * @param photo
+	 */
 	public void setDateOfBirth(DateOfBirth dob) {
 		this.dateOfBirth = dob;
 	}
 
 	
-	//Indirect Getters and setters
-	public void setDateOfBirth(String dateOfBirth) {
-		this.dateOfBirth.setDateOfBirth(dateOfBirth);
-	}
-	
-	public List<Phone> getPhones() {
-		return phones;
-	}
-	
-	public void addPhone(Phone phone) {
-		this.phones.add(phone);
-	}
-	
-	public void removePhone(Phone phone) {
-		this.phones.remove(phone);
-	}
-	
-	public List<Email> getEmails() {
-		return emails;
-	}
-	
-	public void addEmail(Email email) {
-		this.emails.add(email);
-	}
-	
-	public void removeEmail(Email email) {
-		this.emails.remove(email);
-	}
-	
-	public List<Address> getAddresses() {
-		return addresses;
-	}
-	
-	public void addAddress(Address address) {
-		this.addresses.add(address);
-	}
-	
-	public void removeAddress(Address address) {
-		this.addresses.remove(address);
-	}
-	
-	public Bitmap getImage() {
-		return photo.getImage();
-	}
-
-	public void setImage(Bitmap photo) {
-		this.photo.setImage(photo);
-	}
-	
-	public String getDateOfBirth() {
-		return dateOfBirth.getDateOfBirth();
-	}
-
-	
 	//Parcelable
+	/**
+	 * A description of this Parcelable object 
+	 */
 	@Override
 	public int describeContents() {
 		return this.hashCode();
 	}
 
+	/**
+	 * @see android.os.Parcelable.writeToParcel
+	 */
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeValue(this.name);
@@ -164,7 +198,7 @@ public class Contact implements Parcelable {
 
 	public static class Comparators {
 
-		public static class CompareByFirstName implements Comparator<Contact> {
+		public static class FirstNameComparator implements Comparator<Contact> {
 
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
@@ -201,7 +235,7 @@ public class Contact implements Parcelable {
 			
 		}
 		
-		public static class CompareByLastName implements Comparator<Contact> {
+		public static class LastNameComparator implements Comparator<Contact> {
 
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
@@ -236,7 +270,7 @@ public class Contact implements Parcelable {
 			}
 		}
 		
-		public static class CompareByPhone implements Comparator<Contact> {
+		public static class NumberComparator implements Comparator<Contact> {
 
 			@Override
 			public int compare(Contact lhs, Contact rhs) {
@@ -263,7 +297,7 @@ public class Contact implements Parcelable {
 				}else if (rhsPh == null) {
 					return -1;
 				}else {
-					return lhsPh.compareTo(rhsPh);
+					return lhsPh.getNumber().compareTo(rhsPh.getNumber());
 				}
 				
 				

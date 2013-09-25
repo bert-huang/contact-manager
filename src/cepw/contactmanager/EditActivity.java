@@ -36,7 +36,7 @@ public class EditActivity extends Activity {
 	static final int RESULT_LOAD_IMAGE = 1;
 	static final int PIC_CROP = 2;
 
-	private final int BTN_BORDER = 11;
+	private final int BTN_MARGIN = 11;
 	
 	private enum FieldType {
 		PHONE, EMAIL, ADDRESS
@@ -96,10 +96,10 @@ public class EditActivity extends Activity {
 		if (contact != null) {
 			
 			// Set up image
-			displayPhoto = contact.getImage();
+			displayPhoto = contact.getPhoto().getImage();
 
 			// Set up name
-			String full = Name.ParseName(
+			String full = Name.parseName(
 					null, 
 					contact.getName().getFirstName(), 
 					contact.getName().getMiddleName(),
@@ -168,7 +168,7 @@ public class EditActivity extends Activity {
 			}
 			
 			// Set up date of birth
-			dobField.setText(contact.getDateOfBirth());
+			dobField.setText(contact.getDateOfBirth().getValue());
 			
 		}else {
 			createNewField(FieldType.PHONE, dynamicPhoneLayout);
@@ -215,7 +215,7 @@ public class EditActivity extends Activity {
 				expandName.setVisibility(View.GONE);
 				collapseName.setVisibility(View.VISIBLE);
 
-				String[] splits = Name.ParseName(
+				String[] splits = Name.parseName(
 						fullName.getText().toString(), 
 						null, null, null, null);
 				fullName.setText("");
@@ -242,7 +242,7 @@ public class EditActivity extends Activity {
 				expandName.setVisibility(View.VISIBLE);
 				collapseName.setVisibility(View.GONE);
 
-				String[] combine = Name.ParseName(
+				String[] combine = Name.parseName(
 						null, 
 						firstName.getText().toString(), 
 						middleName.getText().toString(),
@@ -320,7 +320,7 @@ public class EditActivity extends Activity {
 
 			// Parsing contact name
 			if (fullName.getVisibility() == View.VISIBLE) {
-					String[] splits = Name.ParseName(
+					String[] splits = Name.parseName(
 							fullName.getText().toString(), 
 							null, null, null, null);
 					name = new Name(splits[0], splits[1], splits[2], splits[3]);
@@ -353,7 +353,7 @@ public class EditActivity extends Activity {
 				phones.add(phoneObject);
 
 			}
-			Collections.sort(phones, new Phone.ComparePhoneWithDefault());
+			Collections.sort(phones, new Phone.PhoneComparator());
 
 			// Populating emails
 			childCount = dynamicEmailLayout.getChildCount();
@@ -415,13 +415,13 @@ public class EditActivity extends Activity {
 //				this.contact = new Contact(name, photo, phones, emails, addresses, dob);
 				intent.putExtra("EDITED_CONTACT", this.contact);
 				setResult(RESULT_OK, intent);
-				Toast.makeText(EditActivity.this, "Modified!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
 				finish();
 			}else {
 				contact = new Contact(name, photo, phones, emails, addresses, dob);
 				intent.putExtra("NEW_CONTACT", contact);
 				setResult(RESULT_OK, intent);
-				Toast.makeText(EditActivity.this, "Created!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(EditActivity.this, "Created", Toast.LENGTH_SHORT).show();
 				finish();
 				return true;
 			}
@@ -456,8 +456,8 @@ public class EditActivity extends Activity {
 						if (b != null) {
 							displayPhoto = b;
 							imageBtn.setImageBitmap(Bitmap.createScaledBitmap(
-									b, imageBtn.getWidth() - BTN_BORDER,
-									imageBtn.getHeight() - BTN_BORDER, false));
+									b, imageBtn.getWidth() - BTN_MARGIN,
+									imageBtn.getHeight() - BTN_MARGIN, false));
 						} else {
 							Toast.makeText(this, "Failed to load image!",
 									Toast.LENGTH_LONG).show();
@@ -478,8 +478,8 @@ public class EditActivity extends Activity {
 					if (b != null) {
 						displayPhoto = b;
 						imageBtn.setImageBitmap(Bitmap.createScaledBitmap(b,
-								imageBtn.getWidth() - BTN_BORDER,
-								imageBtn.getHeight() - BTN_BORDER, false));
+								imageBtn.getWidth() - BTN_MARGIN,
+								imageBtn.getHeight() - BTN_MARGIN, false));
 					}
 				}
 			}
@@ -570,10 +570,10 @@ public class EditActivity extends Activity {
 
 	public void showDiscardDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("All data entries will be lost")
+		builder.setMessage("All changes will be lost")
 				.setTitle("Discard changes?")
 				.setNegativeButton("Cancel", null)
-				.setPositiveButton("Confirm",
+				.setPositiveButton("OK",
 						new DialogInterface.OnClickListener() {
 
 							@Override
@@ -587,7 +587,6 @@ public class EditActivity extends Activity {
 
 	private boolean performCrop(Uri picUri) {
 		try {
-
 			Intent cropIntent = new Intent("com.android.camera.action.CROP");
 			// indicate image type and Uri
 			cropIntent.setDataAndType(picUri, "image/*");

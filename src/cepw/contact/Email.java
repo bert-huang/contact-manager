@@ -3,6 +3,10 @@ package cepw.contact;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * This is an object that represents a Email object for a Contact Manager
+ * @author cookie-paw
+ */
 public class Email implements Parcelable {
 	private String type;
 	private String email;
@@ -22,18 +26,11 @@ public class Email implements Parcelable {
 	
 	/**
 	 * Get the type of this email object
+	 * Can be { "Home", "Work", "Other" }
 	 * @return a string representing the type of email
 	 */
 	public String getType() {
 		return type;
-	}
-
-	/**
-	 * Setter of email type
-	 * @param type desired type for this email object
-	 */
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	/**
@@ -42,14 +39,6 @@ public class Email implements Parcelable {
 	 */
 	public String getEmail() {
 		return email;
-	}
-
-	/**
-	 * Setter of email number
-	 * @param email desired email address for this email object
-	 */
-	public void setEmail(String email) {
-		this.email = email;
 	}
 	
 	/**

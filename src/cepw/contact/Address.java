@@ -3,6 +3,10 @@ package cepw.contact;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * This is an object that represents a single address for a Contact Manager
+ * @author cookie-paw
+ */
 public class Address implements Parcelable {
 	private String type;
 	private String address;
@@ -19,18 +23,11 @@ public class Address implements Parcelable {
 	
 	/**
 	 * Get the type of this address object
+	 * Can be { "Home", "Work", "Other" }
 	 * @return a string representing the type of address
 	 */
 	public String getType() {
 		return type;
-	}
-
-	/**
-	 * Setter of address type
-	 * @param type desired type for this address object
-	 */
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	/**
@@ -40,15 +37,6 @@ public class Address implements Parcelable {
 	public String getAddress() {
 		return address;
 	}
-
-	/**
-	 * Setter of address
-	 * @param address desired value for this address object
-	 */
-	public void setAddress(String address) {
-		this.address = address;
-	}
-	
 	/**
 	 * A description of this Parcelable object 
 	 */

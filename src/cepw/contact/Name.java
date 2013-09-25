@@ -3,23 +3,29 @@ package cepw.contact;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * This is an object that represents a Name object for a Contact Manager
+ * @author cookie-paw
+ */
 public class Name implements Parcelable{
 
-	private String firstName, middleName, lastName, suffix;
-
-	{
-		firstName = "";
-		middleName = "";
-		lastName = "";
-		suffix = "";
-	}
+	private String firstName = "";
+	private String middleName = "";
+	private String lastName = "";
+	private String suffix = "";
 
 	/**
 	 * Parse Name from either a string of full name or from several parts of name.
 	 * Put full as NULL if you want to merge.
 	 * Put anything except full as NULL if you want to split
+	 * 
+	 * To convert from full name to individual fields:
+	 * 		Suffix will be the string after the LAST occurrence of a comma ","
+	 * 		Last name will be the last token of the String, or the token prior to suffix
+	 * 		Middle name will be the token prior to Last name
+	 * 		First name will be all token prior to Middle name
 	 */
-	public static final String[] ParseName(String full,
+	public static final String[] parseName(String full,
 			String first, String middle, String last, String suffix) {
 		
 		
@@ -92,6 +98,13 @@ public class Name implements Parcelable{
 
 	}
 
+	/**
+	 * Constructor of a Name object
+	 * @param firstName First name of the object
+	 * @param middleName Middle name of the object
+	 * @param lastName Last name of the object
+	 * @param suffix Suffix of the object
+	 */
 	public Name(String firstName, String middleName,
 			String lastName, String suffix) {
 		this.firstName = firstName;
@@ -100,43 +113,50 @@ public class Name implements Parcelable{
 		this.suffix = suffix;
 	}
 
+	// Getters
+	/**
+	 * Get the first name of this object
+	 * @return First name
+	 */
 	public String getFirstName() {
 		return firstName;
 	}
 
-	public void setFirstName(String firstName) {
-		this.firstName = firstName;
-	}
-
+	/**
+	 * Get the middle name of this object
+	 * @return Middle name
+	 */
 	public String getMiddleName() {
 		return middleName;
 	}
 
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
-
+	/**
+	 * Get the last name of this object
+	 * @return Last name
+	 */
 	public String getLastName() {
 		return lastName;
 	}
 
-	public void setLastName(String lastName) {
-		this.lastName = lastName;
-	}
-
+	/**
+	 * Get the name suffix of this object
+	 * @return Name suffix
+	 */
 	public String getSuffix() {
 		return suffix;
 	}
 
-	public void setSuffix(String suffix) {
-		this.suffix = suffix;
-	}
-
+	/**
+	 * ` A description of this Parcelable object
+	 */
 	@Override
 	public int describeContents() {
 		return this.hashCode();
 	}
 
+	/**
+	 * @see android.os.Parcelable.writeToParcel
+	 */
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeString(this.firstName);

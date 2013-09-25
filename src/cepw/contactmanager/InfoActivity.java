@@ -11,6 +11,7 @@ import cepw.contact.Utilities;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,8 +39,8 @@ public class InfoActivity extends Activity {
 	static final int EDIT_CONTACT_REQUEST = 1;
 
 	private Contact contact = null;
-	private int position;
-	private String ACTION;
+	protected int position;
+	protected static String ACTION;
 
 	private ScrollView scrollView;
 	private ImageView image;
@@ -93,7 +94,6 @@ public class InfoActivity extends Activity {
 		emailList = (ListView) findViewById(R.id.listview_email_info);
 		addressList = (ListView) findViewById(R.id.listview_address_info);
 
-		
 		populateData();
 	}
 
@@ -147,7 +147,7 @@ public class InfoActivity extends Activity {
 		builder.setMessage("Are you sure you want to delete this contact?")
 				.setTitle("Delete?")
 				.setNegativeButton("Cancel", null)
-				.setPositiveButton("Confirm",
+				.setPositiveButton("Yes",
 						new DialogInterface.OnClickListener() {
 
 							@Override
@@ -157,7 +157,6 @@ public class InfoActivity extends Activity {
 								intent.putExtra("ACTION", ACTION);
 								intent.putExtra("POSITION", position);
 								setResult(RESULT_OK, intent);
-								Toast.makeText(InfoActivity.this, "Contact Removed!", Toast.LENGTH_SHORT).show();
 								finish();
 							}
 						});
@@ -184,7 +183,7 @@ public class InfoActivity extends Activity {
 	// POPULATE DATA
 	private void populateData() {
 		// Set image
-		image.setImageBitmap(contact.getImage());
+		image.setImageBitmap(contact.getPhoto().getImage());
 
 		// Set name
 		if (!contact.getName().getFirstName().equals("")) {
@@ -220,7 +219,7 @@ public class InfoActivity extends Activity {
 			phoneInfo.setVisibility(View.GONE);
 		} else {
 			phoneInfo.setVisibility(View.VISIBLE);
-			Collections.sort(phones);
+			Collections.sort(phones, new Phone.PhoneComparator());
 			phoneAdapter = new PhoneListAdapter(InfoActivity.this, phones);
 			phoneList.setAdapter(phoneAdapter);
 			phoneList.setOnItemLongClickListener(new ListItemClickedListener());
@@ -255,10 +254,10 @@ public class InfoActivity extends Activity {
 
 		// Set Date of Birth
 
-		if (contact.getDateOfBirth().equals("")) {
+		if (contact.getDateOfBirth().getValue().equals("")) {
 			dobInfo.setVisibility(View.GONE);
 		} else {
-			dobDate.setText(contact.getDateOfBirth());
+			dobDate.setText(contact.getDateOfBirth().getValue());
 		}
 
 		scrollView.smoothScrollTo(0, 0);
@@ -294,7 +293,11 @@ public class InfoActivity extends Activity {
 			TextView type = (TextView) vg.getChildAt(0);
 			TextView number = (TextView) vg.getChildAt(1);
 
-			type.setText(curPhone.getType());
+			if (curPhone.isDefault()) {
+				type.setText(curPhone.getType() + " - Default");
+			} else {
+				type.setText(curPhone.getType());
+			}
 			number.setText(curPhone.getNumber());
 
 			return (View) vg;
@@ -375,8 +378,7 @@ public class InfoActivity extends Activity {
 		}
 	}
 
-	private class ListItemClickedListener implements
-			AdapterView.OnItemLongClickListener {
+	private class ListItemClickedListener implements AdapterView.OnItemLongClickListener {
 
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
@@ -384,12 +386,21 @@ public class InfoActivity extends Activity {
 
 			switch (parent.getId()) {
 			case R.id.listview_phone_info:
-				Toast.makeText(getApplicationContext(), "Phone list popup!",
-						Toast.LENGTH_SHORT).show();
+				Phone p = contact.getPhones().get(position);
+				if (p.isDefault()) {
+					Toast.makeText(getApplicationContext(), "Default",
+							Toast.LENGTH_SHORT).show();
+				}else {
+					Toast.makeText(getApplicationContext(), "Not default",
+							Toast.LENGTH_SHORT).show();
+				}
 				break;
 			case R.id.listview_email_info:
 				Toast.makeText(getApplicationContext(), "Email list popup!",
 						Toast.LENGTH_SHORT).show();
+				ClipboardManager clipboard = (ClipboardManager)
+				        getSystemService(Context.CLIPBOARD_SERVICE);
+				Utilities.copyStringToClipboard(clipboard, contact.getEmails().get(position).getEmail());
 				break;
 			case R.id.listview_address_info:
 				Toast.makeText(getApplicationContext(), "Address list popup!",

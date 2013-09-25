@@ -4,9 +4,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import android.os.Bundle;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
@@ -20,7 +20,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnFocusChangeListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -77,10 +76,10 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			@Override
 			public void onClick(View v) {
 				searchbar.setText("");
-				searchbar.clearFocus();
 				InputMethodManager imm = (InputMethodManager) v.getContext()
 			            .getSystemService(Context.INPUT_METHOD_SERVICE);
 			    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+			    Utilities.unFocusEditText(searchbar);
 			}
 		});
 		
@@ -91,7 +90,6 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new ListItemClickedListener());
 		list.setOnItemLongClickListener(new ListItemClickedListener());
-		list.setTextFilterEnabled(true);
 		sortBy = SORT_BY_FIRST_NAME;
 		
 		// TESTING PURPOSE
@@ -155,7 +153,10 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 				sortList(contacts, sortBy);
 				adapter.notifyDataSetChanged();
 				int position = contacts.indexOf(contact);
-				gotoContactInfo(position);
+				Intent i = new Intent(getApplicationContext(), InfoActivity.class);
+				i.putExtra("SELECTED_CONTACT", contacts.get(position));
+				i.putExtra("POSITION", position);
+				startActivityForResult(i, CONTACT_INFO_REQUEST);
 				
 			}
 		}
@@ -176,6 +177,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 					
 				} else if (action.equals("DELETE_CONTACT")){
 					contacts.remove(pos);
+					Toast.makeText(MainActivity.this, "Contact Removed!", Toast.LENGTH_SHORT).show();
 					sortList(contacts, sortBy);
 					adapter.notifyDataSetChanged();
 					
@@ -190,27 +192,20 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		Intent i = new Intent(getApplicationContext(), EditActivity.class);
 		startActivityForResult(i, CREATE_CONTACT_REQUEST);
 	}
-	
-	private void gotoContactInfo(int position) {
-		Intent i = new Intent(getApplicationContext(), InfoActivity.class);
-		i.putExtra("SELECTED_CONTACT", contactList.get(position));
-		i.putExtra("POSITION", contacts.indexOf(contactList.get(position)));
-		startActivityForResult(i, CONTACT_INFO_REQUEST);
-	}
 
 	private void sortList(List<Contact> list, int SORT_TYPE) {
 		switch(SORT_TYPE) {
 		case SORT_BY_FIRST_NAME:
-			Collections.sort(list, new Contact.Comparators.CompareByFirstName());
+			Collections.sort(list, new Contact.Comparators.FirstNameComparator());
 			break;
 		case SORT_BY_LAST_NAME:
-			Collections.sort(list, new Contact.Comparators.CompareByLastName());
+			Collections.sort(list, new Contact.Comparators.LastNameComparator());
 			break;
 		case SORT_BY_PHONE:
-			Collections.sort(list, new Contact.Comparators.CompareByPhone());
+			Collections.sort(list, new Contact.Comparators.NumberComparator());
 			break;
 		default:
-			Collections.sort(list, new Contact.Comparators.CompareByFirstName());
+			Collections.sort(list, new Contact.Comparators.FirstNameComparator());
 			break;
 		}
 	}
@@ -257,7 +252,6 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 				divider.setVisibility(View.VISIBLE);
 				foreverAlone.setVisibility(View.GONE);
 			}
-			
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -272,7 +266,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 					R.layout.contact_list_item, null);
 
 			Contact curContact = contactList.get(position);
-			String fullName = Name.ParseName(null, 
+			String fullName = Name.parseName(null, 
 					curContact.getName().getFirstName(), 
 					curContact.getName().getMiddleName(),
 					curContact.getName().getLastName(), 
@@ -285,7 +279,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 //					Utilities.dpToPx(MainActivity.this, 100), 
 //					Utilities.dpToPx(MainActivity.this, 100), false));
 			
-			iv.setImageBitmap(curContact.getImage());
+			iv.setImageBitmap(curContact.getPhoto().getImage());
 			
 			if (fullName.equals("")){
 				nameTag.setText("(Unknown)");
@@ -331,7 +325,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			    	// Filter name
 			        List<Contact> nContacts = new ArrayList<Contact>();
 			        for (Contact c : contacts) {
-			        	String fullName = Name.ParseName(
+			        	String fullName = Name.parseName(
 			        			null, c.getName().getFirstName(), 
 			        			c.getName().getMiddleName(), 
 			        			c.getName().getLastName(), 
@@ -345,8 +339,8 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 			        	for (int i = 0; i <= count; i++) {
 			        		
 			        		// TODO NEED FIX SEARCHING 
-			        		if (fullName.toUpperCase().contains((splitted[i]
-			        				.toUpperCase())) && !nContacts.contains(c)){
+			        		if (fullName.toUpperCase(Locale.US).contains((splitted[i]
+			        				.toUpperCase(Locale.US))) && !nContacts.contains(c)){
 		        				nContacts.add(c);
 			        		}else {
 			        			for (String s : phoneNum) {
@@ -394,7 +388,11 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		@Override
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
-			gotoContactInfo(position);
+			Intent i = new Intent(getApplicationContext(), InfoActivity.class);
+			int realPosition = contacts.indexOf(contactList.get(position));
+			i.putExtra("SELECTED_CONTACT", contacts.get(realPosition));
+			i.putExtra("POSITION", realPosition);
+			startActivityForResult(i, CONTACT_INFO_REQUEST);
 		}
 	}
 
@@ -508,7 +506,7 @@ public class MainActivity extends Activity implements SortingDialog.OnCompleteLi
 		DateOfBirth c77 = new DateOfBirth("14-11-1994");
 		Contact c70 = new Contact(c71, c72, c73, c74, c75, c77);
 		
-		Name c81 = new Name("Toby", "", "Jackson", "Civil Engineer");
+		Name c81 = new Name("Toby", "", "Jackson", "Biomedical Engineer");
 		Photo c82 = new Photo(BitmapFactory.decodeResource(getResources(), R.drawable.ic_face));
 		List<Phone> c83 = new ArrayList<Phone>();	
 		c83.add(new Phone("Mobile", "0280000000", true));

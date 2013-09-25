@@ -5,6 +5,10 @@ import java.util.Comparator;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * This is an object that represents a Phone object for a Contact Manager
+ * @author cookie-paw
+ */
 public class Phone implements Parcelable, Comparable<Phone> {
 
 	private String type;
@@ -27,21 +31,11 @@ public class Phone implements Parcelable, Comparable<Phone> {
 
 	/**
 	 * Get the type of this phone object
-	 * 
+	 * Can be { "Mobile", "Home", "Work", "Home Fax", "Work Fax", "Other" }
 	 * @return a string representing the type of phone
 	 */
 	public String getType() {
 		return type;
-	}
-
-	/**
-	 * Setter of phone type
-	 * 
-	 * @param type
-	 *            desired type for this phone object
-	 */
-	public void setType(String type) {
-		this.type = type;
 	}
 
 	/**
@@ -54,23 +48,23 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	}
 
 	/**
-	 * Setter of phone number
-	 * 
-	 * @param number
-	 *            desired number for this phone object
+	 * Return the value of the defaultNumber flag
+	 * @return
 	 */
-	public void setNumber(String number) {
-		this.number = number;
-	}
-
 	public boolean isDefault() {
 		return defaultNumber;
 	}
 
+	/**
+	 * Make the defaultNumber flag true
+	 */
 	public void setDefault() {
 		defaultNumber = true;
 	}
 
+	/**
+	 * Make the defaultNumber flag false
+	 */
 	public void unsetDefault() {
 		defaultNumber = false;
 	}
@@ -130,6 +124,10 @@ public class Phone implements Parcelable, Comparable<Phone> {
 		}
 	}
 
+	/**
+	 * Default comparing method of type Phone
+	 * Mobile > Home > Work > Home Fax > Work Fax > Other
+	 */
 	@Override
 	public int compareTo(Phone another) {
 		if (this.type.equals("Mobile") && this.type.equals(another.type)) {
@@ -186,7 +184,12 @@ public class Phone implements Parcelable, Comparable<Phone> {
 		}
 	}
 
-	public static class ComparePhoneWithDefault implements Comparator<Phone> {
+	/**
+	 * A comparator for sorting phones. 
+	 * Default phone will have the highest priority.
+	 * Non-Default phone will be sorted by its native way
+	 */
+	public static class PhoneComparator implements Comparator<Phone> {
 
 		@Override
 		public int compare(Phone lhs, Phone rhs) {

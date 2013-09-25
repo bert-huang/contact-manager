@@ -4,6 +4,10 @@ import android.graphics.Bitmap;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+/**
+ * This is an object that represents a Photo object for a Contact Manager
+ * @author cookie-paw
+ */
 public class Photo implements Parcelable {
 	
 	private Bitmap image;
@@ -13,6 +17,7 @@ public class Photo implements Parcelable {
 	 * @param type
 	 */
 	public Photo(Bitmap img) {
+		// Scale the image to avoid FAILED BINDER TRANSACTION error
 		this.image = Bitmap.createScaledBitmap(img, 300, 300, false);
 	}
 
@@ -22,14 +27,6 @@ public class Photo implements Parcelable {
 	 */
 	public Bitmap getImage() {
 		return image;
-	}
-
-	/**
-	 * Setter of bitmap
-	 * @param img desired bitmap for Photo
-	 */
-	public void setImage(Bitmap img) {
-		this.image = Bitmap.createScaledBitmap(img, 300, 300, false);
 	}
 	
 	/**
