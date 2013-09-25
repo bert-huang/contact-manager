@@ -1,4 +1,4 @@
-package cepw.contact;
+package cepw.contactmanager;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

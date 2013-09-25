@@ -7,7 +7,6 @@ import cepw.contact.Address;
 import cepw.contact.Contact;
 import cepw.contact.Email;
 import cepw.contact.Phone;
-import cepw.contact.Utilities;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
