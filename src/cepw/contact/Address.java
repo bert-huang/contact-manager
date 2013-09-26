@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 /**
  * This is an object that represents a single address for a Contact Manager
- * @author cookie-paw
+ * @author I-Yang Huang, IHUA164, 5503504
  */
 public class Address implements Parcelable {
 	private String type;

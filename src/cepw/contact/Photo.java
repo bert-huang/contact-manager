@@ -6,7 +6,7 @@ import android.os.Parcelable;
 
 /**
  * This is an object that represents a Photo object for a Contact Manager
- * @author cookie-paw
+ * @author I-Yang Huang, IHUA164, 5503504
  */
 public class Photo implements Parcelable {
 	

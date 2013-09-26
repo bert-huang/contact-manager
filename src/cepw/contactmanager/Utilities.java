@@ -97,4 +97,5 @@ public class Utilities {
 		ClipData clip = ClipData.newPlainText("simple text", string);
 		clipboard.setPrimaryClip(clip);
 	}
+
 }

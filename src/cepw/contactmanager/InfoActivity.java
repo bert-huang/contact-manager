@@ -28,19 +28,26 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * This is an activity that display the information of a contact.
+ * @author I-Yang Huang, IHUA164, 5503504
+ */
 public class InfoActivity extends Activity {
 	
-
-	static final String NONE = "NONE";
-	static final String DELETE_CONTACT = "DELETE_CONTACT";
-	static final String MODIFIED_CONTACT = "MODIFIED_CONTACT";
+	// Action identifier 
+	private static final String NONE = "NONE";
+	private static final String DELETE_CONTACT = "DELETE_CONTACT";
+	private static final String MODIFIED_CONTACT = "MODIFIED_CONTACT";
+	private static String ACTION;
 	
-	static final int EDIT_CONTACT_REQUEST = 1;
+	// Request code
+	private static final int EDIT_CONTACT_REQUEST = 1;
 
+	// Bundle objects
 	private Contact contact = null;
-	protected int position;
-	protected static String ACTION;
+	private int position;
 
+	// Individual components
 	private ScrollView scrollView;
 	private ImageView image;
 	private TextView firstName, middleName, lastName, suffix, dobDate;
@@ -50,31 +57,36 @@ public class InfoActivity extends Activity {
 	private ArrayAdapter<Email> emailAdapter;
 	private ArrayAdapter<Address> addressAdapter;
 
+	/**
+	 * @see android.app.Activity#onCreate(Bundle)
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_info);
-		setupActionBar();
+		
+		// Show the Up button in the action bar.
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayShowTitleEnabled(false);
+		
+		// Initialize action done to the contact to NONE
 		ACTION = NONE;
 
 		// Getting Data
-		if (savedInstanceState == null) {
-			Bundle extras = getIntent().getExtras();
-			if (extras == null){
-				Toast.makeText(InfoActivity.this, 
-						"Error loading this contact!", Toast.LENGTH_LONG).show();
-				finish();
-			}else{
-				contact = extras.getParcelable("SELECTED_CONTACT");
-				position = extras.getInt("POSITION");
-			}
-		} else {
-			contact = (Contact) savedInstanceState
-					.getSerializable("SELECTED_CONTACT");
-			position = (Integer) savedInstanceState.getSerializable("POSITION");
+		Bundle extras = getIntent().getExtras();
+		
+		// If nothing is passed in, display error, and close activity
+		if (extras == null){
+			Toast.makeText(InfoActivity.this, 
+					"Error loading this contact!", Toast.LENGTH_LONG).show();
+			finish();
+		}else{
+			// Get the contact and the position of the contact
+			contact = extras.getParcelable("SELECTED_CONTACT");
+			position = extras.getInt("POSITION");
 		}
 
-		// Initialise
+		// Initializing
 		scrollView = (ScrollView) findViewById(R.id.scrollview_info);
 
 		image = (ImageView) findViewById(R.id.info_display_image);
@@ -93,16 +105,13 @@ public class InfoActivity extends Activity {
 		emailList = (ListView) findViewById(R.id.listview_email_info);
 		addressList = (ListView) findViewById(R.id.listview_address_info);
 
+		// Invoke the populateData method to populate the data into components
 		populateData();
 	}
 
-	private void setupActionBar() {
-		// Show the Up button in the action bar.
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setDisplayShowTitleEnabled(false);
-
-	}
-
+	/**
+	 * @see android.app.Activity#onCreateOptionsMenu(Menu)
+	 */
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -110,17 +119,26 @@ public class InfoActivity extends Activity {
 		return true;
 	}
 
+	/**
+	 * @see android.app.Activity#onOptionsItemSelected(MenuItem)
+	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		// Home button pressed will be the same as pressing back button
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			onBackPressed();
 			return true;
 
+		// Delete button will display the delete dialog
 		case R.id.action_contact_remove:
 			showDeleteDialog();
 			return true;
 			
+		// Edit button will cause the ACTION flag to turn into MODIFIED_CONTACT
+		// and will pass the contact object over to the EditActivity class so modfification
+		// can be applied.
 		case R.id.action_contact_edit:
 			Intent intent = new Intent(this, EditActivity.class);
 			ACTION = MODIFIED_CONTACT;
@@ -131,16 +149,24 @@ public class InfoActivity extends Activity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	/**
+	 * @see android.app.Activity#onActivityResult(int, int, Intent)
+	 */
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == EDIT_CONTACT_REQUEST) {
-			if (resultCode == RESULT_OK) {
+		
+		// If the request code is EDIT_CONTACT_REQUEST, fetch contact object from data intent
+		// then re populate the updated values
+		if (requestCode == EDIT_CONTACT_REQUEST && resultCode == RESULT_OK) {
+			if (data != null) {
 				contact = (Contact) data.getExtras().getParcelable("EDITED_CONTACT");
 				populateData();
 			}
 		}
 	}
 	
-	// Dialog to show prompt before delete
+	/**
+	 * Shows a dialog that prompt for deletion when the delete button is clicked
+	 */
 	public void showDeleteDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Are you sure you want to delete this contact?")
@@ -163,23 +189,34 @@ public class InfoActivity extends Activity {
 		alert.show();
 	}
 	
-	// Make the BACK button and the UP button behave the same
+	/**
+	 * Invoked when the back button on the phone is pressed.
+	 * Checks for the actions applied to the contact object and close this activity.
+	 * If contact has been modified, ACTION will be MODIFIED_CONTACT,
+	 * If contact is left untouched, ACTION will be NONE.
+	 * 
+	 * Untouched object will have a RESULT_CANCELED flag.
+	 */
 	public void onBackPressed() {
 		Intent intent = new Intent();
 		intent.putExtra("ACTION", ACTION);
+		
+		// If contact has been modified, ACTION will be MODIFIED_CONTACT
 		if (ACTION.equals(MODIFIED_CONTACT)){
 			intent.putExtra(MODIFIED_CONTACT, contact);
 			intent.putExtra("POSITION", position);
 			setResult(RESULT_OK, intent);
+			
+		// If contact is left untouched, ACTION will be NONE
 		}else if (ACTION.equals(NONE)){
-//			intent.putExtra(NONE, contact);
 			setResult(RESULT_CANCELED, intent);
 		}
-		
 		finish();
 	}
 
-	// POPULATE DATA
+	/**
+	 * Populate the data from the contact object into individual components
+	 */
 	private void populateData() {
 		// Set image
 		image.setImageBitmap(contact.getPhoto().getImage());
@@ -259,10 +296,14 @@ public class InfoActivity extends Activity {
 			dobDate.setText(contact.getDateOfBirth().getValue());
 		}
 
+		// Scroll to top
 		scrollView.smoothScrollTo(0, 0);
 	}
 	
 	// CLASSES
+	/**
+	 * Adapter for the list view for phone numbers
+	 */
 	private class PhoneListAdapter extends ArrayAdapter<Phone> {
 
 		private Context context;
@@ -304,6 +345,9 @@ public class InfoActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Adapter for the list view for email addresses
+	 */
 	private class EmailListAdapter extends ArrayAdapter<Email> {
 
 		private Context context;
@@ -340,6 +384,9 @@ public class InfoActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Adapter for the list view for physical addresses
+	 */
 	private class AddressListAdapter extends ArrayAdapter<Address> {
 
 		private Context context;
@@ -377,6 +424,9 @@ public class InfoActivity extends Activity {
 		}
 	}
 
+	/**
+	 * Actions for the list view when items within the list is clicked / long clicked
+	 */
 	private class ListItemClickedListener implements AdapterView.OnItemLongClickListener {
 
 		@Override

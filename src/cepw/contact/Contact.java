@@ -10,7 +10,7 @@ import android.os.Parcelable;
 /**
  * This is an object that represents a Contact object for a Contact Manager
  * It contains all the needed information such as Name, Photo, Phone, Email, Address and Date of Birth
- * @author cookie-paw
+ * @author I-Yang Huang, IHUA164, 5503504
  */
 public class Contact implements Parcelable {
 	

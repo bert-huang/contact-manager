@@ -28,6 +28,11 @@
         <item>Phone Number</item>
     </string-array>
     
+    <string-array name="image_selection_type">
+        <item>Image</item>
+        <item>Take picture</item>
+    </string-array>
+    
     <string-array name="phone_actions">
         <item>Call</item>
         <item>Message</item>

@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -30,20 +31,30 @@ import android.widget.Toast;
 
 import cepw.contact.*;
 import cepw.contact.Email.InvalidEmailException;
+import cepw.contact.Phone.InvalidPhoneException;
+import cepw.contactmanager.ImageChooserDialog.LoadImageType;
 
-public class EditActivity extends Activity {
+/**
+ * This is an android activity that contains fields that allows user to create a
+ * new or edit a pre existing contact.
+ * 
+ * @author I-Yang Huang, IHUA164, 5503504
+ */
+public class EditActivity extends Activity implements
+		ImageChooserDialog.OnCompleteListener {
 
-	static final int RESULT_LOAD_IMAGE = 1;
-	static final int PIC_CROP = 2;
+	// Request code
+	private static final int GALLERY_REQUEST = 1;
+	private static final int CAMERA_REQUEST = 2;
+	private static final int IMG_CROP_REQUEST = 3;
 
-	private final int BTN_MARGIN = 11;
-	
-	private enum FieldType {
-		PHONE, EMAIL, ADDRESS
-	};
+	// Constants for determining the type of field to inflate when buttons are
+	// clicked on different views
+	private enum FieldType { PHONE, EMAIL, ADDRESS }
 
-	
-	private ImageButton imageBtn, expandName, collapseName, clearDob;
+	// Individual components
+	private ImageView imageBtn;
+	private ImageButton expandName, collapseName, clearDob;
 	private EditText fullName, firstName, middleName, lastName, nameSuffix;
 	private TextView dobField;
 	private LinearLayout dynamicPhoneLayout, dynamicEmailLayout,
@@ -52,63 +63,233 @@ public class EditActivity extends Activity {
 
 	// Fields for Bundles
 	private Contact contact = null;
+	private boolean isNewContact;
 
+	/**
+	 * @see android.app.Activity#onCreate(Bundle)
+	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_edit);
 
-		// Initializing
-		setupActionBar();
-		setupNameFields();
-		setupDobField();
+		// Show the Up button in the action bar.
+		getActionBar().setDisplayHomeAsUpEnabled(true);
+		getActionBar().setDisplayShowTitleEnabled(false);
 
-		imageBtn = (ImageButton) findViewById(R.id.button_change_display_image);
+		// Initializing
+		imageBtn = (ImageView) findViewById(R.id.button_change_display_image);
 		displayPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.ic_face);
+
+		expandName = (ImageButton) findViewById(R.id.button_name_expand);
+		collapseName = (ImageButton) findViewById(R.id.button_name_collapse);
+		fullName = (EditText) findViewById(R.id.textfield_name_full);
+		firstName = (EditText) findViewById(R.id.textfield_name_given);
+		middleName = (EditText) findViewById(R.id.textfield_name_middle);
+		lastName = (EditText) findViewById(R.id.textfield_name_last);
+		nameSuffix = (EditText) findViewById(R.id.textfield_name_suffix);
+
 		dynamicPhoneLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
 		dynamicEmailLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
 		dynamicAddressLayout = (LinearLayout) findViewById(R.id.layout_dynamic_addressfield);
 
-		imageBtn.setOnClickListener(new View.OnClickListener() {
+		dobField = (TextView) findViewById(R.id.textview_dob);
+		clearDob = (ImageButton) findViewById(R.id.button_clear_dob);
 
-			@Override
-			public void onClick(View v) {
-				Intent i = new Intent(
-						Intent.ACTION_PICK,
-						android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-				startActivityForResult(i, RESULT_LOAD_IMAGE);
-			}
-		});
+		// Set component visibilities
+		collapseName.setVisibility(View.GONE);
+		firstName.setVisibility(View.GONE);
+		middleName.setVisibility(View.GONE);
+		lastName.setVisibility(View.GONE);
+		nameSuffix.setVisibility(View.GONE);
+		clearDob.setVisibility(View.INVISIBLE);
+
+		// add actions for components
+		imageBtn.setHapticFeedbackEnabled(true);
+		setOnClickActions();
 
 		// Getting Data
-		
 		Bundle extras = getIntent().getExtras();
-		
+
 		// IMPORTANT!
 		// If extras is null, means it's coming from the ADD NEW menu button.
 		// If extras is NOT null, means it's coming from the EDIT menu button.
-		if (extras != null){
+		if (extras == null) {
+			isNewContact = true;
+		} else {
+			isNewContact = false;
 			contact = extras.getParcelable("SELECTED_CONTACT");
 		}
-		
-		
-		//Setting data (If possible)
+		// Populate data (If possible)
+		populateData(contact);
+
+		// Request focus on the name section
+		fullName.setFocusable(true);
+		fullName.requestFocus();
+		fullName.setSelection(0);
+	}
+
+	/**
+	 * @see android.app.Activity#onCreateOptionsMenu(Menu)
+	 */
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.edit, menu);
+		return true;
+	}
+
+	/**
+	 * @see android.app.Activity#onOptionsItemSelected(MenuItem)
+	 */
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+
+		// Home button acts the same as the back button, which simply shows the
+		// discard dialog
+		case android.R.id.home:
+			onBackPressed();
+			return true;
+
+			// Discard button displays discard dialog
+		case R.id.action_create_discard:
+			showDiscardDialog();
+			return true;
+
+			// Done button creates || updates a contact, and pass the data back
+			// to source activity
+		case R.id.action_create_done:
+
+			Contact contact;
+			try {
+				// Generate/update contact
+				contact = generateContact(this.contact);
+
+				Intent intent = new Intent();
+				// If is new contact, pass the created contact back to source
+				// activity
+				if (isNewContact) {
+					intent.putExtra("NEW_CONTACT", contact);
+					setResult(RESULT_OK, intent);
+					Toast.makeText(EditActivity.this, "Created",
+							Toast.LENGTH_SHORT).show();
+					finish();
+
+					// If is existing contact, pass the updated contact back to
+					// source activity
+				} else {
+					intent.putExtra("EDITED_CONTACT", contact);
+					setResult(RESULT_OK, intent);
+					Toast.makeText(EditActivity.this, "Saved",
+							Toast.LENGTH_SHORT).show();
+					finish();
+				}
+
+				// If InvalidEmailException is caught, display a toast
+			} catch (InvalidEmailException e) {
+				Toast.makeText(
+						this,
+						"Invalid E-mail detected!\nPlease fix it and try again.",
+						Toast.LENGTH_SHORT).show();
+
+				// If InvalidPhoneException is caught, display a toast
+			} catch (InvalidPhoneException e) {
+				Toast.makeText(
+						this,
+						"Invalid phone number detected!\nPlease fix it and try again.",
+						Toast.LENGTH_SHORT).show();
+			}
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * @see android.app.Activity#onActivityResult(int, int, Intent)
+	 */
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		// If result's request code is either GALLERY_REQUEST or CAMERA_REQUEST
+		if (requestCode == GALLERY_REQUEST || requestCode == CAMERA_REQUEST) {
+			if (resultCode == RESULT_OK && data != null) {
+
+				// Get the Uri
+				Uri selectedImage = data.getData();
+
+				// Perform crop
+				// If phone does not support image cropping, then simply squeeze image
+				if (!performCrop(selectedImage)) {
+					String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+					Cursor cursor = getContentResolver().query(selectedImage,
+							filePathColumn, null, null, null);
+					cursor.moveToFirst();
+
+					int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+					String picturePath = cursor.getString(columnIndex);
+					cursor.close();
+
+					Bitmap b = BitmapFactory.decodeFile(picturePath);
+					if (b != null) {
+						displayPhoto = b;
+						imageBtn.setImageBitmap(Bitmap.createScaledBitmap(b,
+								300, 300, false));
+					} else {
+						Toast.makeText(this, "Failed to load image!",
+								Toast.LENGTH_LONG).show();
+					}
+				}
+			}
+		}
+
+		// If result request code is IMG_CROP_REQUEST
+		if (requestCode == IMG_CROP_REQUEST) {
+			if (resultCode == RESULT_OK && data != null) {
+				// get the returned data
+				Bundle extras = data.getExtras();
+				// get the cropped bitmap
+				Bitmap b = extras.getParcelable("data");
+
+				// if successfully retrieved bitmap, store to field and assign
+				// to img
+				if (b != null) {
+					displayPhoto = b;
+					imageBtn.setImageBitmap(b);
+				}
+			}
+		}
+	}
+
+	/**
+	 * When the back button is pressed, display Discard Dialog
+	 */
+	@Override
+	public void onBackPressed() {
+		showDiscardDialog();
+	}
+
+	/**
+	 * Populate and initialize fields
+	 * 
+	 * @param contact
+	 *            A contact object pass in through another intent. If null, then
+	 *            initialize fields for creating new contact If != null, then
+	 *            initialize fields with the data within the contact
+	 */
+	private void populateData(Contact contact) {
 		if (contact != null) {
-			
 			// Set up image
 			displayPhoto = contact.getPhoto().getImage();
 
 			// Set up name
-			String full = Name.parseName(
-					null, 
-					contact.getName().getFirstName(), 
-					contact.getName().getMiddleName(),
-					contact.getName().getLastName(),
+			String full = Name.parseName(null,
+					contact.getName().getFirstName(), contact.getName()
+							.getMiddleName(), contact.getName().getLastName(),
 					contact.getName().getSuffix())[0];
 			fullName.setText(full);
-			
+
 			// Set up phone
-			for (int i = 0; i < contact.getPhones().size(); i++){
+			for (int i = 0; i < contact.getPhones().size(); i++) {
 				Phone p = contact.getPhones().get(i);
 				// Get type (for spinner selection index
 				int type = 0;
@@ -125,14 +306,16 @@ public class EditActivity extends Activity {
 				} else if (p.getType().equals("Other")) {
 					type = 5;
 				}
-				
-				createNewField(FieldType.PHONE, dynamicPhoneLayout);
-				((Spinner)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(0)).setSelection(type);
-				((EditText)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(1)).setText(p.getNumber());
+
+				createNewField(FieldType.PHONE);
+				((Spinner) ((ViewGroup) dynamicPhoneLayout.getChildAt(i))
+						.getChildAt(0)).setSelection(type);
+				((EditText) ((ViewGroup) dynamicPhoneLayout.getChildAt(i))
+						.getChildAt(1)).setText(p.getNumber());
 			}
-			
+
 			// Set up email
-			for (int i = 0; i < contact.getEmails().size(); i++){
+			for (int i = 0; i < contact.getEmails().size(); i++) {
 				Email e = contact.getEmails().get(i);
 				// Get type (for spinner selection index
 				int type = 0;
@@ -143,14 +326,16 @@ public class EditActivity extends Activity {
 				} else if (e.getType().equals("Other")) {
 					type = 2;
 				}
-				
-				createNewField(FieldType.EMAIL, dynamicEmailLayout);
-				((Spinner)((ViewGroup)dynamicEmailLayout.getChildAt(i)).getChildAt(0)).setSelection(type);
-				((EditText)((ViewGroup)dynamicEmailLayout.getChildAt(i)).getChildAt(1)).setText(e.getEmail());
+
+				createNewField(FieldType.EMAIL);
+				((Spinner) ((ViewGroup) dynamicEmailLayout.getChildAt(i))
+						.getChildAt(0)).setSelection(type);
+				((EditText) ((ViewGroup) dynamicEmailLayout.getChildAt(i))
+						.getChildAt(1)).setText(e.getEmail());
 			}
-			
+
 			// Set up address
-			for (int i = 0; i < contact.getAddresses().size(); i++){
+			for (int i = 0; i < contact.getAddresses().size(); i++) {
 				Address a = contact.getAddresses().get(i);
 				// Get type (for spinner selection index
 				int type = 0;
@@ -161,53 +346,158 @@ public class EditActivity extends Activity {
 				} else if (a.getType().equals("Other")) {
 					type = 2;
 				}
-				
-				createNewField(FieldType.ADDRESS, dynamicAddressLayout);
-				((Spinner)((ViewGroup)dynamicAddressLayout.getChildAt(i)).getChildAt(0)).setSelection(type);
-				((EditText)((ViewGroup)dynamicAddressLayout.getChildAt(i)).getChildAt(1)).setText(a.getAddress());
+
+				createNewField(FieldType.ADDRESS);
+				((Spinner) ((ViewGroup) dynamicAddressLayout.getChildAt(i))
+						.getChildAt(0)).setSelection(type);
+				((EditText) ((ViewGroup) dynamicAddressLayout.getChildAt(i))
+						.getChildAt(1)).setText(a.getAddress());
 			}
-			
+
 			// Set up date of birth
 			dobField.setText(contact.getDateOfBirth().getValue());
-			
-		}else {
-			createNewField(FieldType.PHONE, dynamicPhoneLayout);
+			if (dobField.getText().toString().equals("")) {
+				clearDob.setVisibility(View.INVISIBLE);
+			} else {
+				clearDob.setVisibility(View.VISIBLE);
+			}
+		} else {
+			createNewField(FieldType.PHONE);
 		}
-		
-		
-		// Placing The data in
-		imageBtn.setImageBitmap(Bitmap.createScaledBitmap(displayPhoto,
-				Utilities.dpToPx(this, 80), Utilities.dpToPx(this, 80), false));
-		
-		fullName.setFocusable(true);
-		fullName.requestFocus();
-		
-		fullName.setSelection(0);
+
+		// Assign Image
+		imageBtn.setImageBitmap(displayPhoto);
 	}
 
-	private void setupActionBar() {
+	/**
+	 * Generate or update an existing contact based on the data entered in the
+	 * fields
+	 * 
+	 * @param contact
+	 *            A contact object pass in through another intent. If null, then
+	 *            at the end of the method, create a new Contact object If !=
+	 *            null, then at the end of the method, update the new Contact
+	 *            object
+	 * 
+	 * @return either a new Contact object, or an updated Contact, depend on
+	 *         whether the parameter is null or not null.
+	 * @throws InvalidEmailException
+	 *             when invalid email format detected
+	 * @throws InvalidPhoneException
+	 *             when invalid phone format detected
+	 */
+	private Contact generateContact(Contact contact)
+			throws InvalidEmailException, InvalidPhoneException {
+		Name name = null;
+		Photo photo = null;
+		int childCount = 0;
+		List<Phone> phones = new ArrayList<Phone>();
+		List<Email> emails = new ArrayList<Email>();
+		List<Address> addresses = new ArrayList<Address>();
+		DateOfBirth dob = null;
 
-		// Show the Up button in the action bar.
-		getActionBar().setDisplayHomeAsUpEnabled(true);
-		getActionBar().setDisplayShowTitleEnabled(false);
+		// Parsing contact name
+		if (fullName.getVisibility() == View.VISIBLE) {
+			String[] splits = Name.parseName(fullName.getText().toString(),
+					null, null, null, null);
+			name = new Name(splits[0], splits[1], splits[2], splits[3]);
+
+		} else {
+			name = new Name(firstName.getText().toString(), middleName
+					.getText().toString(), lastName.getText().toString(),
+					nameSuffix.getText().toString());
+		}
+
+		// Get Photo
+		photo = new Photo(displayPhoto);
+
+		// Populating phones
+		childCount = dynamicPhoneLayout.getChildCount();
+		for (int i = 0; i < childCount; i++) {
+			ViewGroup vg = (ViewGroup) dynamicPhoneLayout.getChildAt(i);
+			String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
+					.toString();
+			String number = ((EditText) vg.getChildAt(1)).getText().toString();
+
+			Phone phoneObject = (i == 0) ? new Phone(type, number, true)
+					: new Phone(type, number, false);
+
+			if (phoneObject.getNumber().isEmpty())
+				continue;
+			phones.add(phoneObject);
+
+		}
+		Collections.sort(phones, new Phone.PhoneComparator());
+
+		// Populating emails
+		childCount = dynamicEmailLayout.getChildCount();
+		for (int i = 0; i < childCount; i++) {
+			ViewGroup vg = (ViewGroup) dynamicEmailLayout.getChildAt(i);
+			String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
+					.toString();
+			String email = ((EditText) vg.getChildAt(1)).getText().toString();
+
+			Email emailObject = null;
+			emailObject = new Email(type, email);
+
+			if (emailObject.getEmail().isEmpty())
+				continue;
+			emails.add(emailObject);
+
+		}
+
+		// Populating addresses
+		childCount = dynamicAddressLayout.getChildCount();
+		for (int i = 0; i < childCount; i++) {
+			ViewGroup vg = (ViewGroup) dynamicAddressLayout.getChildAt(i);
+			String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
+					.toString();
+			String address = ((EditText) vg.getChildAt(1)).getText().toString();
+
+			Address addressObject = new Address(type, address);
+			if (addressObject.getAddress().isEmpty())
+				continue;
+			addresses.add(addressObject);
+
+		}
+
+		// Get Date of Birth
+		dob = new DateOfBirth(dobField.getText().toString());
+
+		if (contact != null) {
+			contact.setPhoto(photo);
+			contact.setName(name);
+			contact.setPhones(phones);
+			contact.setEmail(emails);
+			contact.setAddresses(addresses);
+			contact.setDateOfBirth(dob);
+
+			return contact;
+		} else {
+			return new Contact(name, photo, phones, emails, addresses, dob);
+		}
 
 	}
 
-	private void setupNameFields() {
-		expandName = (ImageButton) findViewById(R.id.button_name_expand);
-		collapseName = (ImageButton) findViewById(R.id.button_name_collapse);
-		fullName = (EditText) findViewById(R.id.textfield_name_full);
-		firstName = (EditText) findViewById(R.id.textfield_name_given);
-		middleName = (EditText) findViewById(R.id.textfield_name_middle);
-		lastName = (EditText) findViewById(R.id.textfield_name_last);
-		nameSuffix = (EditText) findViewById(R.id.textfield_name_suffix);
+	/**
+	 * A method that contains all the method for anonymous OnClickListener
+	 * implementation
+	 */
+	private void setOnClickActions() {
 
-		collapseName.setVisibility(View.GONE);
-		firstName.setVisibility(View.GONE);
-		middleName.setVisibility(View.GONE);
-		lastName.setVisibility(View.GONE);
-		nameSuffix.setVisibility(View.GONE);
+		// Image chooser button
+		imageBtn.setOnClickListener(new View.OnClickListener() {
 
+			@Override
+			public void onClick(View v) {
+				DialogFragment imageLoader = new ImageChooserDialog();
+				imageLoader
+						.show(getFragmentManager(), "Image Selection Option");
+			}
+		});
+
+		// Expand name, hide full name edittext, display first, middle, last and
+		// suffix edittext
 		expandName.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -215,8 +505,7 @@ public class EditActivity extends Activity {
 				expandName.setVisibility(View.GONE);
 				collapseName.setVisibility(View.VISIBLE);
 
-				String[] splits = Name.parseName(
-						fullName.getText().toString(), 
+				String[] splits = Name.parseName(fullName.getText().toString(),
 						null, null, null, null);
 				fullName.setText("");
 				firstName.setText(splits[0]);
@@ -235,6 +524,9 @@ public class EditActivity extends Activity {
 
 			}
 		});
+
+		// Collapse name, hide first, middle, last and suffix edittext, display
+		// full name edittext
 		collapseName.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -242,12 +534,9 @@ public class EditActivity extends Activity {
 				expandName.setVisibility(View.VISIBLE);
 				collapseName.setVisibility(View.GONE);
 
-				String[] combine = Name.parseName(
-						null, 
-						firstName.getText().toString(), 
-						middleName.getText().toString(),
-						lastName.getText().toString(), 
-						nameSuffix.getText().toString());
+				String[] combine = Name.parseName(null, firstName.getText()
+						.toString(), middleName.getText().toString(), lastName
+						.getText().toString(), nameSuffix.getText().toString());
 				fullName.setText(combine[0]);
 				firstName.setText("");
 				middleName.setText("");
@@ -266,12 +555,7 @@ public class EditActivity extends Activity {
 			}
 		});
 
-	}
-
-	private void setupDobField() {
-		dobField = (TextView) findViewById(R.id.textview_dob);
-		clearDob = (ImageButton) findViewById(R.id.button_clear_dob);
-
+		// Date of click field, when clicked display DateChooserDialog
 		dobField.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
@@ -279,229 +563,33 @@ public class EditActivity extends Activity {
 				newFragment.show(getFragmentManager(), "datePicker");
 			}
 		});
+
+		// Clears dob edittext.
 		clearDob.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
+				clearDob.setVisibility(View.INVISIBLE);
 				dobField.setText("");
 			}
 		});
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.edit, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case android.R.id.home:
-			onBackPressed();
-			return true;
-
-		case R.id.action_create_discard:
-			showDiscardDialog();
-			return true;
-
-		case R.id.action_create_done:
-
-			Intent intent = new Intent();
-			Contact contact = null;
-			Name name = null;
-			Photo photo = null;
-			int childCount = 0;
-			List<Phone> phones = new ArrayList<Phone>();
-			List<Email> emails = new ArrayList<Email>();
-			List<Address> addresses = new ArrayList<Address>();
-			DateOfBirth dob = null;
-
-			// Parsing contact name
-			if (fullName.getVisibility() == View.VISIBLE) {
-					String[] splits = Name.parseName(
-							fullName.getText().toString(), 
-							null, null, null, null);
-					name = new Name(splits[0], splits[1], splits[2], splits[3]);
-
-			} else {
-				name = new Name(
-						firstName.getText().toString(), 
-						middleName.getText().toString(), 
-						lastName.getText().toString(),
-						nameSuffix.getText().toString());
-			}
-
-			// Get Photo
-			photo = new Photo(displayPhoto);
-
-			// Populating phones
-			childCount = dynamicPhoneLayout.getChildCount();
-			for (int i = 0; i < childCount; i++) {
-				ViewGroup vg = (ViewGroup) dynamicPhoneLayout.getChildAt(i);
-				String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
-						.toString();
-				String number = ((EditText) vg.getChildAt(1)).getText()
-						.toString();
-
-				Phone phoneObject = (i == 0) ? new Phone(type, number, true)
-						: new Phone(type, number, false);
-
-				if (phoneObject.getNumber().isEmpty())
-					continue;
-				phones.add(phoneObject);
-
-			}
-			Collections.sort(phones, new Phone.PhoneComparator());
-
-			// Populating emails
-			childCount = dynamicEmailLayout.getChildCount();
-			for (int i = 0; i < childCount; i++) {
-				ViewGroup vg = (ViewGroup) dynamicEmailLayout.getChildAt(i);
-				String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
-						.toString();
-				String email = ((EditText) vg.getChildAt(1)).getText()
-						.toString();
-
-				Email emailObject = null;
-				try {
-					emailObject = new Email(type, email);
-
-					if (emailObject.getEmail().isEmpty())
-						continue;
-					emails.add(emailObject);
-
-				} catch (InvalidEmailException e) {
-					Toast.makeText(
-							this,
-							"Invalid E-mail detected!\n"
-									+ "Please fix it and try again.",
-							Toast.LENGTH_SHORT).show();
-					return false;
-				}
-			}
-
-			// Populating addresses
-			childCount = dynamicAddressLayout.getChildCount();
-			for (int i = 0; i < childCount; i++) {
-				ViewGroup vg = (ViewGroup) dynamicAddressLayout
-						.getChildAt(i);
-				String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
-						.toString();
-				String address = ((EditText) vg.getChildAt(1)).getText()
-						.toString();
-
-				Address addressObject = new Address(type, address);
-				if (addressObject.getAddress().isEmpty())
-					continue;
-				addresses.add(addressObject);
-
-			}
-
-			// Get Date of Birth
-			dob = new DateOfBirth(dobField.getText().toString());
-
-			
-			if (this.contact != null) {
-				this.contact.setPhoto(photo);
-				this.contact.setName(name);
-				this.contact.setPhones(phones);
-				this.contact.setEmail(emails);
-				this.contact.setAddresses(addresses);
-				this.contact.setDateOfBirth(dob);
-				
-				
-//				this.contact = new Contact(name, photo, phones, emails, addresses, dob);
-				intent.putExtra("EDITED_CONTACT", this.contact);
-				setResult(RESULT_OK, intent);
-				Toast.makeText(EditActivity.this, "Saved", Toast.LENGTH_SHORT).show();
-				finish();
-			}else {
-				contact = new Contact(name, photo, phones, emails, addresses, dob);
-				intent.putExtra("NEW_CONTACT", contact);
-				setResult(RESULT_OK, intent);
-				Toast.makeText(EditActivity.this, "Created", Toast.LENGTH_SHORT).show();
-				finish();
-				return true;
-			}
-			
-			
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (requestCode == RESULT_LOAD_IMAGE) {
-			if (resultCode == RESULT_OK) {
-				if (data != null) {
-					Uri selectedImage = data.getData();
-
-					// If phone does not support image cropping, then simply
-					// squeeze image
-					if (!performCrop(selectedImage)) {
-						String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-						Cursor cursor = getContentResolver()
-								.query(selectedImage, filePathColumn, null,
-										null, null);
-						cursor.moveToFirst();
-
-						int columnIndex = cursor
-								.getColumnIndex(filePathColumn[0]);
-						String picturePath = cursor.getString(columnIndex);
-						cursor.close();
-
-						Bitmap b = BitmapFactory.decodeFile(picturePath);
-						if (b != null) {
-							displayPhoto = b;
-							imageBtn.setImageBitmap(Bitmap.createScaledBitmap(
-									b, imageBtn.getWidth() - BTN_MARGIN,
-									imageBtn.getHeight() - BTN_MARGIN, false));
-						} else {
-							Toast.makeText(this, "Failed to load image!",
-									Toast.LENGTH_LONG).show();
-						}
-					}
-				}
-			}
-		}
-
-		if (requestCode == PIC_CROP) {
-			if (resultCode == RESULT_OK) {
-				if (data != null) {
-					// get the returned data
-					Bundle extras = data.getExtras();
-					// get the cropped bitmap
-					Bitmap b = extras.getParcelable("data");
-
-					if (b != null) {
-						displayPhoto = b;
-						imageBtn.setImageBitmap(Bitmap.createScaledBitmap(b,
-								imageBtn.getWidth() - BTN_MARGIN,
-								imageBtn.getHeight() - BTN_MARGIN, false));
-					}
-				}
-			}
-		}
-	}
-
-	@Override
-	public void onBackPressed() {
-		showDiscardDialog();
-	}
-
-	// =======================================//
-	//
-	// Method for general buttons
-	// (or buttons without ID)
-	//
-	// =======================================//
+	/**
+	 * This method is for the add button for phone, email and address. Because
+	 * the + button view does not have an ID, they have to be created by
+	 * inflating XML layout, thus using the onClick xml code.
+	 * 
+	 * @param v
+	 *            The view that is clicked
+	 */
 	public void addNewField(View v) {
-		
+
+		// Check which parent this view belongs to.
+		// Could be LinearLayout for Phone, Email or Address
 		ViewGroup vg = (ViewGroup) v.getParent().getParent();
 		FieldType ft = null;
-		
+
 		switch (vg.getId()) {
 		case R.id.layout_phonefields:
 			ft = FieldType.PHONE;
@@ -516,15 +604,24 @@ public class EditActivity extends Activity {
 			return;
 		}
 
-		createNewField(ft, v);
+		// Created new field based on the field type
+		createNewField(ft);
 	}
 
-	private void createNewField(FieldType ft, View v) {
+	/**
+	 * Created a new field View by inflating XML layout and adding it to its
+	 * parent layout based on the field type parameter.
+	 * 
+	 * @param fieldType
+	 */
+	private void createNewField(FieldType fieldType) {
 
+		// Get the inflate layout ID, parent layout and String array for the
+		// spinner
 		int infl = 0;
 		int charSeq = 0;
 		LinearLayout ll = null;
-		switch (ft) {
+		switch (fieldType) {
 		case PHONE:
 			infl = R.layout.phone_field_item;
 			ll = dynamicPhoneLayout;
@@ -544,9 +641,11 @@ public class EditActivity extends Activity {
 			return;
 		}
 
+		// Inflate XML layout
 		ViewGroup fieldInfo = (ViewGroup) getLayoutInflater().inflate(infl, ll,
 				false);
 
+		// Setup spinner
 		Spinner spinner = (Spinner) fieldInfo.getChildAt(0);
 		// Create an ArrayAdapter using the string array and a default spinner
 		// layout
@@ -557,9 +656,18 @@ public class EditActivity extends Activity {
 		// Apply the adapter to the spinner
 		spinner.setAdapter(adapter);
 
+		// Add the inflated view to the parent layout
 		ll.addView(fieldInfo);
 	}
 
+	/**
+	 * This method is for the remove button for phone, email and address.
+	 * Because the remove button view does not have an ID, they have to be
+	 * created by inflating XML layout, thus using the onClick xml syntax.
+	 * 
+	 * @param v
+	 *            The view that is clicked
+	 */
 	public void removeCurrentField(View v) {
 		ViewGroup view2rm = (ViewGroup) v.getParent();
 		ViewGroup parent = (ViewGroup) view2rm.getParent();
@@ -568,23 +676,32 @@ public class EditActivity extends Activity {
 
 	}
 
+	/**
+	 * A discard dialog when home, back and discard buttons is clicked.
+	 */
 	public void showDiscardDialog() {
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("All changes will be lost")
-				.setTitle("Discard changes?")
-				.setNegativeButton("Cancel", null)
-				.setPositiveButton("OK",
-						new DialogInterface.OnClickListener() {
+				.setTitle("Discard changes?").setNegativeButton("Cancel", null)
+				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								finish();
-							}
-						});
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						finish();
+					}
+				});
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
 
+	/**
+	 * Performs a image crop by launching external image crop application
+	 * 
+	 * @param picUri
+	 *            Uri of the image you want to crop
+	 * @return whether the crop is success. Returns false if cropping is not
+	 *         supported.
+	 */
 	private boolean performCrop(Uri picUri) {
 		try {
 			Intent cropIntent = new Intent("com.android.camera.action.CROP");
@@ -601,18 +718,39 @@ public class EditActivity extends Activity {
 			// retrieve data on return
 			cropIntent.putExtra("return-data", true);
 			// start the activity - we handle returning in onActivityResult
-			startActivityForResult(cropIntent, PIC_CROP);
+			startActivityForResult(cropIntent, IMG_CROP_REQUEST);
 			return true;
 		}
 		// respond to users whose devices do not support the crop action
 		catch (ActivityNotFoundException anfe) {
 			// display an error message
-			String errorMessage = "Whoops - your device doesn't support the crop action!";
+			String errorMessage = "Your device doesn't support the crop action";
 			Toast toast = Toast
 					.makeText(this, errorMessage, Toast.LENGTH_SHORT);
 			toast.show();
 			return false;
 		}
+	}
+
+	/**
+	 * This onComplete method is for ImageChooserDialog. It will react according
+	 * to what the user selected in the list dialog.
+	 */
+	@Override
+	public void onComplete(LoadImageType loadingType) {
+		switch (loadingType) {
+		case SELECTED_GALLERY:
+			Intent galleryIntent = new Intent(
+					Intent.ACTION_PICK,
+					android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+			startActivityForResult(galleryIntent, GALLERY_REQUEST);
+			break;
+		case SELECTED_CAMERA:
+			Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			startActivityForResult(captureIntent, CAMERA_REQUEST);
+			break;
+		}
+
 	}
 
 }

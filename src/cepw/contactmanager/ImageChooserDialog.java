@@ -7,22 +7,33 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-public class SortingDialog extends DialogFragment {
+/**
+ * This is a DialogFragment that prompt the user to choose from Gallery or Camera. 
+ * 
+ * @author I-Yang Huang, IHUA164, 5503504
+ */
+public class ImageChooserDialog extends DialogFragment {
 
-	protected enum SortType { SORT_BY_FIRST_NAME, SORT_BY_LAST_NAME, SORT_BY_PHONE }
-	
+	// Constants for selection
+	protected enum LoadImageType { SELECTED_GALLERY, SELECTED_CAMERA }
+
 	private OnCompleteListener mListener;
 
+	/**
+	 * @see android.app.DialogFragment#onCreate(Bundle)
+	 */
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-		String[] sortTypes = getResources().getStringArray(R.array.sort_type);
+		String[] loadingType = getResources().getStringArray(
+				R.array.image_selection_type);
 		onAttach(getActivity());
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle(R.string.action_sort_options)
-				.setItems(sortTypes, new OnOptionSelected())
-				.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
+		builder.setTitle("Contact Photo")
+				.setItems(loadingType, new OnOptionSelected())
+				.setNeutralButton("Cancel",
+						new DialogInterface.OnClickListener() {
 
 							@Override
 							public void onClick(DialogInterface dialog,
@@ -33,6 +44,9 @@ public class SortingDialog extends DialogFragment {
 		return builder.create();
 	}
 
+	/**
+	 * @see android.app.DialogFragment#onAttach(Activity)
+	 */
 	@Override
 	// make sure the Activity implemented it
 	public void onAttach(Activity activity) {
@@ -45,29 +59,37 @@ public class SortingDialog extends DialogFragment {
 					+ " must implement OnCompleteListener");
 		}
 	}
-	
+
+	/**
+	 * Interface created for this ImageChooserDialog. Any activity that implements this
+	 * interface will onComplete method involked when one of the option in this dialog is 
+	 * clicked.
+	 * 
+	 * @author I-Yang Huang, IHUA164, 5503504
+	 */
 	public static interface OnCompleteListener {
-		public abstract void onComplete(SortType sortType);
+		public abstract void onComplete(LoadImageType loadingType);
 	}
 
+	/**
+	 * The OnClickListener for this list dialog
+	 * 
+	 * @author I-Yang Huang, IHUA164, 5503504
+	 */
 	class OnOptionSelected implements DialogInterface.OnClickListener {
 
 		@Override
 		public void onClick(DialogInterface dialog, int which) {
 			switch (which) {
 			case 0:
-				mListener.onComplete(SortType.SORT_BY_FIRST_NAME);
+				mListener.onComplete(LoadImageType.SELECTED_GALLERY);
 				break;
 			case 1:
-				mListener.onComplete(SortType.SORT_BY_LAST_NAME);
-				break;
-			case 2:
-				mListener.onComplete(SortType.SORT_BY_PHONE);
+				mListener.onComplete(LoadImageType.SELECTED_CAMERA);
 				break;
 			}
 
 		}
 
 	}
-
 }

@@ -7,7 +7,7 @@ import android.os.Parcelable;
 
 /**
  * This is an object that represents a Phone object for a Contact Manager
- * @author cookie-paw
+ * @author I-Yang Huang, IHUA164, 5503504
  */
 public class Phone implements Parcelable, Comparable<Phone> {
 
@@ -22,8 +22,11 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	 * @param number
 	 * @throws InvalidPhoneException
 	 */
-	public Phone(String type, String number, boolean defaultNumber) {
+	public Phone(String type, String number, boolean defaultNumber) throws InvalidPhoneException {
 		this.type = type;
+		if(!number.isEmpty() && !number.matches("[0-9\\- ]+")){
+			throw new InvalidPhoneException("Not a valid phone!");
+		}
 		String temp = number.replaceAll("[^0-9]", "");
 		this.number = temp;
 		this.defaultNumber = defaultNumber;
@@ -113,16 +116,7 @@ public class Phone implements Parcelable, Comparable<Phone> {
 		this.defaultNumber = in.readByte() == 1;
 	}
 
-	/**
-	 * Exception for when invalid phone number is detected
-	 */
-	class InvalidPhoneException extends Exception {
-		private static final long serialVersionUID = -6647400545705033613L;
 
-		public InvalidPhoneException(String msg) {
-			super(msg);
-		}
-	}
 
 	/**
 	 * Default comparing method of type Phone
@@ -202,6 +196,17 @@ public class Phone implements Parcelable, Comparable<Phone> {
 			}
 		}
 
+	}
+	
+	/**
+	 * Exception for when invalid phone number is detected
+	 */
+	public class InvalidPhoneException extends Exception {
+		private static final long serialVersionUID = -6647400545705033613L;
+
+		public InvalidPhoneException(String msg) {
+			super(msg);
+		}
 	}
 
 }

@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 /**
  * This is an object that represents a Email object for a Contact Manager
- * @author cookie-paw
+ * @author I-Yang Huang, IHUA164, 5503504
  */
 public class Email implements Parcelable {
 	private String type;
@@ -82,7 +82,7 @@ public class Email implements Parcelable {
     }
 	
 	/**
-	 * Exception for when invalid phone number is detected
+	 * Exception for when invalid email number is detected
 	 */
 	public class InvalidEmailException extends Exception {
 		private static final long serialVersionUID = 705798288431081538L;

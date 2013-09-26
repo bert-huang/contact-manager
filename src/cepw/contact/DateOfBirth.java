@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 /**
  * This is an object that represents a Date of Birth for a Contact Manager
- * @author cookie-paw
+ * @author I-Yang Huang, IHUA164, 5503504
  */
 public class DateOfBirth implements Parcelable {
 	

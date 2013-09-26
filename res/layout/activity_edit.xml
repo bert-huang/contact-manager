@@ -28,12 +28,12 @@
 
                 <!-- Avatar icon -->
 
-                <ImageButton
+                <ImageView
                     android:id="@id/button_change_display_image"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
                     android:contentDescription="@string/disc_display_image"
-                    android:src="@drawable/ic_face" />
+                    android:background="@drawable/ic_face"/>
 
                 <!-- Name fields -->
 
@@ -43,6 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="80"
                     android:orientation="vertical"
+                    android:layout_marginLeft="10dp"
                     android:paddingTop="30dp" >
 
                     <EditText
