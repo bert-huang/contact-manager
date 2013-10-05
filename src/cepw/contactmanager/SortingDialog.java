@@ -7,12 +7,22 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+/**
+ * This is a DialogFragment that prompt the user to sort the list by first name, last name
+ * or phone number. 
+ * 
+ * @author I-Yang Huang, IHUA164, 5503504
+ */
 public class SortingDialog extends DialogFragment {
 
+	// Constants for selection
 	protected enum SortType { SORT_BY_FIRST_NAME, SORT_BY_LAST_NAME, SORT_BY_PHONE }
 	
 	private OnCompleteListener mListener;
 
+	/**
+	 * @see android.app.DialogFragment#onCreate(Bundle)
+	 */
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -33,6 +43,9 @@ public class SortingDialog extends DialogFragment {
 		return builder.create();
 	}
 
+	/**
+	 * @see android.app.DialogFragment#onAttach(Activity)
+	 */
 	@Override
 	// make sure the Activity implemented it
 	public void onAttach(Activity activity) {
@@ -46,10 +59,18 @@ public class SortingDialog extends DialogFragment {
 		}
 	}
 	
+	/**
+	 * Interface created for this SortingDialog. Any activity that implements this
+	 * interface will onComplete method invoked when one of the option in this dialog is 
+	 * clicked.
+	 */
 	public static interface OnCompleteListener {
 		public abstract void onComplete(SortType sortType);
 	}
 
+	/**
+	 * The OnClickListener for this list dialog
+	 */
 	class OnOptionSelected implements DialogInterface.OnClickListener {
 
 		@Override

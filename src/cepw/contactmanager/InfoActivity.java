@@ -289,10 +289,10 @@ public class InfoActivity extends Activity {
 		}
 
 		// Set Date of Birth
-
 		if (contact.getDateOfBirth().getValue().equals("")) {
 			dobInfo.setVisibility(View.GONE);
 		} else {
+			dobInfo.setVisibility(View.VISIBLE);
 			dobDate.setText(contact.getDateOfBirth().getValue());
 		}
 
@@ -443,16 +443,18 @@ public class InfoActivity extends Activity {
 					Toast.makeText(getApplicationContext(), "Not default",
 							Toast.LENGTH_SHORT).show();
 				}
+				Toast.makeText(getApplicationContext(), "Phone. TODO: Dialog",
+						Toast.LENGTH_SHORT).show();
 				break;
 			case R.id.listview_email_info:
-				Toast.makeText(getApplicationContext(), "Email list popup!",
+				Toast.makeText(getApplicationContext(), "Email. TODO: Dialog",
 						Toast.LENGTH_SHORT).show();
 				ClipboardManager clipboard = (ClipboardManager)
 				        getSystemService(Context.CLIPBOARD_SERVICE);
 				Utilities.copyStringToClipboard(clipboard, contact.getEmails().get(position).getEmail());
 				break;
 			case R.id.listview_address_info:
-				Toast.makeText(getApplicationContext(), "Address list popup!",
+				Toast.makeText(getApplicationContext(), "Address. TODO: Dialog",
 						Toast.LENGTH_SHORT).show();
 				break;
 			}

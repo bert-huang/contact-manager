@@ -62,10 +62,8 @@ public class ImageChooserDialog extends DialogFragment {
 
 	/**
 	 * Interface created for this ImageChooserDialog. Any activity that implements this
-	 * interface will onComplete method involked when one of the option in this dialog is 
+	 * interface will onComplete method invoked when one of the option in this dialog is 
 	 * clicked.
-	 * 
-	 * @author I-Yang Huang, IHUA164, 5503504
 	 */
 	public static interface OnCompleteListener {
 		public abstract void onComplete(LoadImageType loadingType);
@@ -73,8 +71,6 @@ public class ImageChooserDialog extends DialogFragment {
 
 	/**
 	 * The OnClickListener for this list dialog
-	 * 
-	 * @author I-Yang Huang, IHUA164, 5503504
 	 */
 	class OnOptionSelected implements DialogInterface.OnClickListener {
 

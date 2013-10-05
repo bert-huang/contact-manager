@@ -170,20 +170,32 @@ public class EditActivity extends Activity implements
 				// If is new contact, pass the created contact back to source
 				// activity
 				if (isNewContact) {
-					intent.putExtra("NEW_CONTACT", contact);
-					setResult(RESULT_OK, intent);
-					Toast.makeText(EditActivity.this, "Created",
-							Toast.LENGTH_SHORT).show();
-					finish();
+					if (contact == null) {
+						setResult(RESULT_CANCELED, intent);
+						finish();
+					}else {
+						intent.putExtra("NEW_CONTACT", contact);
+						setResult(RESULT_OK, intent);
+						Toast.makeText(EditActivity.this, "Created",
+								Toast.LENGTH_SHORT).show();
+						finish();
+					}
 
 					// If is existing contact, pass the updated contact back to
 					// source activity
 				} else {
-					intent.putExtra("EDITED_CONTACT", contact);
-					setResult(RESULT_OK, intent);
-					Toast.makeText(EditActivity.this, "Saved",
-							Toast.LENGTH_SHORT).show();
-					finish();
+					if (contact == null) {
+						setResult(RESULT_CANCELED, intent);
+						Toast.makeText(EditActivity.this, "Not Saved",
+								Toast.LENGTH_SHORT).show();
+						finish();
+					}else {
+						intent.putExtra("EDITED_CONTACT", contact);
+						setResult(RESULT_OK, intent);
+						Toast.makeText(EditActivity.this, "Saved",
+								Toast.LENGTH_SHORT).show();
+						finish();
+					}
 				}
 
 				// If InvalidEmailException is caught, display a toast
@@ -464,7 +476,24 @@ public class EditActivity extends Activity implements
 		// Get Date of Birth
 		dob = new DateOfBirth(dobField.getText().toString());
 
-		if (contact != null) {
+		// Check if all fields are empty
+		boolean isEmpty = 
+				(name.getFirstName().length() + 
+				name.getMiddleName().length()+
+				name.getLastName().length() +
+				name.getSuffix().length() +
+				phones.size() +
+				emails.size() + 
+				addresses.size() + 
+				dob.getValue().length()) == 0 
+				? true : false;
+		
+		// If all fields are empty, return null
+		if (isEmpty) {
+			return null;
+			
+		// If contact existed (therefore editing)
+		}else if (contact != null) {
 			contact.setPhoto(photo);
 			contact.setName(name);
 			contact.setPhones(phones);
@@ -473,6 +502,8 @@ public class EditActivity extends Activity implements
 			contact.setDateOfBirth(dob);
 
 			return contact;
+			
+		// If contact is null (therefore creating new)
 		} else {
 			return new Contact(name, photo, phones, emails, addresses, dob);
 		}
