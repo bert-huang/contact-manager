@@ -63,6 +63,7 @@ public class EditActivity extends Activity implements
 
 	// Fields for Bundles
 	private Contact contact = null;
+	private int position;
 	private boolean isNewContact;
 
 	/**
@@ -118,6 +119,7 @@ public class EditActivity extends Activity implements
 			isNewContact = true;
 		} else {
 			isNewContact = false;
+			position = extras.getInt("POSITION");
 			contact = extras.getParcelable("SELECTED_CONTACT");
 		}
 		// Populate data (If possible)
@@ -190,6 +192,7 @@ public class EditActivity extends Activity implements
 								Toast.LENGTH_SHORT).show();
 						finish();
 					}else {
+						intent.putExtra("POSITION", position);
 						intent.putExtra("EDITED_CONTACT", contact);
 						setResult(RESULT_OK, intent);
 						Toast.makeText(EditActivity.this, "Saved",

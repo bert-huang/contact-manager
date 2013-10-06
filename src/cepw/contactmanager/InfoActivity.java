@@ -37,7 +37,7 @@ public class InfoActivity extends Activity {
 	// Action identifier 
 	private static final String NONE = "NONE";
 	private static final String DELETE_CONTACT = "DELETE_CONTACT";
-	private static final String MODIFIED_CONTACT = "MODIFIED_CONTACT";
+	private static final String EDIT_CONTACT = "EDIT_CONTACT";
 	private static String ACTION;
 	
 	// Request code
@@ -137,13 +137,18 @@ public class InfoActivity extends Activity {
 			return true;
 			
 		// Edit button will cause the ACTION flag to turn into MODIFIED_CONTACT
-		// and will pass the contact object over to the EditActivity class so modfification
+		// and will pass the contact object over to the EditActivity class so modification
 		// can be applied.
 		case R.id.action_contact_edit:
-			Intent intent = new Intent(this, EditActivity.class);
-			ACTION = MODIFIED_CONTACT;
+			ACTION = EDIT_CONTACT;
+			Intent intent = new Intent(this, MainActivity.class);
+			intent.putExtra("ACTION", ACTION);
+			intent.putExtra("POSITION", position);
+			setResult(RESULT_OK, intent);
+			finish();
+			/*Intent intent = new Intent(this, EditActivity.class);
 			intent.putExtra("SELECTED_CONTACT", contact);
-			startActivityForResult(intent, EDIT_CONTACT_REQUEST);
+			startActivityForResult(intent, EDIT_CONTACT_REQUEST);*/
 			
 		}
 		return super.onOptionsItemSelected(item);
@@ -202,8 +207,8 @@ public class InfoActivity extends Activity {
 		intent.putExtra("ACTION", ACTION);
 		
 		// If contact has been modified, ACTION will be MODIFIED_CONTACT
-		if (ACTION.equals(MODIFIED_CONTACT)){
-			intent.putExtra(MODIFIED_CONTACT, contact);
+		if (ACTION.equals(EDIT_CONTACT)){
+			intent.putExtra(EDIT_CONTACT, contact);
 			intent.putExtra("POSITION", position);
 			setResult(RESULT_OK, intent);
 			

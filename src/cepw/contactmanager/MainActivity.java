@@ -46,7 +46,8 @@ public class MainActivity extends Activity implements
 
 	// Request code
 	private static final int CREATE_CONTACT_REQUEST = 1;
-	private static final int CONTACT_INFO_REQUEST = 2;
+	private static final int EDIT_CONTACT_REQUEST = 2;
+	private static final int CONTACT_INFO_REQUEST = 3;
 
 	// A variable to store the sorting type
 	private static SortType CURRENT_SORT_OPTION;
@@ -170,12 +171,12 @@ public class MainActivity extends Activity implements
 		if (requestCode == CREATE_CONTACT_REQUEST) {
 			if (resultCode == RESULT_OK) {
 
-				Contact contact = (Contact) data.getExtras().getParcelable(
+				Contact c = (Contact) data.getExtras().getParcelable(
 						"NEW_CONTACT");
-				contacts.add(contact);
+				contacts.add(c);
 				sortList(contacts, CURRENT_SORT_OPTION);
 				adapter.notifyDataSetChanged();
-				int position = contacts.indexOf(contact);
+				int position = contacts.indexOf(c);
 				Intent i = new Intent(getApplicationContext(),
 						InfoActivity.class);
 				i.putExtra("SELECTED_CONTACT", contacts.get(position));
@@ -191,15 +192,16 @@ public class MainActivity extends Activity implements
 				String action = data.getStringExtra("ACTION");
 				int pos = data.getExtras().getInt("POSITION");
 
-				if (action.equals("MODIFIED_CONTACT")) {
+				if (action.equals("EDIT_CONTACT")) {
 
-					contacts.set(
-							pos,
-							(Contact) data.getExtras().getParcelable(
-									"MODIFIED_CONTACT"));
+					Intent intent = new Intent(this, EditActivity.class);
+					intent.putExtra("POSITION", pos);
+					intent.putExtra("SELECTED_CONTACT", contacts.get(pos));
+					startActivityForResult(intent, EDIT_CONTACT_REQUEST);
+/*					contacts.set(pos,(Contact) data.getExtras().getParcelable("MODIFIED_CONTACT"));
 
 					sortList(contacts, CURRENT_SORT_OPTION);
-					adapter.notifyDataSetChanged();
+					adapter.notifyDataSetChanged();*/
 
 				} else if (action.equals("DELETE_CONTACT")) {
 					contacts.remove(pos);
@@ -211,6 +213,23 @@ public class MainActivity extends Activity implements
 				}
 			}
 		}
+		
+		if (requestCode == EDIT_CONTACT_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				
+				Contact c = (Contact) data.getExtras().getParcelable("EDITED_CONTACT");
+				contacts.set(data.getExtras().getInt("POSITION"), c);
+				sortList(contacts, CURRENT_SORT_OPTION);
+				adapter.notifyDataSetChanged();
+				int position = contacts.indexOf(c);
+				Intent i = new Intent(getApplicationContext(),
+						InfoActivity.class);
+				i.putExtra("SELECTED_CONTACT", contacts.get(position));
+				i.putExtra("POSITION", position);
+				startActivityForResult(i, CONTACT_INFO_REQUEST);
+			}
+		}
+		
 		searchbar.setText(searchbar.getText().toString());
 	}
 
