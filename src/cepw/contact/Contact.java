@@ -14,6 +14,7 @@ import android.os.Parcelable;
  */
 public class Contact implements Parcelable {
 	
+	private int id;
 	private Name name;
 	private Photo photo;
 	private List<Phone> phones;
@@ -30,8 +31,8 @@ public class Contact implements Parcelable {
 	 * @param addresses Address list for this contact
 	 * @param dateOfBirth DateOfBirth object for this contact
 	 */
-	public Contact(Name name, Photo photo, List<Phone> phones,
-			List<Email> emails, List<Address> addresses,
+	public Contact(Name name, Photo photo, 
+			List<Phone> phones, List<Email> emails, List<Address> addresses,
 			DateOfBirth dateOfBirth) {
 		
 		this.name = name;
@@ -42,8 +43,31 @@ public class Contact implements Parcelable {
 		this.dateOfBirth = dateOfBirth;
 
 	}
+	
+	/**
+	 * Constructor of a Contact object
+	 * @param id ID for this contact object
+	 * @param photo Photo object for this contact
+	 * @param phones Phone list for this contact
+	 * @param emails Email list for this contact
+	 * @param addresses Address list for this contact
+	 * @param dateOfBirth DateOfBirth object for this contact
+	 */
+	public Contact(int id, Name name, Photo photo, 
+			List<Phone> phones, List<Email> emails, List<Address> addresses,
+			DateOfBirth dateOfBirth) {
+		this(name, photo, phones, emails, addresses, dateOfBirth);
+		this.id = id;
+	}
 
 	// Getter
+	/**
+	 * Getter of ID
+	 * @return the id of this phone object
+	 */
+	public int getID() {
+		return id;
+	}
 	
 	/**
 	 * Returns the contacts Photo object
@@ -94,6 +118,14 @@ public class Contact implements Parcelable {
 	}
 	
 	// Setters
+	/**
+	 * Setter of ID
+	 * @param id set the id of this object
+	 */
+	public void setID(int id) {
+		this.id = id;
+	}
+	
 	/**
 	 * Overwrites the current Photo object to another
 	 * @param photo
@@ -157,6 +189,7 @@ public class Contact implements Parcelable {
 	 */
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
+		out.writeInt(this.id);
 		out.writeValue(this.name);
 		out.writeValue(this.photo);
 		out.writeValue(this.dateOfBirth);
@@ -188,6 +221,7 @@ public class Contact implements Parcelable {
 		emails = new ArrayList<Email>();
 		addresses = new ArrayList<Address>();
 		
+		this.id = in.readInt();
 		this.name = (Name)in.readValue(Name.class.getClassLoader());
 		this.photo = (Photo)in.readValue(Photo.class.getClassLoader());
 		this.dateOfBirth = (DateOfBirth)in.readValue(DateOfBirth.class.getClassLoader());

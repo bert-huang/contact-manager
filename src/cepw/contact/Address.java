@@ -8,17 +8,45 @@ import android.os.Parcelable;
  * @author I-Yang Huang, IHUA164, 5503504
  */
 public class Address implements Parcelable {
+	private int id;
 	private String type;
 	private String address;
 
 	/**
 	 * Constructor of an address object
-	 * @param type
-	 * @param address
+	 * @param type type of the address, can be Home, Work, Other
+	 * @param address physical address
 	 */
 	public Address(String type, String address) {
 		this.type = type;
 		this.address = address;
+	}
+	
+	/**
+	 * Constructor of an address object
+	 * @param id id of this address
+	 * @param type type of the address, can be Home, Work, Other
+	 * @param address physical address
+	 */
+	public Address(int id, String type, String address) {
+		this(type, address);
+		this.id = id;
+	}
+	
+	/**
+	 * Getter of ID
+	 * @return the id of this phone object
+	 */
+	public int getID() {
+		return id;
+	}
+	
+	/**
+	 * Setter of ID
+	 * @param id set the id of this object
+	 */
+	public void setID(int id) {
+		this.id = id;
 	}
 	
 	/**
@@ -50,6 +78,7 @@ public class Address implements Parcelable {
 	 */
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
+		out.writeInt(id);
 		out.writeString(type);
 		out.writeString(address);
 
@@ -73,6 +102,7 @@ public class Address implements Parcelable {
 	 * @param in Parcel that contains data
 	 */
 	private Address(Parcel in) {
+		this.id = in.readInt();
         this.type = in.readString();
         this.address = in.readString();
     }

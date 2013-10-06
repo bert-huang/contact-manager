@@ -8,20 +8,50 @@ import android.os.Parcelable;
  * @author I-Yang Huang, IHUA164, 5503504
  */
 public class Email implements Parcelable {
+	
+	private int id;
 	private String type;
 	private String email;
 
 	/**
 	 * Constructor of an email object
-	 * @param type
-	 * @param email
-	 * @throws InvalidEmailException 
+	 * @param type type of email, can be Home, Work, Other
+	 * @param email address of the email
+	 * @throws InvalidEmailException when invalid character token is detected
 	 */
 	public Email(String type, String email) throws InvalidEmailException {
 		this.type = type;
 		if (!email.isEmpty() && !email.matches("(.+)[@]([A-Za-z]+[\\.])+[A-Za-z]+"))
 			throw new InvalidEmailException("Not a valid E-mail address");
 		this.email = email;
+	}
+	
+	/**
+	 * 
+	 * @param id id of this email object
+	 * @param type type of email, can be Home, Work, Other
+	 * @param email address of the email
+	 * @throws InvalidEmailException when invalid character token is detected
+	 */
+	public Email(int id, String type, String email) throws InvalidEmailException {
+		this(type, email);
+		this.id = id;
+	}
+	
+	/**
+	 * Getter of ID
+	 * @return the id of this phone object
+	 */
+	public int getID() {
+		return id;
+	}
+	
+	/**
+	 * Setter of ID
+	 * @param id set the id of this object
+	 */
+	public void setID(int id) {
+		this.id = id;
 	}
 	
 	/**
@@ -54,6 +84,7 @@ public class Email implements Parcelable {
 	 */
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
+		out.writeInt(id);
 		out.writeString(type);
 		out.writeString(email);
 
@@ -77,6 +108,7 @@ public class Email implements Parcelable {
 	 * @param in Parcel that contains data
 	 */
 	private Email(Parcel in) {
+		this.id = in.readInt();
         this.type = in.readString();
         this.email = in.readString();
     }
