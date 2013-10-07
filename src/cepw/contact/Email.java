@@ -10,6 +10,7 @@ import android.os.Parcelable;
 public class Email implements Parcelable {
 	
 	private int id;
+	private int contactId;
 	private String type;
 	private String email;
 
@@ -39,6 +40,18 @@ public class Email implements Parcelable {
 	}
 	
 	/**
+	 * 
+	 * @param id id of this email object
+	 * @param type type of email, can be Home, Work, Other
+	 * @param email address of the email
+	 * @throws InvalidEmailException when invalid character token is detected
+	 */
+	public Email(int id, int contactId, String type, String email) throws InvalidEmailException {
+		this(id, type, email);
+		this.contactId = contactId;
+	}
+	
+	/**
 	 * Getter of ID
 	 * @return the id of this phone object
 	 */
@@ -52,6 +65,22 @@ public class Email implements Parcelable {
 	 */
 	public void setID(int id) {
 		this.id = id;
+	}
+	
+	/**
+	 * Getter of contact ID
+	 * @return the id of contact this object belongs to
+	 */
+	public int getContactID() {
+		return contactId;
+	}
+	
+	/**
+	 * Setter of contact ID
+	 * @param id set the id of the contact this object belongs to
+	 */
+	public void setContactID(int id) {
+		this.contactId = id;
 	}
 	
 	/**
@@ -85,6 +114,7 @@ public class Email implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeInt(id);
+		out.writeInt(contactId);
 		out.writeString(type);
 		out.writeString(email);
 
@@ -109,6 +139,7 @@ public class Email implements Parcelable {
 	 */
 	private Email(Parcel in) {
 		this.id = in.readInt();
+		this.contactId = in.readInt();
         this.type = in.readString();
         this.email = in.readString();
     }

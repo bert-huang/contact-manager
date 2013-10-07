@@ -9,6 +9,7 @@ import android.os.Parcelable;
  */
 public class Address implements Parcelable {
 	private int id;
+	private int contactId;
 	private String type;
 	private String address;
 
@@ -34,6 +35,17 @@ public class Address implements Parcelable {
 	}
 	
 	/**
+	 * Constructor of an address object
+	 * @param id id of this address
+	 * @param type type of the address, can be Home, Work, Other
+	 * @param address physical address
+	 */
+	public Address(int id, int contactId, String type, String address) {
+		this(id, type, address);
+		this.contactId = contactId;
+	}
+	
+	/**
 	 * Getter of ID
 	 * @return the id of this phone object
 	 */
@@ -47,6 +59,22 @@ public class Address implements Parcelable {
 	 */
 	public void setID(int id) {
 		this.id = id;
+	}
+	
+	/**
+	 * Getter of contact ID
+	 * @return the id of contact this object belongs to
+	 */
+	public int getContactID() {
+		return contactId;
+	}
+	
+	/**
+	 * Setter of contact ID
+	 * @param id set the id of the contact this object belongs to
+	 */
+	public void setContactID(int id) {
+		this.contactId = id;
 	}
 	
 	/**
@@ -79,6 +107,7 @@ public class Address implements Parcelable {
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeInt(id);
+		out.writeInt(contactId);
 		out.writeString(type);
 		out.writeString(address);
 
@@ -103,6 +132,7 @@ public class Address implements Parcelable {
 	 */
 	private Address(Parcel in) {
 		this.id = in.readInt();
+		this.contactId = in.readInt();
         this.type = in.readString();
         this.address = in.readString();
     }

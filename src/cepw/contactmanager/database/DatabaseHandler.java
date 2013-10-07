@@ -19,30 +19,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static final String TABLE_EMAIL = "emails";
     private static final String TABLE_ADDRESS = "addresses";
  
-    // Contacts Table Columns names
+    // Common Table Columns names
     private static final String KEY_ID = "id";
+    private static final String KEY_CONTACT_ID = "contact";
+    
+    // Contacts Table Columns names
     private static final String KEY_FIRST_NAME = "first_name";
     private static final String KEY_MIDDLE_NAME = "middle_name";
     private static final String KEY_LAST_NAME = "last_name";
     private static final String KEY_NAME_SUFFIX = "name_suffix";
-    private static final String KEY_PH_ID = "phone_id";
-    private static final String KEY_EM_ID = "email_id";
-    private static final String KEY_AD_ID = "address_id";
     private static final String KEY_DOB = "date_of_birth";
     private static final String KEY_IMAGE = "image_(byte_array)";
     
     // Phone Table Columns names
-    private static final String KEY_PHONE_ID = "id";
     private static final String KEY_PHONE_TYPE = "type";
     private static final String KEY_NUMBER = "number";
     
     // Email Table Columns names
-    private static final String KEY_EMAIL_ID = "id";
     private static final String KEY_EMAIL_TYPE = "type";
     private static final String KEY_EMAIL = "email_address";
     
     // Address Table Columns names
-    private static final String KEY_ADDRESS_ID = "id";
     private static final String KEY_ADDRESS_TYPE = "type";
     private static final String KEY_ADDRESS = "physical_address";
     
@@ -56,29 +53,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             KEY_MIDDLE_NAME + " TEXT," + 
     		KEY_LAST_NAME + " TEXT," + 
             KEY_NAME_SUFFIX + " TEXT," +
-            KEY_PH_ID + " INTEGER," + 
-            KEY_EM_ID + " INTEGER," + 
-            KEY_AD_ID + " INTEGER," + 
-            KEY_DOB + " TEXT," + ")";
+            KEY_DOB + " TEXT," + 
+            KEY_IMAGE + " BLOB," + ")";
     
     // Phones table create statement
     private static final String CREATE_TABLE_PHONE = "CREATE TABLE "
-            + TABLE_CONTACTS + "(" + 
-            KEY_PHONE_ID + " INTEGER PRIMARY KEY," + 
+            + TABLE_PHONE + "(" + 
+            KEY_ID + " INTEGER PRIMARY KEY," + 
+            KEY_CONTACT_ID + " INTEGER," + 
             KEY_PHONE_TYPE + " TEXT," + 
             KEY_NUMBER + " TEXT," + ")";
     
     // Email table create statement
     private static final String CREATE_TABLE_EMAIL = "CREATE TABLE "
-            + TABLE_CONTACTS + "(" + 
-            KEY_EMAIL_ID + " INTEGER PRIMARY KEY," + 
+            + TABLE_EMAIL + "(" + 
+            KEY_ID + " INTEGER PRIMARY KEY," + 
+            KEY_CONTACT_ID + " INTEGER," + 
             KEY_EMAIL_TYPE + " TEXT," + 
             KEY_EMAIL + " TEXT," + ")";
     
     // Address table create statement
     private static final String CREATE_TABLE_ADDRESS = "CREATE TABLE "
-            + TABLE_CONTACTS + "(" + 
-            KEY_ADDRESS_ID + " INTEGER PRIMARY KEY," + 
+            + TABLE_ADDRESS + "(" + 
+            KEY_ID + " INTEGER PRIMARY KEY," + 
+            KEY_CONTACT_ID + " INTEGER," + 
             KEY_ADDRESS_TYPE + " TEXT," + 
             KEY_ADDRESS + " TEXT," + ")";
 
