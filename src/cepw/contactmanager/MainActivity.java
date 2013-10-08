@@ -398,22 +398,23 @@ public class MainActivity extends Activity implements
 							phoneNum.add(p.getNumber());
 						}
 
-						for (int i = 0; i <= count; i++) {
+						for (String s : splitted) {
 							
 							// TODO NEED FIX SEARCHING
 							if (fullName.toUpperCase(Locale.US).contains(
-									(splitted[i].toUpperCase(Locale.US)))
+									(s.toUpperCase(Locale.US)))
 									&& !nContacts.contains(c)) {
 								nContacts.add(c);
-							} else {
-								for (String s : phoneNum) {
-									if (s.contains((splitted[i]))
-											&& !nContacts.contains(c)) {
-										nContacts.add(c);
-									}
+							} 
+							
+							if (nContacts.contains(c)) {
+								boolean keep = false;
+								for (String p : phoneNum){
+									if (p.contains(s)) { keep = true; }
 								}
-								
+								if (!keep) { nContacts.remove(c); }
 							}
+								
 						}
 					}
 
