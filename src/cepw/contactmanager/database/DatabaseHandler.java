@@ -464,4 +464,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	            new String[] { String.valueOf(contactId) });
 	}
 	
+	// ===================================================
+	
+	// closing database
+    public void closeDB() {
+        SQLiteDatabase db = this.getReadableDatabase();
+        if (db != null && db.isOpen())
+            db.close();
+    }
+	
 }
