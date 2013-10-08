@@ -1,5 +1,7 @@
 package cepw.contact;
 
+import java.io.ByteArrayOutputStream;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 

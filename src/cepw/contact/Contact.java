@@ -22,6 +22,10 @@ public class Contact implements Parcelable {
 	private List<Address> addresses;
 	private DateOfBirth dateOfBirth;
 
+	{
+		id = -2;
+	}
+	
 	/**
 	 * Constructor of a Contact object
 	 * @param name Name object for this contact

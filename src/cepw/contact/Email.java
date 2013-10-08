@@ -14,6 +14,10 @@ public class Email implements Parcelable {
 	private String type;
 	private String email;
 
+	{
+		id = -2;
+	}
+	
 	/**
 	 * Constructor of an email object
 	 * @param type type of email, can be Home, Work, Other

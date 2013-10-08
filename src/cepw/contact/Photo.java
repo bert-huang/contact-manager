@@ -1,6 +1,9 @@
 package cepw.contact;
 
+import java.io.ByteArrayOutputStream;
+
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,7 +14,7 @@ import android.os.Parcelable;
 public class Photo implements Parcelable {
 	
 	private Bitmap image;
-
+	
 	/**
 	 * Constructor of a Photo object
 	 * @param type
@@ -20,6 +23,14 @@ public class Photo implements Parcelable {
 		// Scale the image to avoid FAILED BINDER TRANSACTION error
 		this.image = Bitmap.createScaledBitmap(img, 300, 300, false);
 	}
+	
+	/**
+	 * Constructor of a Photo object
+	 * @param type
+	 */
+	public Photo(byte[] byteArray) {
+		this.image = BitmapFactory.decodeByteArray(byteArray , 0, byteArray.length);
+	}
 
 	/**
 	 * Get the bitmap of Photo
@@ -27,6 +38,12 @@ public class Photo implements Parcelable {
 	 */
 	public Bitmap getImage() {
 		return image;
+	}
+	
+	public byte[] getByteArray() {
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		this.image.compress(Bitmap.CompressFormat.PNG, 100, stream);
+		return stream.toByteArray();
 	}
 	
 	/**

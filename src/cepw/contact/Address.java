@@ -13,6 +13,10 @@ public class Address implements Parcelable {
 	private String type;
 	private String address;
 
+	{
+		id = -2;
+	}
+	
 	/**
 	 * Constructor of an address object
 	 * @param type type of the address, can be Home, Work, Other

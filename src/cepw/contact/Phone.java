@@ -17,6 +17,10 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	private String number;
 	private boolean defaultNumber;
 
+	{
+		id = -2;
+	}
+	
 	/**
 	 * Constructor of a phone object
 	 * 
