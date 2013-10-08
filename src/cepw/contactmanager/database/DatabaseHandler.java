@@ -118,7 +118,37 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// ========== Helper method ================
 
 	// -=-=-=-=-=-= CREATE =-=-=-=-=-=-=- //
+	
+	public long createContact(Name name, Photo photo, List<Phone> phones, List<Email> emails,
+			List<Address> addresses, DateOfBirth dob) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(KEY_FIRST_NAME, name.getFirstName());
+		values.put(KEY_MIDDLE_NAME, name.getMiddleName());
+		values.put(KEY_LAST_NAME, name.getLastName());
+		values.put(KEY_NAME_SUFFIX, name.getSuffix());
+		values.put(KEY_DOB, dob.getValue());
+		values.put(KEY_IMAGE, photo.getByteArray());
 
+		// insert row
+		long contactId = db.insert(TABLE_CONTACTS, null, values);
+
+		// add associated phones, emails and addresses
+		for (Phone p : phones) {
+			createPhone(p, contactId);
+		}
+
+		for (Email e : emails) {
+			createEmail(e, contactId);
+		}
+
+		for (Address a : addresses) {
+			createAddress(a, contactId);
+		}
+
+		return contactId;
+	}
+	
 	public long createContact(Contact c) {
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
