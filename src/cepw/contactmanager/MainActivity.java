@@ -15,6 +15,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,6 +33,7 @@ import android.widget.Toast;
 
 import cepw.contact.*;
 import cepw.contactmanager.SortingDialog.SortType;
+import cepw.contactmanager.database.DatabaseHandler;
 
 /**
  * The Main Activity of the contact manager. Displays the contact list and
@@ -43,6 +45,8 @@ import cepw.contactmanager.SortingDialog.SortType;
  */
 public class MainActivity extends Activity implements
 		SortingDialog.OnCompleteListener {
+	
+	private static final String LOG = "MainActivity";
 
 	// Request code
 	private static final int CREATE_CONTACT_REQUEST = 1;
@@ -52,6 +56,7 @@ public class MainActivity extends Activity implements
 	// A variable to store the sorting type
 	private static SortType CURRENT_SORT_OPTION;
 
+	private DatabaseHandler db;
 	
 	// Individual components and list to store contacts.
 	private List<Contact> contacts; // The actual list that stores contacts
@@ -72,6 +77,8 @@ public class MainActivity extends Activity implements
 		setContentView(R.layout.activity_main);
 
 		getActionBar().setDisplayShowTitleEnabled(false);
+		
+		db = new DatabaseHandler(getApplicationContext());
 
 		foreverAlone = (TextView) findViewById(R.id.textview_no_friend);
 		divider = (View) findViewById(R.id.main_activity_separator_1);
@@ -94,7 +101,7 @@ public class MainActivity extends Activity implements
 			}
 		});
 
-		contacts = new ArrayList<Contact>();
+		contacts = db.getAllContacts();
 		contactList = new ArrayList<Contact>();
 		list = (ListView) findViewById(R.id.listview_contact_list);
 		adapter = new ContactListAdapter(MainActivity.this, contacts);
@@ -102,9 +109,11 @@ public class MainActivity extends Activity implements
 		list.setOnItemClickListener(new ListItemClickedListener());
 		list.setOnItemLongClickListener(new ListItemClickedListener());
 		MainActivity.CURRENT_SORT_OPTION = SortType.SORT_BY_FIRST_NAME;
+		adapter.notifyDataSetChanged();
 
 		// TESTING PURPOSE
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+/*		
+ 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage("Add dummy contacts for testing purpose?")
 				.setTitle("ADD TESTING OBJECTS")
 				.setNegativeButton("No", null)
@@ -122,7 +131,8 @@ public class MainActivity extends Activity implements
 							}
 						});
 		AlertDialog alert = builder.create();
-		alert.show();
+		alert.show(); 
+*/
 
 	}
 
@@ -198,12 +208,10 @@ public class MainActivity extends Activity implements
 					intent.putExtra("POSITION", pos);
 					intent.putExtra("SELECTED_CONTACT", contacts.get(pos));
 					startActivityForResult(intent, EDIT_CONTACT_REQUEST);
-/*					contacts.set(pos,(Contact) data.getExtras().getParcelable("MODIFIED_CONTACT"));
-
-					sortList(contacts, CURRENT_SORT_OPTION);
-					adapter.notifyDataSetChanged();*/
 
 				} else if (action.equals("DELETE_CONTACT")) {
+					db.deleteContact(contacts.get(pos).getID());
+					Log.d(LOG, "Contacts Removed from DB");
 					contacts.remove(pos);
 					Toast.makeText(MainActivity.this, "Contact Removed!",
 							Toast.LENGTH_SHORT).show();
@@ -404,6 +412,7 @@ public class MainActivity extends Activity implements
 										nContacts.add(c);
 									}
 								}
+								
 							}
 						}
 					}
@@ -485,6 +494,14 @@ public class MainActivity extends Activity implements
 		MainActivity.CURRENT_SORT_OPTION = sortType;
 		sortList(contacts, sortType);
 		adapter.notifyDataSetChanged();
+	}
+	
+	
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		db.closeDB();
 	}
 
 	/**
@@ -614,4 +631,6 @@ public class MainActivity extends Activity implements
 		adapter.notifyDataSetChanged();
 
 	}
+
+	
 }

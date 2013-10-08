@@ -51,7 +51,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_LAST_NAME = "last_name";
 	private static final String KEY_NAME_SUFFIX = "name_suffix";
 	private static final String KEY_DOB = "date_of_birth";
-	private static final String KEY_IMAGE = "image_(byte_array)";
+	private static final String KEY_IMAGE = "image";
 
 	// Phone Table Columns names
 	private static final String KEY_NUMBER = "number";
@@ -65,29 +65,40 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Table Create Statements
 	// Contacts table create statement
-	private static final String CREATE_TABLE_CONTACTS = "CREATE TABLE "
-			+ TABLE_CONTACTS + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-			+ KEY_FIRST_NAME + " TEXT," + KEY_MIDDLE_NAME + " TEXT,"
-			+ KEY_LAST_NAME + " TEXT," + KEY_NAME_SUFFIX + " TEXT," + KEY_DOB
-			+ " TEXT," + KEY_IMAGE + " BLOB" + ")";
+	private static final String CREATE_TABLE_CONTACTS = 
+			"CREATE TABLE " + TABLE_CONTACTS + "(" + 
+			KEY_ID 				+ " INTEGER PRIMARY KEY," + 
+			KEY_FIRST_NAME 		+ " TEXT," + 
+			KEY_MIDDLE_NAME 	+ " TEXT," + 
+			KEY_LAST_NAME 		+ " TEXT," + 
+			KEY_NAME_SUFFIX 	+ " TEXT," + 
+			KEY_DOB 			+ " TEXT," + 
+			KEY_IMAGE 			+ " BLOB" + ")";
 
 	// Phones table create statement
-	private static final String CREATE_TABLE_PHONE = "CREATE TABLE "
-			+ TABLE_PHONE + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-			+ KEY_CONTACT_ID + " INTEGER," + KEY_TYPE + " TEXT," + KEY_NUMBER
-			+ " TEXT," + KEY_DEFAULT + " INTEGER" + ")";
+	private static final String CREATE_TABLE_PHONE = 
+			"CREATE TABLE " + TABLE_PHONE + "(" + 
+			KEY_ID 				+ " INTEGER PRIMARY KEY," + 
+			KEY_CONTACT_ID 		+ " INTEGER," + 
+			KEY_TYPE 			+ " TEXT," + 
+			KEY_NUMBER 			+ " TEXT," + 
+			KEY_DEFAULT 		+ " INTEGER" + ")";
 
 	// Email table create statement
-	private static final String CREATE_TABLE_EMAIL = "CREATE TABLE "
-			+ TABLE_EMAIL + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-			+ KEY_CONTACT_ID + " INTEGER," + KEY_TYPE + " TEXT," + KEY_EMAIL
-			+ " TEXT" + ")";
+	private static final String CREATE_TABLE_EMAIL = 
+			"CREATE TABLE " + TABLE_EMAIL + "(" + 
+			KEY_ID 				+ " INTEGER PRIMARY KEY," + 
+			KEY_CONTACT_ID 		+ " INTEGER," + 
+			KEY_TYPE 			+ " TEXT," + 
+			KEY_EMAIL 			+ " TEXT" + ")";
 
 	// Address table create statement
-	private static final String CREATE_TABLE_ADDRESS = "CREATE TABLE "
-			+ TABLE_ADDRESS + "(" + KEY_ID + " INTEGER PRIMARY KEY,"
-			+ KEY_CONTACT_ID + " INTEGER," + KEY_TYPE + " TEXT," + KEY_ADDRESS
-			+ " TEXT" + ")";
+	private static final String CREATE_TABLE_ADDRESS = 
+			"CREATE TABLE " + TABLE_ADDRESS + "(" + 
+			KEY_ID 				+ " INTEGER PRIMARY KEY," + 
+			KEY_CONTACT_ID 		+ " INTEGER," + 
+			KEY_TYPE 			+ " TEXT," + 
+			KEY_ADDRESS 		+ " TEXT" + ")";
 
 	public DatabaseHandler(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -256,7 +267,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		Cursor cursor = db.rawQuery(selectQuery, null);
 		if (cursor.moveToFirst()) {
 			do {
-				int contactId = cursor.getInt(cursor.getColumnIndex("KEY_ID"));
+				int contactId = cursor.getInt(cursor.getColumnIndex(KEY_ID));
 
 				Name name = new Name(
 						cursor.getString(cursor.getColumnIndex(KEY_FIRST_NAME)),
@@ -442,6 +453,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// -=-=-=-=-=-= Delete =-=-=-=-=-=-=- //
 	public void deleteContact(long contactId) {
 	    SQLiteDatabase db = this.getWritableDatabase();
+	    deletePhones(contactId);
+	    deleteEmails(contactId);
+	    deleteAddresses(contactId);
 	    db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
 	            new String[] { String.valueOf(contactId) });
 	}
@@ -471,6 +485,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         if (db != null && db.isOpen())
             db.close();
+    }
+    
+    //==================================================
+    public int getContactCount() {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	String selectQuery = "SELECT  * FROM " + TABLE_CONTACTS;
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+    	return cursor.getCount();
+    }
+    
+    public int getPhoneCount() {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	String selectQuery = "SELECT  * FROM " + TABLE_PHONE;
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+    	return cursor.getCount();
+    }
+    
+    public int getEmailCount() {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	String selectQuery = "SELECT  * FROM " + TABLE_EMAIL;
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+    	return cursor.getCount();
+    }
+    
+    public int getAddressCount() {
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	String selectQuery = "SELECT  * FROM " + TABLE_ADDRESS;
+    	Cursor cursor = db.rawQuery(selectQuery, null);
+    	return cursor.getCount();
     }
 	
 }

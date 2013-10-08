@@ -16,6 +16,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,7 @@ import cepw.contact.*;
 import cepw.contact.Email.InvalidEmailException;
 import cepw.contact.Phone.InvalidPhoneException;
 import cepw.contactmanager.ImageChooserDialog.LoadImageType;
+import cepw.contactmanager.database.DatabaseHandler;
 
 /**
  * This is an android activity that contains fields that allows user to create a
@@ -43,6 +45,8 @@ import cepw.contactmanager.ImageChooserDialog.LoadImageType;
 public class EditActivity extends Activity implements
 		ImageChooserDialog.OnCompleteListener {
 
+	private static final String LOG = "EditActivity";
+	
 	// Request code
 	private static final int GALLERY_REQUEST = 1;
 	private static final int CAMERA_REQUEST = 2;
@@ -52,6 +56,8 @@ public class EditActivity extends Activity implements
 	// clicked on different views
 	private enum FieldType { PHONE, EMAIL, ADDRESS }
 
+	private DatabaseHandler db;
+	
 	// Individual components
 	private ImageView imageBtn;
 	private ImageButton expandName, collapseName, clearDob;
@@ -177,6 +183,7 @@ public class EditActivity extends Activity implements
 						finish();
 					}else {
 						intent.putExtra("NEW_CONTACT", contact);
+						Log.d(LOG, ""+contact.getID());
 						setResult(RESULT_OK, intent);
 						Toast.makeText(EditActivity.this, "Created",
 								Toast.LENGTH_SHORT).show();
@@ -492,8 +499,9 @@ public class EditActivity extends Activity implements
 				? true : false;
 		
 		// If all fields are empty, return null
+		db = new DatabaseHandler(getApplicationContext());
 		if (isEmpty) {
-			return null;
+			contact = null;
 			
 		// If contact existed (therefore editing)
 		}else if (contact != null) {
@@ -503,13 +511,20 @@ public class EditActivity extends Activity implements
 			contact.setEmail(emails);
 			contact.setAddresses(addresses);
 			contact.setDateOfBirth(dob);
-
-			return contact;
+			Log.d(LOG, "Contact Object Updated");
+			db.updateContact(contact);
+			Log.d(LOG, "Updated Contact in DB");
 			
 		// If contact is null (therefore creating new)
 		} else {
-			return new Contact(name, photo, phones, emails, addresses, dob);
+			long contactId = db.createContact(name, photo, phones, emails, addresses, dob);
+			Log.d(LOG, "Created Contact in DB");
+			contact = db.getContact(contactId);
+			Log.d(LOG, "Contact Object Created");
 		}
+		
+		db.closeDB();
+		return contact;
 
 	}
 
