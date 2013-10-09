@@ -310,12 +310,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 			do {
 				try {
 					Phone p = new Phone(
-							cursor.getInt(cursor.getColumnIndex(KEY_ID)),
-							cursor.getInt(cursor.getColumnIndex(KEY_CONTACT_ID)),
-							cursor.getString(cursor.getColumnIndex(KEY_TYPE)),
-							cursor.getString(cursor.getColumnIndex(KEY_NUMBER)),
-							((cursor.getInt(cursor.getColumnIndex(KEY_DEFAULT)) == 1 ? true
-									: false)));
+						cursor.getInt(cursor.getColumnIndex(KEY_ID)),
+						cursor.getInt(cursor.getColumnIndex(KEY_CONTACT_ID)),
+						cursor.getString(cursor.getColumnIndex(KEY_TYPE)),
+						cursor.getString(cursor.getColumnIndex(KEY_NUMBER)),
+						((cursor.getInt(cursor.getColumnIndex(KEY_DEFAULT)) == 1 ? true
+								: false)));
 
 					pl.add(p);
 				} catch (InvalidPhoneException e) {
@@ -387,28 +387,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_DOB, c.getDateOfBirth().getValue());
 		values.put(KEY_IMAGE, c.getPhoto().getByteArray());
 
+		
+		deleteAllPhones(c.getID());
 		for (Phone p : c.getPhones()) {
-			if (p.getID() != -2) {
-				updatePhone(p, c.getID());
-			}else {
-				createPhone(p, c.getID());
-			}
+			createPhone(p, c.getID());
 		}
 		
+		deleteAllEmails(c.getID());
 		for (Email e : c.getEmails()) {
-			if (e.getID() != -2) {
-				updateEmail(e, c.getID());
-			}else {
-				createEmail(e, c.getID());
-			}
+			createEmail(e, c.getID());
 		}
 		
+		deleteAllAddresses(c.getID());
 		for (Address a : c.getAddresses()) {
-			if (a.getID() != -2) {
-				updateAddress(a, c.getID());
-			}else {
-				createAddress(a, c.getID());
-			}
+			createAddress(a, c.getID());
 		}
 		
 		// updating row
@@ -426,6 +418,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		
 		return db.update(TABLE_PHONE, values, KEY_ID + " = ?",
 				new String[] { String.valueOf(p.getID()) });
+	}
+	
+	public int setDefaultPhone(int phoneId) {
+		clearAllDefaultPhone();
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.put(KEY_DEFAULT, 1);
+		
+		return db.update(TABLE_PHONE, values, KEY_ID + " = ?",
+				new String[] { String.valueOf(phoneId) });
+	}
+	
+	public void clearAllDefaultPhone() {
+		SQLiteDatabase db = this.getWritableDatabase();
+		String rawQ = "UPDATE "+ TABLE_PHONE + " SET "+ KEY_DEFAULT +" = " + "0 * " + KEY_DEFAULT;
+		 db.rawQuery(rawQ, null);
 	}
 	
 	public int updateEmail(Email e, int contactId) {
@@ -453,26 +461,26 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// -=-=-=-=-=-= Delete =-=-=-=-=-=-=- //
 	public void deleteContact(long contactId) {
 	    SQLiteDatabase db = this.getWritableDatabase();
-	    deletePhones(contactId);
-	    deleteEmails(contactId);
-	    deleteAddresses(contactId);
+	    deleteAllPhones(contactId);
+	    deleteAllEmails(contactId);
+	    deleteAllAddresses(contactId);
 	    db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
 	            new String[] { String.valueOf(contactId) });
 	}
 	
-	public void deletePhones(long contactId) {
+	public void deleteAllPhones(long contactId) {
 		SQLiteDatabase db = this.getWritableDatabase();
 	    db.delete(TABLE_PHONE, KEY_CONTACT_ID + " = ?",
 	            new String[] { String.valueOf(contactId) });
 	}
 	
-	public void deleteEmails(long contactId) {
+	public void deleteAllEmails(long contactId) {
 		SQLiteDatabase db = this.getWritableDatabase();
 	    db.delete(TABLE_EMAIL, KEY_CONTACT_ID + " = ?",
 	            new String[] { String.valueOf(contactId) });
 	}
 	
-	public void deleteAddresses(long contactId) {
+	public void deleteAllAddresses(long contactId) {
 		SQLiteDatabase db = this.getWritableDatabase();
 	    db.delete(TABLE_ADDRESS, KEY_CONTACT_ID + " = ?",
 	            new String[] { String.valueOf(contactId) });

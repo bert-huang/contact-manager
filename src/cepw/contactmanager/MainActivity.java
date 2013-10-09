@@ -12,6 +12,7 @@ import android.app.DialogFragment;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -54,6 +55,7 @@ public class MainActivity extends Activity implements
 	private static final int CONTACT_INFO_REQUEST = 3;
 
 	// A variable to store the sorting type
+	private static String SORTBY = "SORT_TYPE";
 	private static SortType CURRENT_SORT_OPTION;
 
 	private DatabaseHandler db;
@@ -79,6 +81,7 @@ public class MainActivity extends Activity implements
 		getActionBar().setDisplayShowTitleEnabled(false);
 		
 		db = new DatabaseHandler(getApplicationContext());
+		loadDataFromSharedPref();
 
 		foreverAlone = (TextView) findViewById(R.id.textview_no_friend);
 		divider = (View) findViewById(R.id.main_activity_separator_1);
@@ -108,7 +111,8 @@ public class MainActivity extends Activity implements
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new ListItemClickedListener());
 		list.setOnItemLongClickListener(new ListItemClickedListener());
-		MainActivity.CURRENT_SORT_OPTION = SortType.SORT_BY_FIRST_NAME;
+//		MainActivity.CURRENT_SORT_OPTION = SortType.SORT_BY_FIRST_NAME;
+		sortList(contacts, CURRENT_SORT_OPTION);
 		adapter.notifyDataSetChanged();
 
 		// TESTING PURPOSE
@@ -164,7 +168,7 @@ public class MainActivity extends Activity implements
 			return true;
 
 		case R.id.action_exit:
-			finish();
+			onExit();
 			return true;
 
 		default:
@@ -377,12 +381,6 @@ public class MainActivity extends Activity implements
 				} else {
 					constraint = constraint.toString().trim()
 							.replaceAll("[\\s+]", " ");
-					int count = 0;
-					for (int i = 0; i < constraint.toString().length(); i++) {
-						if (constraint.toString().charAt(i) == ' ') {
-							count++;
-						}
-					}
 					String[] splitted = constraint.toString().split(" ");
 
 					// Filter name
@@ -393,28 +391,12 @@ public class MainActivity extends Activity implements
 								.getName().getLastName(), c.getName()
 								.getSuffix())[0];
 
-						List<String> phoneNum = new ArrayList<String>();
-						for (Phone p : c.getPhones()) {
-							phoneNum.add(p.getNumber());
-						}
-
 						for (String s : splitted) {
-							
-							// TODO NEED FIX SEARCHING
 							if (fullName.toUpperCase(Locale.US).contains(
 									(s.toUpperCase(Locale.US)))
 									&& !nContacts.contains(c)) {
 								nContacts.add(c);
-							} 
-							
-							if (nContacts.contains(c)) {
-								boolean keep = false;
-								for (String p : phoneNum){
-									if (p.contains(s)) { keep = true; }
-								}
-								if (!keep) { nContacts.remove(c); }
 							}
-								
 						}
 					}
 
@@ -498,11 +480,49 @@ public class MainActivity extends Activity implements
 	}
 	
 	
-
+	protected void onPause() {
+		super.onPause();
+		saveDataToSharedPref();
+	}
+	
+	protected void onResume() {
+		super.onResume();
+		loadDataFromSharedPref();
+	}
+	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
+		saveDataToSharedPref();
 		db.closeDB();
+	}
+	
+	protected void onExit() {
+		saveDataToSharedPref();
+		db.closeDB();
+		finish();
+	}
+	
+	private void saveDataToSharedPref() {
+		SharedPreferences pref = getPreferences(MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit();
+		
+		// Save sort type
+		switch (CURRENT_SORT_OPTION) {
+		case SORT_BY_FIRST_NAME:
+			editor.putInt(SORTBY, 0); break;
+		case SORT_BY_LAST_NAME:
+			editor.putInt(SORTBY, 1); break;
+		case SORT_BY_PHONE:
+			editor.putInt(SORTBY, 2); break;
+		}
+		
+		editor.apply();
+	}
+	
+	private void loadDataFromSharedPref() {
+		SharedPreferences pref = getPreferences(MODE_PRIVATE);
+		CURRENT_SORT_OPTION = SortType.values()[pref.getInt(SORTBY, 0)];
 	}
 
 	/**

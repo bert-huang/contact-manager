@@ -14,6 +14,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -225,7 +226,7 @@ public class InfoActivity extends Activity {
 	private void populateData() {
 		// Set image
 		image.setImageBitmap(contact.getPhoto().getImage());
-
+	
 		// Set name
 		if (!contact.getName().getFirstName().equals("")) {
 			firstName.setText(contact.getName().getFirstName());
