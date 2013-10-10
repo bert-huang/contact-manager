@@ -13,6 +13,8 @@ import android.os.Parcelable;
  */
 public class Photo implements Parcelable {
 	
+	public static final int IMAGE_SIZE = 300;
+	
 	private Bitmap image;
 	
 	/**
@@ -21,7 +23,7 @@ public class Photo implements Parcelable {
 	 */
 	public Photo(Bitmap img) {
 		// Scale the image to avoid FAILED BINDER TRANSACTION error
-		this.image = Bitmap.createScaledBitmap(img, 300, 300, false);
+		this.image = Bitmap.createScaledBitmap(img, IMAGE_SIZE, IMAGE_SIZE, false);
 	}
 	
 	/**
