@@ -51,6 +51,8 @@ public class EditActivity extends Activity implements
 	private static final int GALLERY_REQUEST = 1;
 	private static final int CAMERA_REQUEST = 2;
 	private static final int IMG_CROP_REQUEST = 3;
+	
+	private static final int IMAGE_SIZE = Photo.IMAGE_SIZE;
 
 	// Constants for determining the type of field to inflate when buttons are
 	// clicked on different views
@@ -255,7 +257,7 @@ public class EditActivity extends Activity implements
 					if (b != null) {
 						displayPhoto = b;
 						imageBtn.setImageBitmap(Bitmap.createScaledBitmap(b,
-								300, 300, false));
+								IMAGE_SIZE, IMAGE_SIZE, false));
 					} else {
 						Toast.makeText(this, "Failed to load image!",
 								Toast.LENGTH_LONG).show();
@@ -762,8 +764,8 @@ public class EditActivity extends Activity implements
 			cropIntent.putExtra("aspectX", 1);
 			cropIntent.putExtra("aspectY", 1);
 			// indicate output X and Y
-			cropIntent.putExtra("outputX", 300);
-			cropIntent.putExtra("outputY", 300);
+			cropIntent.putExtra("outputX", IMAGE_SIZE);
+			cropIntent.putExtra("outputY", IMAGE_SIZE);
 			// retrieve data on return
 			cropIntent.putExtra("return-data", true);
 			// start the activity - we handle returning in onActivityResult

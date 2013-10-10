@@ -331,10 +331,6 @@ public class MainActivity extends Activity implements
 			ImageView iv = (ImageView) vg.getChildAt(0);
 			TextView nameTag = (TextView) vg.getChildAt(1);
 
-			// iv.setImageBitmap(Bitmap.createScaledBitmap(curContact.getImage(),
-			// Utilities.dpToPx(MainActivity.this, 100),
-			// Utilities.dpToPx(MainActivity.this, 100), false));
-
 			iv.setImageBitmap(curContact.getPhoto().getImage());
 
 			if (fullName.equals("")) {

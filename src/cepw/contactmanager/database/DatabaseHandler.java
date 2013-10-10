@@ -36,14 +36,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// Contacts table name
 	private static final String TABLE_CONTACTS = "contacts";
-	private static final String TABLE_PHONE = "phones";
-	private static final String TABLE_EMAIL = "emails";
-	private static final String TABLE_ADDRESS = "addresses";
 
 	// Common Table Columns names
 	private static final String KEY_ID = "id";
-	private static final String KEY_CONTACT_ID = "contact";
-	private static final String KEY_TYPE = "type";
 
 	// Contacts Table Columns names
 	private static final String KEY_FIRST_NAME = "first_name";
@@ -113,7 +108,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		// add associated phones, emails and addresses
 		StringBuffer phone = new StringBuffer();
 		for (Phone p : phones) {
-			phone.append(p.getType() + "," + p.getNumber() + "," + (p.isDefault()? 1 : 0) + ";");
+			phone.append(p.getType() + "," + p.getNumber() + "," + (p.isDefault()? "1" : "0") + ";");
 		}
 		if(phone.length() != 0) {phone.deleteCharAt(phone.length()-1);}
 		values.put(KEY_PHONE, phone.toString());
@@ -152,7 +147,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		// add associated phones, emails and addresses
 		StringBuffer phone = new StringBuffer();
 		for (Phone p : c.getPhones()) {
-			phone.append(p.getType() + "," + p.getNumber() + "," + (p.isDefault()? 1 : 0) + ";");
+			phone.append(p.getType() + "," + p.getNumber() + "," + (p.isDefault() ? "1" : "0") + ";");
 		}
 		if(phone.length() != 0) {phone.deleteCharAt(phone.length()-1);}
 		values.put(KEY_PHONE, phone.toString());
@@ -208,32 +203,40 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		
 		List<Phone> phoneList = new ArrayList<Phone>();
 		String[] phones = cursor.getString(cursor.getColumnIndex(KEY_PHONE)).split(";");
-		for (String p : phones) {
-			String[] indiPh = p.split(",");
-			try {
-				phoneList.add(new Phone(indiPh[0], indiPh[1], (indiPh[2].equals("1"))? true : false));
-			} catch (InvalidPhoneException phEx) {
-				continue;
+		
+		if (!phones[0].isEmpty()){
+			for (String p : phones) {
+				String[] indiPh = p.split(",");
+				
+				try {
+					phoneList.add(new Phone(indiPh[0], indiPh[1], (indiPh[2].equals("1")) ? true : false));
+				} catch (InvalidPhoneException phEx) {
+					continue;
+				}
 			}
 		}
 		
 		List<Email> emailList = new ArrayList<Email>();
 		String[] emails = cursor.getString(cursor.getColumnIndex(KEY_EMAIL)).split(";");
-		for (String e : emails) {
-			String[] indiEm = e.split(",");
-			try {
-				emailList.add(new Email(indiEm[0], indiEm[1]));
-			} catch (InvalidEmailException emEx) {
-				continue;
+		if (!emails[0].isEmpty()){
+			for (String e : emails) {
+				String[] indiEm = e.split(",");
+				try {
+					emailList.add(new Email(indiEm[0], indiEm[1]));
+				} catch (InvalidEmailException emEx) {
+					continue;
+				}
 			}
 		}
 		
 		List<Address> addressList = new ArrayList<Address>();
 		String[] addresses = cursor.getString(cursor.getColumnIndex(KEY_ADDRESS)).split(";");
-		for (String a : addresses) {
-			String[] indiAd = a.split(",");
-			addressList.add(new Address(indiAd[0], indiAd[1]));
-
+		if (!addresses[0].isEmpty()){
+			for (String a : addresses) {
+				String[] indiAd = a.split(",");
+				addressList.add(new Address(indiAd[0], indiAd[1]));
+	
+			}
 		}
 
 		DateOfBirth dob = new DateOfBirth(cursor.getString(cursor
@@ -272,32 +275,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				
 				List<Phone> phoneList = new ArrayList<Phone>();
 				String[] phones = cursor.getString(cursor.getColumnIndex(KEY_PHONE)).split(";");
-				for (String p : phones) {
-					String[] indiPh = p.split(",");
-					try {
-						phoneList.add(new Phone(indiPh[0], indiPh[1], (indiPh[2].equals("1"))? true : false));
-					} catch (InvalidPhoneException phEx) {
-						continue;
+				if (!phones[0].isEmpty()){
+					for (String p : phones) {
+						String[] indiPh = p.split(",");
+						try {
+							phoneList.add(new Phone(indiPh[0], indiPh[1], (indiPh[2].equals("1"))? true : false));
+						} catch (InvalidPhoneException phEx) {
+							continue;
+						}
 					}
 				}
 				
 				List<Email> emailList = new ArrayList<Email>();
 				String[] emails = cursor.getString(cursor.getColumnIndex(KEY_EMAIL)).split(";");
-				for (String e : emails) {
-					String[] indiEm = e.split(",");
-					try {
-						emailList.add(new Email(indiEm[0], indiEm[1]));
-					} catch (InvalidEmailException emEx) {
-						continue;
+				if (!emails[0].isEmpty()){
+					for (String e : emails) {
+						String[] indiEm = e.split(",");
+						try {
+							emailList.add(new Email(indiEm[0], indiEm[1]));
+						} catch (InvalidEmailException emEx) {
+							continue;
+						}
 					}
 				}
 				
 				List<Address> addressList = new ArrayList<Address>();
 				String[] addresses = cursor.getString(cursor.getColumnIndex(KEY_ADDRESS)).split(";");
-				for (String a : addresses) {
-					String[] indiAd = a.split(",");
-					addressList.add(new Address(indiAd[0], indiAd[1]));
-
+				if (!addresses[0].isEmpty()){
+					for (String a : addresses) {
+						String[] indiAd = a.split(",");
+						addressList.add(new Address(indiAd[0], indiAd[1]));
+			
+					}
 				}
 
 				DateOfBirth dob = new DateOfBirth(cursor.getString(cursor
@@ -310,9 +319,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		}
 		return cl;
 	}
-
-
-
 
 	// -=-=-=-=-=-= Update =-=-=-=-=-=-=- //
 	
@@ -327,14 +333,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_DOB, c.getDateOfBirth().getValue());
 		values.put(KEY_IMAGE, c.getPhoto().getByteArray());
 
+		StringBuffer phone = new StringBuffer();
+		for (Phone p : c.getPhones()) {
+			phone.append(p.getType() + "," + p.getNumber() + "," + (p.isDefault()? 1 : 0) + ";");
+		}
+		if(phone.length() != 0) {phone.deleteCharAt(phone.length()-1);}
+		values.put(KEY_PHONE, phone.toString());
 		
+		StringBuffer email = new StringBuffer();
+		for (Email e : c.getEmails()) {
+			email.append(e.getType() + "," + e.getEmail() + ";");
+		}
+		if(email.length() != 0) {email.deleteCharAt(email.length()-1);}
+		values.put(KEY_EMAIL, email.toString());
+		
+		StringBuffer address = new StringBuffer();
+		for (Address a : c.getAddresses()) {
+			address.append(a.getType() + "," + a.getAddress() + ";");
+		}
+		if(address.length() != 0) {address.deleteCharAt(address.length()-1);}
+		values.put(KEY_ADDRESS, address.toString());
 		
 		// updating row
 		return db.update(TABLE_CONTACTS, values, KEY_ID + " = ?",
 				new String[] { String.valueOf(c.getID()) });
 	}
-	
-
 	
 	// -=-=-=-=-=-= Delete =-=-=-=-=-=-=- //
 	public void deleteContact(long contactId) {
@@ -343,9 +366,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	            new String[] { String.valueOf(contactId) });
 	}
 	
-	
 	// ===================================================
-	
+
 	// closing database
     public void closeDB() {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -357,27 +379,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public int getContactCount() {
     	SQLiteDatabase db = this.getReadableDatabase();
     	String selectQuery = "SELECT  * FROM " + TABLE_CONTACTS;
-    	Cursor cursor = db.rawQuery(selectQuery, null);
-    	return cursor.getCount();
-    }
-    
-    public int getPhoneCount() {
-    	SQLiteDatabase db = this.getReadableDatabase();
-    	String selectQuery = "SELECT  * FROM " + TABLE_PHONE;
-    	Cursor cursor = db.rawQuery(selectQuery, null);
-    	return cursor.getCount();
-    }
-    
-    public int getEmailCount() {
-    	SQLiteDatabase db = this.getReadableDatabase();
-    	String selectQuery = "SELECT  * FROM " + TABLE_EMAIL;
-    	Cursor cursor = db.rawQuery(selectQuery, null);
-    	return cursor.getCount();
-    }
-    
-    public int getAddressCount() {
-    	SQLiteDatabase db = this.getReadableDatabase();
-    	String selectQuery = "SELECT  * FROM " + TABLE_ADDRESS;
     	Cursor cursor = db.rawQuery(selectQuery, null);
     	return cursor.getCount();
     }
