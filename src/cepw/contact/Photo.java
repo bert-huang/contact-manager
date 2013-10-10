@@ -13,7 +13,7 @@ import android.os.Parcelable;
  */
 public class Photo implements Parcelable {
 	
-	public static final int IMAGE_SIZE = 250;
+	public static final int IMAGE_SIZE = 300;
 	
 	private Bitmap image;
 	
