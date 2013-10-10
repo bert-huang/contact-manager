@@ -37,10 +37,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	// Contacts table name
 	private static final String TABLE_CONTACTS = "contacts";
 
-	// Common Table Columns names
-	private static final String KEY_ID = "id";
-
 	// Contacts Table Columns names
+	private static final String KEY_ID = "id";
 	private static final String KEY_FIRST_NAME = "first_name";
 	private static final String KEY_MIDDLE_NAME = "middle_name";
 	private static final String KEY_LAST_NAME = "last_name";
@@ -50,10 +48,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	private static final String KEY_ADDRESS = "address";
 	private static final String KEY_DOB = "date_of_birth";
 	private static final String KEY_IMAGE = "image";
-
-	// Email Table Columns names
-
-	// Address Table Columns names
 
 	// Table Create Statements
 	// Contacts table create statement
