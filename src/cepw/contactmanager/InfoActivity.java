@@ -292,6 +292,7 @@ public class InfoActivity extends Activity implements
 			phoneAdapter = new PhoneListAdapter(InfoActivity.this, phones);
 			phoneList.setAdapter(phoneAdapter);
 			phoneList.setOnItemLongClickListener(new ListItemClickedListener());
+			phoneList.setOnItemClickListener(new ListItemClickedListener());
 			Utilities.setNoCollapseListView(phoneList);
 		}
 
@@ -304,6 +305,7 @@ public class InfoActivity extends Activity implements
 			emailAdapter = new EmailListAdapter(InfoActivity.this, emails);
 			emailList.setAdapter(emailAdapter);
 			emailList.setOnItemLongClickListener(new ListItemClickedListener());
+			emailList.setOnItemClickListener(new ListItemClickedListener());
 			Utilities.setNoCollapseListView(emailList);
 		}
 
@@ -316,8 +318,8 @@ public class InfoActivity extends Activity implements
 			addressAdapter = new AddressListAdapter(InfoActivity.this,
 					addresses);
 			addressList.setAdapter(addressAdapter);
-			addressList
-					.setOnItemLongClickListener(new ListItemClickedListener());
+			addressList.setOnItemLongClickListener(new ListItemClickedListener());
+			addressList.setOnItemClickListener(new ListItemClickedListener());
 			Utilities.setNoCollapseListView(addressList);
 		}
 
@@ -462,7 +464,8 @@ public class InfoActivity extends Activity implements
 	 * clicked
 	 */
 	private class ListItemClickedListener implements
-			AdapterView.OnItemLongClickListener {
+			AdapterView.OnItemLongClickListener,
+			AdapterView.OnItemClickListener{
 
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
@@ -505,6 +508,29 @@ public class InfoActivity extends Activity implements
 
 			return true;
 		}
+
+		@Override
+		public void onItemClick(AdapterView<?> parent, View view, 
+				int position,long id) {
+			
+			switch (parent.getId()) {
+			
+			case R.id.listview_phone_info:
+				String number = contact.getPhones().get(position).getNumber();
+				Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+				dialIntent.setData(Uri.parse("tel:" + number));
+				startActivity(dialIntent);
+				break;
+			case R.id.listview_email_info:
+				String email = contact.getEmails().get(position).getEmail();
+				invokeEmailIntent(email);
+				break;
+			case R.id.listview_address_info:
+				String address = contact.getAddresses().get(position).getAddress();
+				invokeMapIntent(address);
+				break;
+			}			
+		}
 	}
 
 	@Override
@@ -523,17 +549,18 @@ public class InfoActivity extends Activity implements
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, number);
+			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
 			break;
 		case SELECTED_SET_PRIMARY:
-			for (Phone p : contact.getPhones()) {
+			for (Phone p : contact.getPhones())
 				p.unsetDefault();
-			}
 			contact.getPhones().get(position).setDefault();
 			Collections.sort(contact.getPhones(), new Phone.PhoneComparator());
 			DatabaseHandler db = new DatabaseHandler(getApplicationContext());
 			db.updateContact(contact);
 			phoneAdapter.notifyDataSetChanged();
 			ACTION = MODIFIED_CONTACT;
+			Toast.makeText(getApplicationContext(), number+" set as primary.", Toast.LENGTH_LONG).show();
 			break;
 		}
 
@@ -544,22 +571,12 @@ public class InfoActivity extends Activity implements
 		String email = contact.getEmails().get(position).getEmail();
 		switch (action) {
 		case SELECTED_MAIL:
-			Intent i = new Intent(Intent.ACTION_SEND);
-			i.setType("message/rfc822");
-			i.putExtra(Intent.EXTRA_EMAIL, new String[] { email });
-/*			i.putExtra(Intent.EXTRA_SUBJECT, "subject");
-			i.putExtra(Intent.EXTRA_TEXT, "texts");*/
-			try {
-				startActivity(Intent.createChooser(i, "Send mail..."));
-			} catch (android.content.ActivityNotFoundException ex) {
-				Toast.makeText(getApplicationContext(),
-						"There are no email clients installed.",
-						Toast.LENGTH_SHORT).show();
-			}
+			invokeEmailIntent(email);
 			break;
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, email);
+			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
 			break;
 		}
 
@@ -570,14 +587,36 @@ public class InfoActivity extends Activity implements
 		String address = contact.getAddresses().get(position).getAddress();
 		switch (action) {
 		case SELECTED_MAP:
-			String uri = "geo:0,0?q="+address;
-			startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri)));
+			invokeMapIntent(address);
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, address);
+			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
 			break;
 		}
 
+	}
+	
+	private void invokeEmailIntent(String emailAddress){
+		Intent emailIntent = new Intent(Intent.ACTION_SEND);
+		emailIntent.setType("message/rfc822");
+		emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { emailAddress });
+		try {
+			startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(),
+					"There are no email clients installed.", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	private void invokeMapIntent(String physicalAddress){
+		String uri = "geo:0,0?q="+physicalAddress;
+		try {
+			startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri)));
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(),
+					"There are no map clients installed.", Toast.LENGTH_SHORT).show();
+		}
 	}
 
 }
