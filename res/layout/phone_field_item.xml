@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/Transparent"
+    android:layout_marginBottom="2dp"
     android:orientation="horizontal" >
 
     <Spinner
