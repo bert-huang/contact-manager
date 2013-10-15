@@ -521,7 +521,7 @@ public class EditActivity extends Activity implements
 		} else {
 			long contactId = db.createContact(name, photo, phones, emails, addresses, dob);
 			Log.d(LOG, "Created Contact in DB");
-			contact = db.getContact(contactId);
+			contact = db.getContact(contactId, null);
 			Log.d(LOG, "Contact Object Created");
 		}
 		
