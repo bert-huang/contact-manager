@@ -30,10 +30,10 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	 */
 	public Phone(String type, String number, boolean defaultNumber) throws InvalidPhoneException {
 		this.type = type;
-		if(!number.isEmpty() && !number.matches("[0-9\\- ]+")){
+		if(!number.isEmpty() && !number.matches("(\\+|)[0-9\\- ]+")){
 			throw new InvalidPhoneException("Not a valid phone!");
 		}
-		String temp = number.replaceAll("[^0-9]", "");
+		String temp = number.replaceAll("[^0-9\\+]", "");
 		this.number = temp;
 		this.defaultNumber = defaultNumber;
 	}

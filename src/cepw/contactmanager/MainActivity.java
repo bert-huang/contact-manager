@@ -189,6 +189,7 @@ public class MainActivity extends Activity implements
 					
 				} else if (action.equals("MODIFIED_CONTACT")) {
 					contacts.set(pos, (Contact)data.getExtras().getParcelable("MODIFIED_CONTACT"));
+					sortList(contacts, CURRENT_SORT_OPTION);
 					adapter.notifyDataSetChanged();
 				} else if (action.equals("DELETE_CONTACT")) {
 					db.deleteContact(contacts.get(pos).getID());

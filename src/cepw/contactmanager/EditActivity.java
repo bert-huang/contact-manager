@@ -114,7 +114,6 @@ public class EditActivity extends Activity implements
 		clearDob.setVisibility(View.INVISIBLE);
 
 		// add actions for components
-		imageBtn.setHapticFeedbackEnabled(true);
 		setOnClickActions();
 
 		// Getting Data
