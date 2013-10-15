@@ -542,8 +542,7 @@ public class EditActivity extends Activity implements
 			@Override
 			public void onClick(View v) {
 				DialogFragment imageLoader = new ImageChooserDialog();
-				imageLoader
-						.show(getFragmentManager(), "Image Selection Option");
+				imageLoader.show(getFragmentManager(), "Image Selection Option");
 			}
 		});
 

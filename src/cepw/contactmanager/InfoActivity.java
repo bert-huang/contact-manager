@@ -7,14 +7,19 @@ import cepw.contact.Address;
 import cepw.contact.Contact;
 import cepw.contact.Email;
 import cepw.contact.Phone;
+import cepw.contactmanager.AddressPopupDialog.AddressAction;
+import cepw.contactmanager.EmailPopupDialog.EmailAction;
+import cepw.contactmanager.PhonePopupDialog.PhoneAction;
+import cepw.contactmanager.database.DatabaseHandler;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,20 +36,31 @@ import android.widget.Toast;
 
 /**
  * This is an activity that display the information of a contact.
+ * 
  * @author I-Yang Huang, IHUA164, 5503504
  */
-public class InfoActivity extends Activity {
-	
-	// Action identifier 
+public class InfoActivity extends Activity implements
+		PhonePopupDialog.OnCompleteListener,
+		EmailPopupDialog.OnCompleteListener,
+		AddressPopupDialog.OnCompleteListener {
+
+	// Action identifier
 	private static final String NONE = "NONE";
 	private static final String DELETE_CONTACT = "DELETE_CONTACT";
 	private static final String EDIT_CONTACT = "EDIT_CONTACT";
+	private static final String MODIFIED_CONTACT = "MODIFIED_CONTACT";
 	private static String ACTION;
-	
+
 	// Request code
 	private static final int EDIT_CONTACT_REQUEST = 1;
 
 	// Bundle objects
+	protected static final String PH_NUMBER = "phoneNumber";
+	protected static final String PH_TYPE = "phoneType";
+	protected static final String EMAIL_ADDRESS = "emailAddress";
+	protected static final String PHY_ADDRESS = "physicalAddress";
+	protected static final String IS_DEFAULT = "isDefault";
+	protected static final String SELECTED_POS = "selectedPosition";
 	private Contact contact = null;
 	private int position;
 
@@ -65,23 +81,23 @@ public class InfoActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_info);
-		
+
 		// Show the Up button in the action bar.
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setDisplayShowTitleEnabled(false);
-		
+
 		// Initialize action done to the contact to NONE
 		ACTION = NONE;
 
 		// Getting Data
 		Bundle extras = getIntent().getExtras();
-		
+
 		// If nothing is passed in, display error, and close activity
-		if (extras == null){
-			Toast.makeText(InfoActivity.this, 
-					"Error loading this contact!", Toast.LENGTH_LONG).show();
+		if (extras == null) {
+			Toast.makeText(InfoActivity.this, "Error loading this contact!",
+					Toast.LENGTH_LONG).show();
 			finish();
-		}else{
+		} else {
 			// Get the contact and the position of the contact
 			contact = extras.getParcelable("SELECTED_CONTACT");
 			position = extras.getInt("POSITION");
@@ -125,21 +141,23 @@ public class InfoActivity extends Activity {
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+
 		// Home button pressed will be the same as pressing back button
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			onBackPressed();
 			return true;
 
-		// Delete button will display the delete dialog
+			// Delete button will display the delete dialog
 		case R.id.action_contact_remove:
 			showDeleteDialog();
 			return true;
-			
-		// Edit button will cause the ACTION flag to turn into MODIFIED_CONTACT
-		// and will pass the contact object over to the EditActivity class so modification
-		// can be applied.
+
+			// Edit button will cause the ACTION flag to turn into
+			// MODIFIED_CONTACT
+			// and will pass the contact object over to the EditActivity class
+			// so modification
+			// can be applied.
 		case R.id.action_contact_edit:
 			ACTION = EDIT_CONTACT;
 			Intent intent = new Intent(this, MainActivity.class);
@@ -147,29 +165,33 @@ public class InfoActivity extends Activity {
 			intent.putExtra("POSITION", position);
 			setResult(RESULT_OK, intent);
 			finish();
-			/*Intent intent = new Intent(this, EditActivity.class);
-			intent.putExtra("SELECTED_CONTACT", contact);
-			startActivityForResult(intent, EDIT_CONTACT_REQUEST);*/
-			
+			/*
+			 * Intent intent = new Intent(this, EditActivity.class);
+			 * intent.putExtra("SELECTED_CONTACT", contact);
+			 * startActivityForResult(intent, EDIT_CONTACT_REQUEST);
+			 */
+
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	/**
 	 * @see android.app.Activity#onActivityResult(int, int, Intent)
 	 */
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		
-		// If the request code is EDIT_CONTACT_REQUEST, fetch contact object from data intent
+
+		// If the request code is EDIT_CONTACT_REQUEST, fetch contact object
+		// from data intent
 		// then re populate the updated values
 		if (requestCode == EDIT_CONTACT_REQUEST && resultCode == RESULT_OK) {
 			if (data != null) {
-				contact = (Contact) data.getExtras().getParcelable("EDITED_CONTACT");
+				contact = (Contact) data.getExtras().getParcelable(
+						"EDITED_CONTACT");
 				populateData();
 			}
 		}
 	}
-	
+
 	/**
 	 * Shows a dialog that prompt for deletion when the delete button is clicked
 	 */
@@ -182,7 +204,8 @@ public class InfoActivity extends Activity {
 						new DialogInterface.OnClickListener() {
 
 							@Override
-							public void onClick(DialogInterface dialog, int which) {
+							public void onClick(DialogInterface dialog,
+									int which) {
 								Intent intent = new Intent();
 								ACTION = DELETE_CONTACT;
 								intent.putExtra("ACTION", ACTION);
@@ -194,27 +217,31 @@ public class InfoActivity extends Activity {
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
-	
+
 	/**
-	 * Invoked when the back button on the phone is pressed.
-	 * Checks for the actions applied to the contact object and close this activity.
-	 * If contact has been modified, ACTION will be MODIFIED_CONTACT,
-	 * If contact is left untouched, ACTION will be NONE.
+	 * Invoked when the back button on the phone is pressed. Checks for the
+	 * actions applied to the contact object and close this activity. If contact
+	 * has been modified, ACTION will be MODIFIED_CONTACT, If contact is left
+	 * untouched, ACTION will be NONE.
 	 * 
 	 * Untouched object will have a RESULT_CANCELED flag.
 	 */
 	public void onBackPressed() {
 		Intent intent = new Intent();
 		intent.putExtra("ACTION", ACTION);
-		
+
 		// If contact has been modified, ACTION will be MODIFIED_CONTACT
-		if (ACTION.equals(EDIT_CONTACT)){
-			intent.putExtra(EDIT_CONTACT, contact);
+		if (ACTION.equals(EDIT_CONTACT)) {
+			// intent.putExtra(EDIT_CONTACT, contact);
 			intent.putExtra("POSITION", position);
 			setResult(RESULT_OK, intent);
-			
-		// If contact is left untouched, ACTION will be NONE
-		}else if (ACTION.equals(NONE)){
+		} else if (ACTION.equals(MODIFIED_CONTACT)) {
+			intent.putExtra(MODIFIED_CONTACT, contact);
+			intent.putExtra("POSITION", position);
+			setResult(RESULT_OK, intent);
+
+			// If contact is left untouched, ACTION will be NONE
+		} else if (ACTION.equals(NONE)) {
 			setResult(RESULT_CANCELED, intent);
 		}
 		finish();
@@ -226,7 +253,7 @@ public class InfoActivity extends Activity {
 	private void populateData() {
 		// Set image
 		image.setImageBitmap(contact.getPhoto().getImage());
-	
+
 		// Set name
 		if (!contact.getName().getFirstName().equals("")) {
 			firstName.setText(contact.getName().getFirstName());
@@ -305,7 +332,7 @@ public class InfoActivity extends Activity {
 		// Scroll to top
 		scrollView.smoothScrollTo(0, 0);
 	}
-	
+
 	// CLASSES
 	/**
 	 * Adapter for the list view for phone numbers
@@ -340,7 +367,7 @@ public class InfoActivity extends Activity {
 			TextView number = (TextView) vg.getChildAt(1);
 
 			if (curPhone.isDefault()) {
-				type.setText(curPhone.getType() + " - Default");
+				type.setText(curPhone.getType() + " - Primary");
 			} else {
 				type.setText(curPhone.getType());
 			}
@@ -431,37 +458,48 @@ public class InfoActivity extends Activity {
 	}
 
 	/**
-	 * Actions for the list view when items within the list is clicked / long clicked
+	 * Actions for the list view when items within the list is clicked / long
+	 * clicked
 	 */
-	private class ListItemClickedListener implements AdapterView.OnItemLongClickListener {
+	private class ListItemClickedListener implements
+			AdapterView.OnItemLongClickListener {
 
 		@Override
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
 
+			Bundle args;
+
 			switch (parent.getId()) {
 			case R.id.listview_phone_info:
 				Phone p = contact.getPhones().get(position);
-				if (p.isDefault()) {
-					Toast.makeText(getApplicationContext(), "Default",
-							Toast.LENGTH_SHORT).show();
-				}else {
-					Toast.makeText(getApplicationContext(), "Not default",
-							Toast.LENGTH_SHORT).show();
-				}
-				Toast.makeText(getApplicationContext(), "Phone. TODO: Dialog",
-						Toast.LENGTH_SHORT).show();
+				DialogFragment phoneDialog = new PhonePopupDialog();
+				args = new Bundle();
+				args.putString(PH_NUMBER, p.getNumber());
+				args.putString(PH_TYPE, p.getType());
+				args.putBoolean(IS_DEFAULT, p.isDefault());
+				args.putInt(SELECTED_POS, position);
+				phoneDialog.setArguments(args);
+				phoneDialog.show(getFragmentManager(), "Phone Options");
 				break;
 			case R.id.listview_email_info:
-				Toast.makeText(getApplicationContext(), "Email. TODO: Dialog",
-						Toast.LENGTH_SHORT).show();
-				ClipboardManager clipboard = (ClipboardManager)
-				        getSystemService(Context.CLIPBOARD_SERVICE);
-				Utilities.copyStringToClipboard(clipboard, contact.getEmails().get(position).getEmail());
+				Email e = contact.getEmails().get(position);
+				DialogFragment emailDialog = new EmailPopupDialog();
+				args = new Bundle();
+				args.putString(EMAIL_ADDRESS, e.getEmail());
+				args.putInt(SELECTED_POS, position);
+				emailDialog.setArguments(args);
+				emailDialog.show(getFragmentManager(), "Email Options");
 				break;
 			case R.id.listview_address_info:
-				Toast.makeText(getApplicationContext(), "Address. TODO: Dialog",
-						Toast.LENGTH_SHORT).show();
+				Address a = contact.getAddresses().get(position);
+				DialogFragment addressDialog = new AddressPopupDialog();
+				args = new Bundle();
+				args.putString(PHY_ADDRESS, a.getAddress());
+				args.putInt(SELECTED_POS, position);
+				addressDialog.setArguments(args);
+				addressDialog.show(getFragmentManager(), "Address Options");
+
 				break;
 			}
 
@@ -469,5 +507,77 @@ public class InfoActivity extends Activity {
 		}
 	}
 
+	@Override
+	public void onComplete(PhoneAction action, int position) {
+		String number = contact.getPhones().get(position).getNumber();
+		switch (action) {
+		case SELECTED_CALL:
+			Intent callIntent = new Intent(Intent.ACTION_CALL);
+			callIntent.setData(Uri.parse("tel:" + number));
+			startActivity(callIntent);
+			break;
+		case SELECTED_MESSAGE:
+			Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
+			startActivity(smsIntent);
+			break;
+		case SELECTED_COPY:
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			Utilities.copyStringToClipboard(clipboard, number);
+			break;
+		case SELECTED_SET_PRIMARY:
+			for (Phone p : contact.getPhones()) {
+				p.unsetDefault();
+			}
+			contact.getPhones().get(position).setDefault();
+			Collections.sort(contact.getPhones(), new Phone.PhoneComparator());
+			DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+			db.updateContact(contact);
+			phoneAdapter.notifyDataSetChanged();
+			ACTION = MODIFIED_CONTACT;
+			break;
+		}
+
+	}
+
+	@Override
+	public void onComplete(EmailAction action, int position) {
+		String email = contact.getEmails().get(position).getEmail();
+		switch (action) {
+		case SELECTED_MAIL:
+			Intent i = new Intent(Intent.ACTION_SEND);
+			i.setType("message/rfc822");
+			i.putExtra(Intent.EXTRA_EMAIL, new String[] { email });
+/*			i.putExtra(Intent.EXTRA_SUBJECT, "subject");
+			i.putExtra(Intent.EXTRA_TEXT, "texts");*/
+			try {
+				startActivity(Intent.createChooser(i, "Send mail..."));
+			} catch (android.content.ActivityNotFoundException ex) {
+				Toast.makeText(getApplicationContext(),
+						"There are no email clients installed.",
+						Toast.LENGTH_SHORT).show();
+			}
+			break;
+		case SELECTED_COPY:
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			Utilities.copyStringToClipboard(clipboard, email);
+			break;
+		}
+
+	}
+
+	@Override
+	public void onComplete(AddressAction action, int position) {
+		String address = contact.getAddresses().get(position).getAddress();
+		switch (action) {
+		case SELECTED_MAP:
+			String uri = "geo:0,0?q="+address;
+			startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri)));
+		case SELECTED_COPY:
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			Utilities.copyStringToClipboard(clipboard, address);
+			break;
+		}
+
+	}
 
 }

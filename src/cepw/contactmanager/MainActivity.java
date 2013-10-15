@@ -7,13 +7,10 @@ import java.util.Locale;
 
 import android.os.Bundle;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -115,29 +112,6 @@ public class MainActivity extends Activity implements
 		sortList(contacts, CURRENT_SORT_OPTION);
 		adapter.notifyDataSetChanged();
 
-		// TESTING PURPOSE
-/*		
- 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("Add dummy contacts for testing purpose?")
-				.setTitle("ADD TESTING OBJECTS")
-				.setNegativeButton("No", null)
-				.setPositiveButton("Yes",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								try {
-									createDummyObject();
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-							}
-						});
-		AlertDialog alert = builder.create();
-		alert.show(); 
-*/
-
 	}
 
 	/**
@@ -212,7 +186,10 @@ public class MainActivity extends Activity implements
 					intent.putExtra("POSITION", pos);
 					intent.putExtra("SELECTED_CONTACT", contacts.get(pos));
 					startActivityForResult(intent, EDIT_CONTACT_REQUEST);
-
+					
+				} else if (action.equals("MODIFIED_CONTACT")) {
+					contacts.set(pos, (Contact)data.getExtras().getParcelable("MODIFIED_CONTACT"));
+					adapter.notifyDataSetChanged();
 				} else if (action.equals("DELETE_CONTACT")) {
 					db.deleteContact(contacts.get(pos).getID());
 					Log.d(LOG, "Contacts Removed from DB");
@@ -520,134 +497,5 @@ public class MainActivity extends Activity implements
 		SharedPreferences pref = getPreferences(MODE_PRIVATE);
 		CURRENT_SORT_OPTION = SortType.values()[pref.getInt(SORTBY, 0)];
 	}
-
-	/**
-	 * Create dummy objects
-	 * @throws Exception
-	 */
-	private void createDummyObject() throws Exception {
-
-		Name c01 = new Name("I-Yang", "Bert", "Huang", "Software Student");
-		Photo c02 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c03 = new ArrayList<Phone>();
-		c03.add(new Phone("Mobile", "0123456789", true));
-		List<Email> c04 = new ArrayList<Email>();
-		c04.add(new Email("Home", "ihua164@aucklanduni.ac.nz"));
-		List<Address> c05 = new ArrayList<Address>();
-		c05.add(new Address("Home", "01 Random Road"));
-		DateOfBirth c06 = new DateOfBirth("");
-		Contact c00 = new Contact(c01, c02, c03, c04, c05, c06);
-		
-		Name c11 = new Name("Bert", "", "Huang", "Meh");
-		Photo c12 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c13 = new ArrayList<Phone>();
-		c13.add(new Phone("Mobile", "0210000000", true));
-		List<Email> c14 = new ArrayList<Email>();
-		c14.add(new Email("Home", "bert_huang@gmail.com"));
-		List<Address> c15 = new ArrayList<Address>();
-		c15.add(new Address("Home", "01 Random Road"));
-		DateOfBirth c16 = new DateOfBirth("27-01-1993");
-		Contact c10 = new Contact(c11, c12, c13, c14, c15, c16);
-
-		Name c21 = new Name("Lucy", "", "Huang", "Doctor");
-		Photo c22 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c23 = new ArrayList<Phone>();
-		c23.add(new Phone("Mobile", "0220000000", true));
-		List<Email> c24 = new ArrayList<Email>();
-		c24.add(new Email("Home", "lucy_huang@gmail.com"));
-		List<Address> c25 = new ArrayList<Address>();
-		c25.add(new Address("Home", "01 Random Road"));
-		DateOfBirth c26 = new DateOfBirth("01-10-1991");
-		Contact c20 = new Contact(c21, c22, c23, c24, c25, c26);
-
-		Name c31 = new Name("Simon", "", "Huang", "Optom");
-		Photo c32 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c33 = new ArrayList<Phone>();
-		c33.add(new Phone("Mobile", "0230000000", true));
-		List<Email> c34 = new ArrayList<Email>();
-		c34.add(new Email("Home", "simon_huang@gmail.com"));
-		List<Address> c35 = new ArrayList<Address>();
-		c35.add(new Address("Home", "01 Random Road"));
-		DateOfBirth c36 = new DateOfBirth("05-07-1990");
-		Contact c30 = new Contact(c31, c32, c33, c34, c35, c36);
-
-		Name c41 = new Name("Akshay", "", "Kalyan", "Software Student");
-		Photo c42 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c43 = new ArrayList<Phone>();
-		c43.add(new Phone("Mobile", "0240000000", true));
-		List<Email> c44 = new ArrayList<Email>();
-		c44.add(new Email("Work", "akshay_kalyan@aucklanduni.ac.nz"));
-		List<Address> c45 = new ArrayList<Address>();
-		c45.add(new Address("Home", "20 Genius Cave, Not from Earth"));
-		DateOfBirth c46 = new DateOfBirth("25-12-1993");
-		Contact c40 = new Contact(c41, c42, c43, c44, c45, c46);
-
-		Name c51 = new Name("Devon", "", "Ahmu", "Civil Engineer");
-		Photo c52 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c53 = new ArrayList<Phone>();
-		c53.add(new Phone("Mobile", "0250000000", true));
-		List<Email> c54 = new ArrayList<Email>();
-		c54.add(new Email("Work", "devon_ahmu@aucklanduni.ac.nz"));
-		List<Address> c55 = new ArrayList<Address>();
-		c55.add(new Address("Home", "20 Man Cave, NZ"));
-		DateOfBirth c56 = new DateOfBirth("18-06-1992");
-		Contact c50 = new Contact(c51, c52, c53, c54, c55, c56);
-
-		Name c61 = new Name("Matthew", "", "Wang", "Civil Engineer");
-		Photo c62 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c63 = new ArrayList<Phone>();
-		c63.add(new Phone("Mobile", "0260000000", true));
-		List<Email> c64 = new ArrayList<Email>();
-		c64.add(new Email("Work", "matthew_wang@aucklanduni.ac.nz"));
-		List<Address> c65 = new ArrayList<Address>();
-		c65.add(new Address("Home", "20 IDK, NZ"));
-		DateOfBirth c66 = new DateOfBirth("02-03-1992");
-		Contact c60 = new Contact(c61, c62, c63, c64, c65, c66);
-
-		Name c71 = new Name("Richard", "", "Dyer", "Civil Engineer");
-		Photo c72 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c73 = new ArrayList<Phone>();
-		c73.add(new Phone("Mobile", "0270000000", true));
-		List<Email> c74 = new ArrayList<Email>();
-		c74.add(new Email("Work", "richard_dyer@aucklanduni.ac.nz"));
-		List<Address> c75 = new ArrayList<Address>();
-		c75.add(new Address("Home", "10 IDK, NZ"));
-		DateOfBirth c77 = new DateOfBirth("14-11-1994");
-		Contact c70 = new Contact(c71, c72, c73, c74, c75, c77);
-
-		Name c81 = new Name("Toby", "", "Jackson", "Biomedical Engineer");
-		Photo c82 = new Photo(BitmapFactory.decodeResource(getResources(),
-				R.drawable.ic_face));
-		List<Phone> c83 = new ArrayList<Phone>();
-		c83.add(new Phone("Mobile", "0280000000", true));
-		List<Email> c84 = new ArrayList<Email>();
-		c84.add(new Email("Work", "toby_jackson@aucklanduni.ac.nz"));
-		List<Address> c85 = new ArrayList<Address>();
-		c85.add(new Address("Home", "30 Genius Cave, Not from Earth"));
-		DateOfBirth c88 = new DateOfBirth("09-01-1992");
-		Contact c80 = new Contact(c81, c82, c83, c84, c85, c88);
-
-		contacts.add(c00);
-		contacts.add(c10);
-		contacts.add(c20);
-		contacts.add(c30);
-		contacts.add(c40);
-		contacts.add(c50);
-		contacts.add(c60);
-		contacts.add(c70);
-		contacts.add(c80);
-		sortList(contacts, CURRENT_SORT_OPTION);
-		adapter.notifyDataSetChanged();
-
-	}
-
 	
 }
