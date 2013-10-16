@@ -11,15 +11,9 @@ import android.os.Parcelable;
  */
 public class Phone implements Parcelable, Comparable<Phone> {
 
-	private int id;
-	private int contactId;
 	private String type;
 	private String number;
 	private boolean defaultNumber;
-
-	{
-		id = -2;
-	}
 	
 	/**
 	 * Constructor of a phone object
@@ -37,65 +31,6 @@ public class Phone implements Parcelable, Comparable<Phone> {
 		this.number = temp;
 		this.defaultNumber = defaultNumber;
 	}
-	
-	/**
-	 *  Constructor of a phone object (with ID)
-	 * @param id ID of the phone
-	 * @param type type of phone, can be Mobile, Home, Work, etc.
-	 * @param number number of the phone
-	 * @param defaultNumber whether the phone is the default one
-	 * @throws InvalidPhoneException when invalid tokens of character is detected.
-	 */
-	public Phone(int id, String type, String number, boolean defaultNumber) throws InvalidPhoneException {
-		this(type, number, defaultNumber);
-		this.id = id;
-	}
-	
-	/**
-	 *  Constructor of a phone object (with ID)
-	 * @param id ID of the phone
-	 * @param type type of phone, can be Mobile, Home, Work, etc.
-	 * @param number number of the phone
-	 * @param defaultNumber whether the phone is the default one
-	 * @throws InvalidPhoneException when invalid tokens of character is detected.
-	 */
-	public Phone(int id, int contactId, String type, String number, boolean defaultNumber) throws InvalidPhoneException {
-		this(id, type, number, defaultNumber);
-		this.contactId = contactId;
-	}
-	
-	/**
-	 * Getter of ID
-	 * @return the id of this phone object
-	 */
-	public int getID() {
-		return id;
-	}
-	
-	/**
-	 * Setter of ID
-	 * @param id set the id of this object
-	 */
-	public void setID(int id) {
-		this.id = id;
-	}
-	
-	/**
-	 * Getter of contact ID
-	 * @return the id of contact this phone object belongs to
-	 */
-	public int getContactID() {
-		return contactId;
-	}
-	
-	/**
-	 * Setter of contact ID
-	 * @param id set the id of the contact this object belongs to
-	 */
-	public void setContactID(int id) {
-		this.contactId = id;
-	}
-	
 
 	/**
 	 * Get the type of this phone object
@@ -150,8 +85,6 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	 */
 	@Override
 	public void writeToParcel(Parcel out, int flags) {
-		out.writeInt(id);
-		out.writeInt(contactId);
 		out.writeString(type);
 		out.writeString(number);
 		out.writeByte((byte) (defaultNumber ? 1 : 0));
@@ -178,8 +111,6 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	 *            Parcel that contains data
 	 */
 	private Phone(Parcel in) {
-		this.id = in.readInt();
-		this.contactId = in.readInt();
 		this.type = in.readString();
 		this.number = in.readString();
 		this.defaultNumber = in.readByte() == 1;
