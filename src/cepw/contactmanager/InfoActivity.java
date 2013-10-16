@@ -63,6 +63,9 @@ public class InfoActivity extends Activity implements
 	protected static final String SELECTED_POS = "selectedPosition";
 	private Contact contact = null;
 	private int position;
+	
+	// Database
+	private DatabaseHandler db;
 
 	// Individual components
 	private ScrollView scrollView;
@@ -82,6 +85,7 @@ public class InfoActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_info);
 
+		db = new DatabaseHandler(getApplicationContext());
 		// Show the Up button in the action bar.
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		getActionBar().setDisplayShowTitleEnabled(false);
@@ -161,6 +165,7 @@ public class InfoActivity extends Activity implements
 		case R.id.action_contact_edit:
 			ACTION = EDIT_CONTACT;
 			Intent intent = new Intent(this, MainActivity.class);
+			intent.putExtra("MODIFIED_CONTACT", contact);
 			intent.putExtra("ACTION", ACTION);
 			intent.putExtra("POSITION", position);
 			setResult(RESULT_OK, intent);
@@ -337,6 +342,7 @@ public class InfoActivity extends Activity implements
 
 	/**
 	 * Method that is invoked when an PhonePopupDialog option is chosen
+	 * and will perform the selection accordingly.
 	 */
 	@Override
 	public void onComplete(PhoneAction action, int position) {
@@ -356,12 +362,46 @@ public class InfoActivity extends Activity implements
 			Utilities.copyStringToClipboard(clipboard, number);
 			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
 			break;
+		case SELECTED_DELETE:
+			final int pos = position;
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Are you sure you want to delete " 
+			+ contact.getPhones().get(pos).getNumber() + "?")
+					.setTitle("Delete?")
+					.setNegativeButton("Cancel", null)
+					.setPositiveButton("Yes",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog,
+								int which) {
+							// If removed the primary number
+							if(pos == 0) {
+								contact.getPhones().remove(pos); // Remove the phone
+								if(!contact.getPhones().isEmpty()){ // If the phone list is not empty
+									contact.getPhones().get(0).setDefault(); // Set the next one as primary
+								}
+							}else { // If not the primary number
+								contact.getPhones().remove(pos); // simply remove
+							}
+							db.updateContact(contact); // Update database
+							phoneAdapter.notifyDataSetChanged(); 
+							Utilities.setNoCollapseListView(phoneList); // Resize list view
+							
+							// If the contact have no more phone, hide the phoneInfoLayout 
+							if(contact.getPhones().isEmpty()){ phoneInfo.setVisibility(View.GONE); } 
+							ACTION = MODIFIED_CONTACT;
+						}
+					});
+			AlertDialog alert = builder.create();
+			alert.show();
+			break;
 		case SELECTED_SET_PRIMARY:
 			for (Phone p : contact.getPhones())
 				p.unsetDefault();
 			contact.getPhones().get(position).setDefault();
 			Collections.sort(contact.getPhones(), new Phone.PhoneComparator());
-			DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+			
 			db.updateContact(contact);
 			phoneAdapter.notifyDataSetChanged();
 			ACTION = MODIFIED_CONTACT;
@@ -373,6 +413,7 @@ public class InfoActivity extends Activity implements
 
 	/**
 	 * Method that is invoked when an EmailPopupDialog option is chosen
+	 * and will perform the selection accordingly.
 	 */
 	@Override
 	public void onComplete(EmailAction action, int position) {
@@ -386,12 +427,39 @@ public class InfoActivity extends Activity implements
 			Utilities.copyStringToClipboard(clipboard, email);
 			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
 			break;
+		case SELECTED_DELETE:
+			final int pos = position;
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Are you sure you want to delete " 
+			+ contact.getEmails().get(pos).getEmail() + "?")
+					.setTitle("Delete?")
+					.setNegativeButton("Cancel", null)
+					.setPositiveButton("Yes",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog,
+								int which) {
+
+							contact.getEmails().remove(pos); // simply remove
+							db.updateContact(contact); // Update database
+							phoneAdapter.notifyDataSetChanged(); 
+							Utilities.setNoCollapseListView(emailList); // Resize list view
+							// If the contact have no more phone, hide the phoneInfoLayout 
+							if(contact.getEmails().isEmpty()){ emailInfo.setVisibility(View.GONE); } 
+							ACTION = MODIFIED_CONTACT;
+						}
+					});
+			AlertDialog alert = builder.create();
+			alert.show();
+			break;
 		}
 
 	}
 
 	/**
 	 * Method that is invoked when an AddressPopupDialog option is chosen
+	 * and will perform the selection accordingly.
 	 */
 	@Override
 	public void onComplete(AddressAction action, int position) {
@@ -403,6 +471,32 @@ public class InfoActivity extends Activity implements
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, address);
 			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
+			break;
+		case SELECTED_DELETE:
+			final int pos = position;
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Are you sure you want to delete " 
+			+ contact.getAddresses().get(pos).getAddress() + "?")
+					.setTitle("Delete?")
+					.setNegativeButton("Cancel", null)
+					.setPositiveButton("Yes",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog,
+								int which) {
+
+							contact.getAddresses().remove(pos); // simply remove
+							db.updateContact(contact); // Update database
+							phoneAdapter.notifyDataSetChanged(); 
+							Utilities.setNoCollapseListView(addressList); // Resize list view
+							// If the contact have no more phone, hide the phoneInfoLayout 
+							if(contact.getAddresses().isEmpty()){ addressInfo.setVisibility(View.GONE); } 
+							ACTION = MODIFIED_CONTACT;
+						}
+					});
+			AlertDialog alert = builder.create();
+			alert.show();
 			break;
 		}
 

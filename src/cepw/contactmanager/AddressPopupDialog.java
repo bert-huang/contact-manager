@@ -16,7 +16,7 @@ import android.os.Bundle;
 public class AddressPopupDialog extends DialogFragment {
 
 	// Constants for selection
-	protected enum AddressAction { SELECTED_MAP, SELECTED_COPY }
+	protected enum AddressAction { SELECTED_MAP, SELECTED_COPY, SELECTED_DELETE}
 	
 	private OnCompleteListener mListener;
 	private int position;
@@ -29,7 +29,7 @@ public class AddressPopupDialog extends DialogFragment {
 
 		String title = getArguments().getString(InfoActivity.PHY_ADDRESS);
 		position = getArguments().getInt(InfoActivity.SELECTED_POS);
-		String[] selection = {"Map", "Copy to clipboard"};
+		String[] selection = {"Map", "Copy to clipboard", "Delete"};
 		
 		onAttach(getActivity());
 
@@ -83,8 +83,12 @@ public class AddressPopupDialog extends DialogFragment {
 			switch (which) {
 			case 0:
 				mListener.onComplete(AddressAction.SELECTED_MAP, position);
+				break;
 			case 1:
 				mListener.onComplete(AddressAction.SELECTED_COPY, position);
+				break;
+			case 2:
+				mListener.onComplete(AddressAction.SELECTED_DELETE, position);
 				break;
 			}
 

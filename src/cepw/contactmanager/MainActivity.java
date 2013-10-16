@@ -181,7 +181,7 @@ public class MainActivity extends Activity implements
 				int pos = data.getExtras().getInt("POSITION");
 
 				if (action.equals("EDIT_CONTACT")) {
-
+					contacts.set(pos, (Contact)data.getExtras().getParcelable("MODIFIED_CONTACT"));
 					Intent intent = new Intent(this, EditActivity.class);
 					intent.putExtra("POSITION", pos);
 					intent.putExtra("SELECTED_CONTACT", contacts.get(pos));

@@ -16,7 +16,7 @@ import android.os.Bundle;
 public class EmailPopupDialog extends DialogFragment {
 
 	// Constants for selection
-	protected enum EmailAction { SELECTED_MAIL, SELECTED_COPY }
+	protected enum EmailAction { SELECTED_MAIL, SELECTED_COPY, SELECTED_DELETE }
 	
 	private OnCompleteListener mListener;
 	private int position;
@@ -29,7 +29,7 @@ public class EmailPopupDialog extends DialogFragment {
 
 		String title = getArguments().getString(InfoActivity.EMAIL_ADDRESS);
 		position = getArguments().getInt(InfoActivity.SELECTED_POS);
-		String[] selection = {"Mail", "Copy to clipboard"};
+		String[] selection = {"Mail", "Copy to clipboard", "Delete"};
 		
 		onAttach(getActivity());
 
@@ -86,6 +86,9 @@ public class EmailPopupDialog extends DialogFragment {
 				break;
 			case 1:
 				mListener.onComplete(EmailAction.SELECTED_COPY, position);
+				break;
+			case 2:
+				mListener.onComplete(EmailAction.SELECTED_DELETE, position);
 				break;
 			}
 

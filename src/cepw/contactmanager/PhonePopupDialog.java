@@ -19,7 +19,8 @@ import android.os.Bundle;
 public class PhonePopupDialog extends DialogFragment {
 
 	// Constants for selection
-	protected enum PhoneAction { SELECTED_CALL, SELECTED_MESSAGE, SELECTED_COPY, SELECTED_SET_PRIMARY }
+	protected enum PhoneAction { SELECTED_CALL, SELECTED_MESSAGE, SELECTED_COPY, 
+		SELECTED_DELETE, SELECTED_SET_PRIMARY }
 	private OnCompleteListener mListener;
 	private int position;
 	private String[] selection;
@@ -37,6 +38,7 @@ public class PhonePopupDialog extends DialogFragment {
 		list.add("Call");
 		if(type.equals("Mobile")){ list.add("Message");}
 		list.add("Copy to clipboard");
+		list.add("Delete");
 		if(!isDefault) {list.add("Set primary number");}
 		
 		selection = list.toArray(new String[] {});
@@ -104,10 +106,17 @@ public class PhonePopupDialog extends DialogFragment {
 				if(selection[which].equals("Copy to clipboard")){
 					mListener.onComplete(PhoneAction.SELECTED_COPY, position);
 				}else{
-					mListener.onComplete(PhoneAction.SELECTED_SET_PRIMARY, position);
+					mListener.onComplete(PhoneAction.SELECTED_DELETE, position);
 				}
 				break;
 			case 3:
+				if(selection[which].equals("Delete")){
+					mListener.onComplete(PhoneAction.SELECTED_DELETE, position);
+				}else{
+					mListener.onComplete(PhoneAction.SELECTED_SET_PRIMARY, position);
+				}
+				break;
+			case 4:
 				mListener.onComplete(PhoneAction.SELECTED_SET_PRIMARY, position);
 				break;
 			}
