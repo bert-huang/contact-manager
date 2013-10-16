@@ -8,7 +8,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 /**
- * This is a DialogFragment that prompt the user to choose from Gallery or Camera. 
+ * This is a DialogFragment that prompt the user to choose from a list of address operations
+ * such as Map and Copy to Clipboard
  * 
  * @author I-Yang Huang, IHUA164, 5503504
  */
@@ -28,7 +29,7 @@ public class AddressPopupDialog extends DialogFragment {
 
 		String title = getArguments().getString(InfoActivity.PHY_ADDRESS);
 		position = getArguments().getInt(InfoActivity.SELECTED_POS);
-		String[] selection = {"Open in map", "Copy to clipboard"};
+		String[] selection = {"Map", "Copy to clipboard"};
 		
 		onAttach(getActivity());
 
@@ -64,7 +65,7 @@ public class AddressPopupDialog extends DialogFragment {
 	}
 
 	/**
-	 * Interface created for this ImageChooserDialog. Any activity that implements this
+	 * Interface created for this AddressPopupDialog. Any activity that implements this
 	 * interface will onComplete method invoked when one of the option in this dialog is 
 	 * clicked.
 	 */

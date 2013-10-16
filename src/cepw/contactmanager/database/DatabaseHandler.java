@@ -96,12 +96,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
 	// -=-=-=-=-=-= CREATE =-=-=-=-=-=-=- //
 	
+	/**
+	 * Store data into database from provided information
+	 * 
+	 * @param name Name object
+	 * @param photo Photo object
+	 * @param phones A list of Phones
+	 * @param emails A list of Email
+	 * @param addresses A list of Address
+	 * @param dob DateOfBirth object
+	 * @return The ID of the contact in the database
+	 */
 	public long createContact(Name name, Photo photo, List<Phone> phones, List<Email> emails,
 			List<Address> addresses, DateOfBirth dob) {
 
 		SQLiteDatabase db = this.getWritableDatabase();
-
 		ContentValues values = new ContentValues();
+		
+		// Put name data into ContentValues
 		values.put(KEY_FIRST_NAME, name.getFirstName());
 		values.put(KEY_MIDDLE_NAME, name.getMiddleName());
 		values.put(KEY_LAST_NAME, name.getLastName());
@@ -109,59 +121,96 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_DOB, dob.getValue());
 		values.put(KEY_IMAGE, photo.getByteArray());
 
-		// Phone
+		// Put Phone data into ContentValues
 		String[] phoneData = createPhoneData(phones);
 		values.put(KEY_PHONE_TYPE, phoneData[0]);
 		values.put(KEY_PHONE_NUMBER, phoneData[1]);
 		values.put(KEY_PHONE_PRIMARY, phoneData[2]);
 		
-		// Email
+		// Put Email data into ContentValues
 		String[] emailData = createEmailData(emails);
 		values.put(KEY_EMAIL_TYPE, emailData[0]);
 		values.put(KEY_EMAIL_VALUE, emailData[1]);
 		
-		// Address
+		// Put Address data into ContentValues
 		String[] addressData = createAddressData(addresses);
 		values.put(KEY_ADDRESS_TYPE, addressData[0]);
 		values.put(KEY_ADDRESS_VALUE, addressData[1]);
 		
-		// insert row
+		// Store the ContentValues datas into the database
 		long contactId = db.insert(TABLE_CONTACTS, null, values);
 
 
 		return contactId;
 	}
 
+	/**
+	 * This method will convert a list of phone into 3 strings that is stored in an array.
+	 * The type, number and isPrimary will be concatenated for each phone, separated by a ";"
+	 * @param phoneList A list of Phone
+	 * @return A String array with a size of 3.
+	 * 	<br/>Index 0 will be the type of the phone number (Mobile, Home, Work..)
+	 * 	<br/>Index 1 will be the number of the phone number
+	 * 	<br/>Index 2 will be a string with 0 or 1, 1 will be the primary number
+	 */
 	public String[] createPhoneData(List<Phone> phoneList) {
-		//Phone
+		
+		// String buffer
 		StringBuffer phoneType = new StringBuffer();
 		StringBuffer phoneNumber = new StringBuffer();
 		StringBuffer phonePrimary = new StringBuffer();
+		
+		// Iterate through the phone list
 		for (Phone p : phoneList) {
 			phoneType	.append(p.getType() + ";");
 			phoneNumber	.append(p.getNumber() + ";");
 			phonePrimary.append((p.isDefault()? "1" : "0") + ";");
 		}
+		
+		// Delete the last occurrence of ";"
 		if(phoneType.length() != 0) {phoneType.deleteCharAt(phoneType.length()-1);}
 		if(phoneNumber.length() != 0) {phoneNumber.deleteCharAt(phoneNumber.length()-1);}
 		if(phonePrimary.length() != 0) {phonePrimary.deleteCharAt(phonePrimary.length()-1);}
 		
+		// Return the array
 		return new String[] {phoneType.toString(), phoneNumber.toString(), phonePrimary.toString()};
 	}
 	
+	/**
+	 * This method will convert a list of email into 2 strings that is stored in an array.
+	 * The type and value will be concatenated for each email, separated by a ";"
+	 * @param emailList A list of email
+	 * @return A String array with a size of 2.
+	 * 	<br/>Index 0 will be the type of the email (Home, Work, Other)
+	 * 	<br/>Index 1 will be the email address
+	 */
 	public String[] createEmailData(List<Email> emailList) {
+		
+		// String buffers
 		StringBuffer emailType = new StringBuffer();
 		StringBuffer emailValue = new StringBuffer();
+		
+		// Iterate through all email in the list
 		for (Email e : emailList) {
 			emailType.append(e.getType() + ";");
 			emailValue.append(e.getEmail() + ";");
 		}
+		// Delete the last occurrence of ";"
 		if(emailType.length() != 0) {emailType.deleteCharAt(emailType.length()-1);}
 		if(emailValue.length() != 0) {emailValue.deleteCharAt(emailValue.length()-1);}
 		
+		// Return the array
 		return new String[] {emailType.toString(), emailValue.toString()};
 	}
 	
+	/**
+	 * This method will convert a list of address into 2 strings that is stored in an array.
+	 * The type and value will be concatenated for each address, separated by a ";"
+	 * @param addressList A list of address
+	 * @return A String array with a size of 2.
+	 * 	<br/>Index 0 will be the type of the address (Home, Work, Other)
+	 * 	<br/>Index 1 will be the physical address
+	 */
 	public String[] createAddressData(List<Address> addressList) {
 		StringBuffer addressType = new StringBuffer();
 		StringBuffer addressValue = new StringBuffer();
@@ -177,6 +226,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	
 	// -=-=-=-=-=-= Retrieve =-=-=-=-=-=-=- //
 
+	/**
+	 * Get a single contact data from the database and create a Contact object
+	 * @param contactId ID of the contact
+	 * @param db Param for an pre-opened database, if put null, then fetch the ReadableDatabase
+	 * @return
+	 */
 	public Contact getContact(long contactId, SQLiteDatabase db) {
 		if(db == null) {
 			db = this.getReadableDatabase();
@@ -254,6 +309,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		return c;
 	}
 
+	/**
+	 * Get all contacts from the database and store all created Contact in a list
+	 * @return The list that contains all Contact objects
+	 */
 	public List<Contact> getAllContacts() {
 		SQLiteDatabase db = this.getReadableDatabase();
 
@@ -270,7 +329,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 
 	// -=-=-=-=-=-= Update =-=-=-=-=-=-=- //
-	
+	/**
+	 * Update an existing contact
+	 * @param c A contact object containing updated data
+	 * @return The ID of the updated contact
+	 */
 	public int updateContact(Contact c) {
 		SQLiteDatabase db = this.getWritableDatabase();
 
@@ -304,6 +367,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	}
 	
 	// -=-=-=-=-=-= Delete =-=-=-=-=-=-=- //
+	/**
+	 * Delete a contact from the database
+	 * @param contactId The ID of the unwanted contact
+	 */
 	public void deleteContact(long contactId) {
 	    SQLiteDatabase db = this.getWritableDatabase();
 	    db.delete(TABLE_CONTACTS, KEY_ID + " = ?",
@@ -312,14 +379,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	
 	// ===================================================
 
-	// closing database
+	/**
+	 * A Method that closes the database if it is not closed already.
+	 */
     public void closeDB() {
         SQLiteDatabase db = this.getReadableDatabase();
         if (db != null && db.isOpen())
             db.close();
     }
     
-    //==================================================
+    /**
+     * Get the number of contacts currently stored in the database
+     * @return the number of contacts in the database
+     */
     public int getContactCount() {
     	SQLiteDatabase db = this.getReadableDatabase();
     	String selectQuery = "SELECT  * FROM " + TABLE_CONTACTS;

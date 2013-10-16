@@ -250,6 +250,91 @@ public class MainActivity extends Activity implements
 	}
 
 	/**
+	 * This onComplete method is for SortingDialog. It will react according
+	 * to what the user selected in the list dialog.
+	 */
+	@Override
+	public void onComplete(SortType sortType) {
+		MainActivity.CURRENT_SORT_OPTION = sortType;
+		sortList(contacts, sortType);
+		adapter.notifyDataSetChanged();
+	}
+	
+	/**
+	 * @see android.app.Activity#onPause()
+	 */
+	protected void onPause() {
+		super.onPause();
+		//Save data to shared preference
+		saveDataToSharedPref();
+	}
+	
+	/**
+	 * @see android.app.Activity#onResume()
+	 */
+	protected void onResume() {
+		super.onResume();
+		//Load data from shared preference
+		loadDataFromSharedPref();
+	}
+	
+	/**
+	 * @see android.app.Activity#onDestroy()
+	 */
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		//Save data to shared preference
+		saveDataToSharedPref();
+		//Close database
+		db.closeDB();
+	}
+	
+	/**
+	 * Method that saves data to shared preference, closes the database and then exits the app
+	 */
+	protected void onExit() {
+		//Save data to shared preference
+		saveDataToSharedPref();
+		//Close database
+		db.closeDB();
+		
+		// Destroy the activity
+		finish();
+	}
+	
+	/**
+	 * Method that handles all data that will be saved to shared preference
+	 */
+	private void saveDataToSharedPref() {
+		SharedPreferences pref = getPreferences(MODE_PRIVATE);
+		SharedPreferences.Editor editor = pref.edit();
+		
+		// Save sort type
+		switch (CURRENT_SORT_OPTION) {
+		case SORT_BY_FIRST_NAME:
+			editor.putInt(SORTBY, 0); break;
+		case SORT_BY_LAST_NAME:
+			editor.putInt(SORTBY, 1); break;
+		case SORT_BY_PHONE:
+			editor.putInt(SORTBY, 2); break;
+		}
+		
+		editor.apply();
+	}
+	
+	/**
+	 * Method that handles all data that will be loaded from shared preference
+	 */
+	private void loadDataFromSharedPref() {
+		SharedPreferences pref = getPreferences(MODE_PRIVATE);
+		
+		// Load sort option
+		CURRENT_SORT_OPTION = SortType.values()[pref.getInt(SORTBY, 0)];
+	}
+
+	// CLASS
+	/**
 	 * Custom Adapter for the contact list view
 	 */
 	private class ContactListAdapter extends ArrayAdapter<Contact> {
@@ -421,7 +506,7 @@ public class MainActivity extends Activity implements
 	}
 
 	/**
-	 * Custom TextWatcher when text changes on the searchbar
+	 * Custom TextWatcher when text changes on the search bar
 	 */
 	private class OnSearchListener implements TextWatcher {
 
@@ -442,61 +527,6 @@ public class MainActivity extends Activity implements
 
 	}
 
-	/**
-	 * This onComplete method is for SortingDialog. It will react according
-	 * to what the user selected in the list dialog.
-	 */
-	@Override
-	public void onComplete(SortType sortType) {
-		MainActivity.CURRENT_SORT_OPTION = sortType;
-		sortList(contacts, sortType);
-		adapter.notifyDataSetChanged();
-	}
-	
-	
-	protected void onPause() {
-		super.onPause();
-		saveDataToSharedPref();
-	}
-	
-	protected void onResume() {
-		super.onResume();
-		loadDataFromSharedPref();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		saveDataToSharedPref();
-		db.closeDB();
-	}
-	
-	protected void onExit() {
-		saveDataToSharedPref();
-		db.closeDB();
-		finish();
-	}
-	
-	private void saveDataToSharedPref() {
-		SharedPreferences pref = getPreferences(MODE_PRIVATE);
-		SharedPreferences.Editor editor = pref.edit();
-		
-		// Save sort type
-		switch (CURRENT_SORT_OPTION) {
-		case SORT_BY_FIRST_NAME:
-			editor.putInt(SORTBY, 0); break;
-		case SORT_BY_LAST_NAME:
-			editor.putInt(SORTBY, 1); break;
-		case SORT_BY_PHONE:
-			editor.putInt(SORTBY, 2); break;
-		}
-		
-		editor.apply();
-	}
-	
-	private void loadDataFromSharedPref() {
-		SharedPreferences pref = getPreferences(MODE_PRIVATE);
-		CURRENT_SORT_OPTION = SortType.values()[pref.getInt(SORTBY, 0)];
-	}
+
 	
 }

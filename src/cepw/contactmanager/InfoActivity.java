@@ -335,6 +335,109 @@ public class InfoActivity extends Activity implements
 		scrollView.smoothScrollTo(0, 0);
 	}
 
+	/**
+	 * Method that is invoked when an PhonePopupDialog option is chosen
+	 */
+	@Override
+	public void onComplete(PhoneAction action, int position) {
+		String number = contact.getPhones().get(position).getNumber();
+		switch (action) {
+		case SELECTED_CALL:
+			Intent callIntent = new Intent(Intent.ACTION_CALL);
+			callIntent.setData(Uri.parse("tel:" + number));
+			startActivity(callIntent);
+			break;
+		case SELECTED_MESSAGE:
+			Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
+			startActivity(smsIntent);
+			break;
+		case SELECTED_COPY:
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			Utilities.copyStringToClipboard(clipboard, number);
+			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
+			break;
+		case SELECTED_SET_PRIMARY:
+			for (Phone p : contact.getPhones())
+				p.unsetDefault();
+			contact.getPhones().get(position).setDefault();
+			Collections.sort(contact.getPhones(), new Phone.PhoneComparator());
+			DatabaseHandler db = new DatabaseHandler(getApplicationContext());
+			db.updateContact(contact);
+			phoneAdapter.notifyDataSetChanged();
+			ACTION = MODIFIED_CONTACT;
+			Toast.makeText(getApplicationContext(), number+" set as primary.", Toast.LENGTH_LONG).show();
+			break;
+		}
+
+	}
+
+	/**
+	 * Method that is invoked when an EmailPopupDialog option is chosen
+	 */
+	@Override
+	public void onComplete(EmailAction action, int position) {
+		String email = contact.getEmails().get(position).getEmail();
+		switch (action) {
+		case SELECTED_MAIL:
+			invokeEmailIntent(email);
+			break;
+		case SELECTED_COPY:
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			Utilities.copyStringToClipboard(clipboard, email);
+			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
+			break;
+		}
+
+	}
+
+	/**
+	 * Method that is invoked when an AddressPopupDialog option is chosen
+	 */
+	@Override
+	public void onComplete(AddressAction action, int position) {
+		String address = contact.getAddresses().get(position).getAddress();
+		switch (action) {
+		case SELECTED_MAP:
+			invokeMapIntent(address);
+		case SELECTED_COPY:
+			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+			Utilities.copyStringToClipboard(clipboard, address);
+			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
+			break;
+		}
+
+	}
+	
+	/**
+	 * Opens up the Email Intent
+	 * @param emailAddress the receiver for the email
+	 */
+	private void invokeEmailIntent(String emailAddress){
+		Intent emailIntent = new Intent(Intent.ACTION_SEND);
+		emailIntent.setType("message/rfc822");
+		emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { emailAddress });
+		try {
+			startActivity(Intent.createChooser(emailIntent, "Send mail..."));
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(),
+					"There are no email clients installed.", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	/**
+	 * Opens up the Map Intent
+	 * @param physicalAddress The physical address to search for
+	 */
+	private void invokeMapIntent(String physicalAddress){
+		String uri = "geo:0,0?q="+physicalAddress;
+		try {
+			startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri)));
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(),
+					"There are no map clients installed.", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
 	// CLASSES
 	/**
 	 * Adapter for the list view for phone numbers
@@ -533,90 +636,6 @@ public class InfoActivity extends Activity implements
 		}
 	}
 
-	@Override
-	public void onComplete(PhoneAction action, int position) {
-		String number = contact.getPhones().get(position).getNumber();
-		switch (action) {
-		case SELECTED_CALL:
-			Intent callIntent = new Intent(Intent.ACTION_CALL);
-			callIntent.setData(Uri.parse("tel:" + number));
-			startActivity(callIntent);
-			break;
-		case SELECTED_MESSAGE:
-			Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
-			startActivity(smsIntent);
-			break;
-		case SELECTED_COPY:
-			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-			Utilities.copyStringToClipboard(clipboard, number);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
-			break;
-		case SELECTED_SET_PRIMARY:
-			for (Phone p : contact.getPhones())
-				p.unsetDefault();
-			contact.getPhones().get(position).setDefault();
-			Collections.sort(contact.getPhones(), new Phone.PhoneComparator());
-			DatabaseHandler db = new DatabaseHandler(getApplicationContext());
-			db.updateContact(contact);
-			phoneAdapter.notifyDataSetChanged();
-			ACTION = MODIFIED_CONTACT;
-			Toast.makeText(getApplicationContext(), number+" set as primary.", Toast.LENGTH_LONG).show();
-			break;
-		}
 
-	}
-
-	@Override
-	public void onComplete(EmailAction action, int position) {
-		String email = contact.getEmails().get(position).getEmail();
-		switch (action) {
-		case SELECTED_MAIL:
-			invokeEmailIntent(email);
-			break;
-		case SELECTED_COPY:
-			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-			Utilities.copyStringToClipboard(clipboard, email);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
-			break;
-		}
-
-	}
-
-	@Override
-	public void onComplete(AddressAction action, int position) {
-		String address = contact.getAddresses().get(position).getAddress();
-		switch (action) {
-		case SELECTED_MAP:
-			invokeMapIntent(address);
-		case SELECTED_COPY:
-			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-			Utilities.copyStringToClipboard(clipboard, address);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
-			break;
-		}
-
-	}
-	
-	private void invokeEmailIntent(String emailAddress){
-		Intent emailIntent = new Intent(Intent.ACTION_SEND);
-		emailIntent.setType("message/rfc822");
-		emailIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { emailAddress });
-		try {
-			startActivity(Intent.createChooser(emailIntent, "Send mail..."));
-		} catch (android.content.ActivityNotFoundException ex) {
-			Toast.makeText(getApplicationContext(),
-					"There are no email clients installed.", Toast.LENGTH_SHORT).show();
-		}
-	}
-	
-	private void invokeMapIntent(String physicalAddress){
-		String uri = "geo:0,0?q="+physicalAddress;
-		try {
-			startActivity(new Intent(android.content.Intent.ACTION_VIEW, Uri.parse(uri)));
-		} catch (android.content.ActivityNotFoundException ex) {
-			Toast.makeText(getApplicationContext(),
-					"There are no map clients installed.", Toast.LENGTH_SHORT).show();
-		}
-	}
 
 }

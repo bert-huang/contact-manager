@@ -8,7 +8,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 /**
- * This is a DialogFragment that prompt the user to choose from Gallery or Camera. 
+ * This is a DialogFragment that prompt the user to choose from a list of email operations
+ * such as Mail and Copy to Clipboard
  * 
  * @author I-Yang Huang, IHUA164, 5503504
  */
@@ -64,7 +65,7 @@ public class EmailPopupDialog extends DialogFragment {
 	}
 
 	/**
-	 * Interface created for this ImageChooserDialog. Any activity that implements this
+	 * Interface created for this EmailPopupDialog. Any activity that implements this
 	 * interface will onComplete method invoked when one of the option in this dialog is 
 	 * clicked.
 	 */
