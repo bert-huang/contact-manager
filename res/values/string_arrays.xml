@@ -32,21 +32,5 @@
         <item>Image</item>
         <item>Take picture</item>
     </string-array>
-    
-    <string-array name="phone_actions">
-        <item>Call</item>
-        <item>Message</item>
-        <item>Copy to Clipboard</item>
-        <item>Set Default</item>
-    </string-array>
-    
-    <string-array name="email_actions">
-        <item>Mail</item>
-        <item>Copy to Clipboard</item>
-    </string-array>
-    
-    <string-array name="address_actions">
-        <item>Copy to Clipboard</item>
-    </string-array>
 
 </resources>

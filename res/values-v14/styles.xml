@@ -11,10 +11,5 @@
         
         	<item name="android:actionBarStyle">@android:style/Widget.Holo.ActionBar.Solid</item> 
     </style>
-    
-    <style name="MyActionBar" parent="@android:style/Widget.Holo.ActionBar">
-        <item name="android:background">@color/color_deep_grey</item>
-        <item name="android:backgroundSplit">@color/DeepSkyBlue</item>
-    </style>
 
 </resources>

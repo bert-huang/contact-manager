@@ -38,7 +38,7 @@
     
     <style name="style_separator_thick">
         <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">3dp</item>
+        <item name="android:layout_height">2dp</item>
         <item name="android:layout_marginBottom">10dp</item>
         <item name="android:layout_marginTop">15dp</item>
         <item name="android:background">#60555555</item>
