@@ -214,18 +214,22 @@ public class MainActivity extends Activity implements
 		}
 		
 		if (requestCode == EDIT_CONTACT_REQUEST) {
+			Intent i = new Intent(getApplicationContext(), InfoActivity.class);
 			if (resultCode == RESULT_OK) {
-				
 				Contact c = (Contact) data.getExtras().getParcelable("EDITED_CONTACT");
 				contacts.set(data.getExtras().getInt("POSITION"), c);
 				sortList(contacts, CURRENT_SORT_OPTION);
 				adapter.notifyDataSetChanged();
 				int position = contacts.indexOf(c);
-				Intent i = new Intent(getApplicationContext(),
-						InfoActivity.class);
 				i.putExtra("SELECTED_CONTACT", contacts.get(position));
 				i.putExtra("POSITION", position);
 				startActivityForResult(i, CONTACT_INFO_REQUEST);
+			}else{
+				int position = data.getExtras().getInt("POSITION");
+				i.putExtra("SELECTED_CONTACT", contacts.get(position));
+				i.putExtra("POSITION", position);
+				startActivityForResult(i, CONTACT_INFO_REQUEST);
+				
 			}
 		}
 		

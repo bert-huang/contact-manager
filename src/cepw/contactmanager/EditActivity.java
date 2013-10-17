@@ -162,12 +162,7 @@ public class EditActivity extends Activity implements
 
 			// Discard button displays discard dialog
 		case R.id.action_create_discard:
-			if(isAllFieldsEmpty()){
-				setResult(RESULT_CANCELED);
-				finish();
-			}else{
-				showDiscardDialog();
-			}
+			showDiscardDialog();
 			return true;
 
 			// Done button creates || updates a contact, and pass the data back
@@ -293,14 +288,7 @@ public class EditActivity extends Activity implements
 	@Override
 	public void onBackPressed() {
 		// Check if all fields are empty
-
-		
-		if(isAllFieldsEmpty()){
-			setResult(RESULT_CANCELED);
-			finish();
-		}else{
-			showDiscardDialog();			
-		}
+		showDiscardDialog();
 	}
 
 	/**
@@ -741,18 +729,33 @@ public class EditActivity extends Activity implements
 	 * A discard dialog when home, back and discard buttons is clicked.
 	 */
 	public void showDiscardDialog() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setMessage("All changes will be lost")
-				.setTitle("Discard changes?").setNegativeButton("Cancel", null)
-				.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		if(isAllFieldsEmpty()){
+			setResultCanceled();
+		}else {
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("All changes will be lost")
+					.setTitle("Discard changes?").setNegativeButton("Cancel", null)
+					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						finish();
-					}
-				});
-		AlertDialog alert = builder.create();
-		alert.show();
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							setResultCanceled();
+						}
+					});
+			AlertDialog alert = builder.create();
+			alert.show();
+		}
+		
+	}
+	
+	/**
+	 * Perform final operations when user discards changes
+	 */
+	private void setResultCanceled(){
+		Intent intent = new Intent();
+		intent.putExtra("POSITION", position);
+		setResult(RESULT_CANCELED, intent);
+		finish();
 	}
 
 	/**
@@ -820,6 +823,8 @@ public class EditActivity extends Activity implements
 	 * @return true if all the fields are empty, false otherwise
 	 */
 	private boolean isAllFieldsEmpty() {
+		
+		// Check if All phone entries are empty
 		boolean emptyPhones = true;
 		EditText editText = null;
 		for(int i = 0; i < dynamicPhoneLayout.getChildCount(); i++){
@@ -829,6 +834,7 @@ public class EditActivity extends Activity implements
 			}
 		}
 		
+		// Check if All email entries are empty
 		boolean emptyEmails = true;
 		for(int i = 0; i < dynamicEmailLayout.getChildCount(); i++){
 			editText = (EditText)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(1);
@@ -837,6 +843,7 @@ public class EditActivity extends Activity implements
 			}
 		}
 		
+		// Check if All address entries are empty
 		boolean emptyAddress = true;
 		for(int i = 0; i < dynamicAddressLayout.getChildCount(); i++){
 			editText = (EditText)((ViewGroup)dynamicAddressLayout.getChildAt(i)).getChildAt(1);
@@ -845,6 +852,7 @@ public class EditActivity extends Activity implements
 			}
 		}
 		
+		// Check if name fields are empty
 		boolean emptyName = 
 				(	fullName.getText().length() +
 					firstName.getText().length() + 
@@ -853,6 +861,7 @@ public class EditActivity extends Activity implements
 					nameSuffix.getText().length() == 0)
 					? true : false;
 		
+		// Check if date of birth fields are empty
 		boolean emptyDob = (dobField.getText().length() == 0) ? true : false;
 		
 		return emptyName && emptyPhones && emptyEmails && emptyAddress & emptyDob;
