@@ -7,8 +7,10 @@ import java.util.Locale;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.Editable;
@@ -30,6 +32,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import cepw.contact.*;
+import cepw.contactmanager.ContactPopupDialog.ContactAction;
 import cepw.contactmanager.SortingDialog.SortType;
 import cepw.contactmanager.database.DatabaseHandler;
 
@@ -42,7 +45,8 @@ import cepw.contactmanager.database.DatabaseHandler;
  * @author I-Yang Huang, IHUA164, 5503504
  */
 public class MainActivity extends Activity implements
-		SortingDialog.OnCompleteListener {
+		SortingDialog.OnCompleteListener,
+		ContactPopupDialog.OnCompleteListener{
 	
 	private static final String LOG = "MainActivity";
 
@@ -55,6 +59,11 @@ public class MainActivity extends Activity implements
 	private static String SORTBY = "SORT_TYPE";
 	private static SortType CURRENT_SORT_OPTION;
 
+	// Bundle
+	protected static final String CONTACT_NAME = "contactName";
+	protected static final String SELECTED_POS = "selectedPosition";
+	
+	// Database
 	private DatabaseHandler db;
 	
 	// Individual components and list to store contacts.
@@ -257,7 +266,45 @@ public class MainActivity extends Activity implements
 	public void onComplete(SortType sortType) {
 		MainActivity.CURRENT_SORT_OPTION = sortType;
 		sortList(contacts, sortType);
+		sortList(contactList, sortType);
 		adapter.notifyDataSetChanged();
+	}
+	
+	/**
+	 * This onComplete method is for ContactPopupDialog. It will react according
+	 * to what the user selected in the list dialog.
+	 */
+	@Override
+	public void onComplete(ContactAction action, int position) {
+		switch(action){
+		case SELECTED_DELETE:
+			final int pos = position;
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Are you sure you want to delete " 
+			+ contacts.get(pos).getName().getFullName() + "?")
+					.setTitle("Delete?")
+					.setNegativeButton("Cancel", null)
+					.setPositiveButton("Yes",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							db.deleteContact(contacts.get(pos).getID()); // Update database
+							contacts.remove(pos); // simply remove
+							adapter.notifyDataSetChanged(); 
+						}
+					});
+			AlertDialog alert = builder.create();
+			alert.show();
+			break;
+		case SELECTED_EDIT:
+			Intent intent = new Intent(this, EditActivity.class);
+			intent.putExtra("POSITION", position);
+			intent.putExtra("SELECTED_CONTACT", contacts.get(position));
+			startActivityForResult(intent, EDIT_CONTACT_REQUEST);
+			break;
+		
+		}
 	}
 	
 	/**
@@ -488,9 +535,12 @@ public class MainActivity extends Activity implements
 		public boolean onItemLongClick(AdapterView<?> parent, View view,
 				int position, long id) {
 			
-
-			Toast.makeText(getApplicationContext(), "Position: "+ position + "\nTODO: Dialog",
-					Toast.LENGTH_SHORT).show();
+			DialogFragment contactDialog = new ContactPopupDialog();
+			Bundle args = new Bundle();
+			args.putString(CONTACT_NAME, contacts.get(position).getName().getFullName());
+			args.putInt(SELECTED_POS, position);
+			contactDialog.setArguments(args);
+			contactDialog.show(getFragmentManager(), "Contact Options");
 			return true;
 		}
 

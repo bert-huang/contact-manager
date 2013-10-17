@@ -65,8 +65,7 @@ public class EditActivity extends Activity implements
 	private ImageButton expandName, collapseName, clearDob;
 	private EditText fullName, firstName, middleName, lastName, nameSuffix;
 	private TextView dobField;
-	private LinearLayout dynamicPhoneLayout, dynamicEmailLayout,
-			dynamicAddressLayout;
+	private LinearLayout dynamicPhoneLayout, dynamicEmailLayout, dynamicAddressLayout;
 	private Bitmap displayPhoto;
 
 	// Fields for Bundles
@@ -163,7 +162,12 @@ public class EditActivity extends Activity implements
 
 			// Discard button displays discard dialog
 		case R.id.action_create_discard:
-			showDiscardDialog();
+			if(isAllFieldsEmpty()){
+				setResult(RESULT_CANCELED);
+				finish();
+			}else{
+				showDiscardDialog();
+			}
 			return true;
 
 			// Done button creates || updates a contact, and pass the data back
@@ -288,7 +292,15 @@ public class EditActivity extends Activity implements
 	 */
 	@Override
 	public void onBackPressed() {
-		showDiscardDialog();
+		// Check if all fields are empty
+
+		
+		if(isAllFieldsEmpty()){
+			setResult(RESULT_CANCELED);
+			finish();
+		}else{
+			showDiscardDialog();			
+		}
 	}
 
 	/**
@@ -802,4 +814,47 @@ public class EditActivity extends Activity implements
 
 	}
 
+	/**
+	 * Check whether all the fields are empty
+	 * NOTE: IMAGES DOES NOT COUNT
+	 * @return true if all the fields are empty, false otherwise
+	 */
+	private boolean isAllFieldsEmpty() {
+		boolean emptyPhones = true;
+		EditText editText = null;
+		for(int i = 0; i < dynamicPhoneLayout.getChildCount(); i++){
+			editText = (EditText)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(1);
+			if(editText.getText().length() != 0){
+				emptyPhones = false;
+			}
+		}
+		
+		boolean emptyEmails = true;
+		for(int i = 0; i < dynamicEmailLayout.getChildCount(); i++){
+			editText = (EditText)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(1);
+			if(editText.getText().length() != 0){
+				emptyPhones = false;
+			}
+		}
+		
+		boolean emptyAddress = true;
+		for(int i = 0; i < dynamicAddressLayout.getChildCount(); i++){
+			editText = (EditText)((ViewGroup)dynamicAddressLayout.getChildAt(i)).getChildAt(1);
+			if(editText.getText().length() != 0){
+				emptyAddress = false;
+			}
+		}
+		
+		boolean emptyName = 
+				(	fullName.getText().length() +
+					firstName.getText().length() + 
+					middleName.getText().length()+
+					lastName.getText().length() +
+					nameSuffix.getText().length() == 0)
+					? true : false;
+		
+		boolean emptyDob = (dobField.getText().length() == 0) ? true : false;
+		
+		return emptyName && emptyPhones && emptyEmails && emptyAddress & emptyDob;
+	}
 }

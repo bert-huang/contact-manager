@@ -438,8 +438,7 @@ public class InfoActivity extends Activity implements
 					new DialogInterface.OnClickListener() {
 
 						@Override
-						public void onClick(DialogInterface dialog,
-								int which) {
+						public void onClick(DialogInterface dialog, int which) {
 
 							contact.getEmails().remove(pos); // simply remove
 							db.updateContact(contact); // Update database

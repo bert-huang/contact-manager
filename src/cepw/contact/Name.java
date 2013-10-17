@@ -145,6 +145,23 @@ public class Name implements Parcelable{
 	public String getSuffix() {
 		return suffix;
 	}
+	
+	/**
+	 * Get the full name of this object
+	 * @return Full name
+	 */
+	public String getFullName() {
+		String fullName = "";
+		if (!firstName.trim().equals("") && firstName != null)
+			fullName += firstName + " ";
+		if (!middleName.trim().equals("") && middleName != null)
+			fullName += middleName + " ";
+		if (!lastName.trim().equals("") && lastName != null)
+			fullName += lastName;
+		if (!suffix.trim().equals("") && suffix != null)
+			fullName += ", " + suffix;
+		return fullName;
+	}
 
 	/**
 	 * ` A description of this Parcelable object
