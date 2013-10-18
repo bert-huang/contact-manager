@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -823,7 +824,7 @@ public class EditActivity extends Activity implements
 			startActivityForResult(galleryIntent, GALLERY_REQUEST);
 			break;
 		case SELECTED_CAMERA:
-			uri = getOutputMediaFileUri();
+			uri = getOutputMediaFileUri(getApplicationContext());
 			Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 			startActivityForResult(captureIntent, CAMERA_REQUEST);
@@ -883,17 +884,18 @@ public class EditActivity extends Activity implements
 	}
 	
 	/** Create a file Uri for saving an image or video */
-	private static Uri getOutputMediaFileUri(){
-	      return Uri.fromFile(getOutputMediaFile());
+	private static Uri getOutputMediaFileUri(Context context){
+	      return Uri.fromFile(getOutputMediaFile(context));
 	}
 
 	/** Create a File for saving an image or video */
-	private static File getOutputMediaFile(){
+	private static File getOutputMediaFile(Context context){
 	    // To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
-	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
-	              Environment.DIRECTORY_PICTURES), "cepw.temp");
+	    File mediaStorageDir = new File(
+	    		context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), 
+	    		"cepw.temp");
 	    // This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 
@@ -906,9 +908,9 @@ public class EditActivity extends Activity implements
 	    }
 
 	    // Create a media file name
-	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+//	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 	    File mediaFile = null;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + "cepw.temp" + ".jpg");
 
 	    return mediaFile;
 	}
