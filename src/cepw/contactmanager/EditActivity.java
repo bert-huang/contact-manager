@@ -1,11 +1,16 @@
 package cepw.contactmanager;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -72,6 +77,9 @@ public class EditActivity extends Activity implements
 	private Contact contact = null;
 	private int position;
 	private boolean isNewContact;
+	
+	//Camera
+	private Uri uri;
 
 	/**
 	 * @see android.app.Activity#onCreate(Bundle)
@@ -233,10 +241,15 @@ public class EditActivity extends Activity implements
 
 		// If result's request code is either GALLERY_REQUEST or CAMERA_REQUEST
 		if (requestCode == GALLERY_REQUEST || requestCode == CAMERA_REQUEST) {
-			if (resultCode == RESULT_OK && data != null) {
-
+			if (resultCode == RESULT_OK) {
+				Uri selectedImage;
 				// Get the Uri
-				Uri selectedImage = data.getData();
+				if(data != null){
+					selectedImage = data.getData();
+				}else{
+					selectedImage = uri;
+				}
+				
 
 				// Perform crop
 				// If phone does not support image cropping, then simply squeeze image
@@ -810,7 +823,9 @@ public class EditActivity extends Activity implements
 			startActivityForResult(galleryIntent, GALLERY_REQUEST);
 			break;
 		case SELECTED_CAMERA:
+			uri = getOutputMediaFileUri();
 			Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
 			startActivityForResult(captureIntent, CAMERA_REQUEST);
 			break;
 		}
@@ -865,5 +880,36 @@ public class EditActivity extends Activity implements
 		boolean emptyDob = (dobField.getText().length() == 0) ? true : false;
 		
 		return emptyName && emptyPhones && emptyEmails && emptyAddress & emptyDob;
+	}
+	
+	/** Create a file Uri for saving an image or video */
+	private static Uri getOutputMediaFileUri(){
+	      return Uri.fromFile(getOutputMediaFile());
+	}
+
+	/** Create a File for saving an image or video */
+	private static File getOutputMediaFile(){
+	    // To be safe, you should check that the SDCard is mounted
+	    // using Environment.getExternalStorageState() before doing this.
+
+	    File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
+	              Environment.DIRECTORY_PICTURES), "cepw.temp");
+	    // This location works best if you want the created images to be shared
+	    // between applications and persist after your app has been uninstalled.
+
+	    // Create the storage directory if it does not exist
+	    if (! mediaStorageDir.exists()){
+	        if (! mediaStorageDir.mkdirs()){
+	            Log.d(LOG, "failed to create directory");
+	            return null;
+	        }
+	    }
+
+	    // Create a media file name
+	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+	    File mediaFile = null;
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_"+ timeStamp + ".jpg");
+
+	    return mediaFile;
 	}
 }
