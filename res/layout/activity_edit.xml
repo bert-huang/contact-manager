@@ -32,8 +32,7 @@
                     android:id="@id/button_change_display_image"
                     android:layout_width="70dp"
                     android:layout_height="70dp"
-                    android:contentDescription="@string/disc_display_image"
-                    android:background="@drawable/ic_face"/>
+                    android:contentDescription="@string/disc_display_image"/>
 
                 <!-- Name fields -->
 

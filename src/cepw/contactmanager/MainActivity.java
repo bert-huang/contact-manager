@@ -164,8 +164,11 @@ public class MainActivity extends Activity implements
 	 */
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		switch (requestCode) {
 
-		if (requestCode == CREATE_CONTACT_REQUEST) {
+		// When coming back from adding a NEW contact
+		case CREATE_CONTACT_REQUEST:
 			if (resultCode == RESULT_OK) {
 
 				Contact c = (Contact) data.getExtras().getParcelable(
@@ -181,9 +184,10 @@ public class MainActivity extends Activity implements
 				startActivityForResult(i, CONTACT_INFO_REQUEST);
 
 			}
-		}
-
-		if (requestCode == CONTACT_INFO_REQUEST) {
+			break;
+		
+		// When coming back from InfoActivity
+		case CONTACT_INFO_REQUEST:
 			if (resultCode == RESULT_OK) {
 
 				String action = data.getStringExtra("ACTION");
@@ -211,28 +215,37 @@ public class MainActivity extends Activity implements
 
 				}
 			}
-		}
+			break;
 		
-		if (requestCode == EDIT_CONTACT_REQUEST) {
+		// When coming back from EditActivity
+		case EDIT_CONTACT_REQUEST:
 			Intent i = new Intent(getApplicationContext(), InfoActivity.class);
-			if (resultCode == RESULT_OK) {
-				Contact c = (Contact) data.getExtras().getParcelable("EDITED_CONTACT");
-				contacts.set(data.getExtras().getInt("POSITION"), c);
-				sortList(contacts, CURRENT_SORT_OPTION);
-				adapter.notifyDataSetChanged();
-				int position = contacts.indexOf(c);
-				i.putExtra("SELECTED_CONTACT", contacts.get(position));
-				i.putExtra("POSITION", position);
-				startActivityForResult(i, CONTACT_INFO_REQUEST);
-			}else{
-				int position = data.getExtras().getInt("POSITION");
-				i.putExtra("SELECTED_CONTACT", contacts.get(position));
-				i.putExtra("POSITION", position);
-				startActivityForResult(i, CONTACT_INFO_REQUEST);
-				
+			int position = 0;
+			
+			switch(resultCode) {
+			
+				case RESULT_OK:
+					Contact c = (Contact) data.getExtras().getParcelable("EDITED_CONTACT");
+					contacts.set(data.getExtras().getInt("POSITION"), c);
+					sortList(contacts, CURRENT_SORT_OPTION);
+					adapter.notifyDataSetChanged();
+					position = contacts.indexOf(c);
+					i.putExtra("SELECTED_CONTACT", contacts.get(position));
+					i.putExtra("POSITION", position);
+					startActivityForResult(i, CONTACT_INFO_REQUEST);
+					break;
+					
+				case RESULT_CANCELED:
+					position = data.getExtras().getInt("POSITION");
+					i.putExtra("SELECTED_CONTACT", contacts.get(position));
+					i.putExtra("POSITION", position);
+					startActivityForResult(i, CONTACT_INFO_REQUEST);
+					break;
 			}
+			break;
 		}
 		
+		// Perform search again
 		searchbar.setText(searchbar.getText().toString());
 	}
 

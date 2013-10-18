@@ -1,11 +1,8 @@
 package cepw.contactmanager;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import android.net.Uri;
@@ -80,7 +77,7 @@ public class EditActivity extends Activity implements
 	private boolean isNewContact;
 	
 	//Camera
-	private Uri uri;
+	private Uri tempImageUri;
 
 	/**
 	 * @see android.app.Activity#onCreate(Bundle)
@@ -88,6 +85,7 @@ public class EditActivity extends Activity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		setContentView(R.layout.activity_edit);
 
 		// Show the Up button in the action bar.
@@ -239,47 +237,32 @@ public class EditActivity extends Activity implements
 	 * @see android.app.Activity#onActivityResult(int, int, Intent)
 	 */
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-		// If result's request code is either GALLERY_REQUEST or CAMERA_REQUEST
-		if (requestCode == GALLERY_REQUEST || requestCode == CAMERA_REQUEST) {
-			if (resultCode == RESULT_OK) {
-				Uri selectedImage;
+		
+		switch(requestCode){
+		
+		case GALLERY_REQUEST:
+			if (resultCode == RESULT_OK && data != null) {
 				// Get the Uri
-				if(data != null){
-					selectedImage = data.getData();
-				}else{
-					selectedImage = uri;
-				}
-				
-
+				Uri selectedImage = data.getData();
 				// Perform crop
 				// If phone does not support image cropping, then simply squeeze image
 				if (!performCrop(selectedImage)) {
-					String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-					Cursor cursor = getContentResolver().query(selectedImage,
-							filePathColumn, null, null, null);
-					cursor.moveToFirst();
-
-					int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-					String picturePath = cursor.getString(columnIndex);
-					cursor.close();
-
-					Bitmap b = BitmapFactory.decodeFile(picturePath);
-					if (b != null) {
-						displayPhoto = b;
-						imageBtn.setImageBitmap(Bitmap.createScaledBitmap(b,
-								IMAGE_SIZE, IMAGE_SIZE, false));
-					} else {
-						Toast.makeText(this, "Failed to load image!",
-								Toast.LENGTH_LONG).show();
-					}
+					performImageSqueeze(selectedImage);
 				}
 			}
-		}
-
-		// If result request code is IMG_CROP_REQUEST
-		if (requestCode == IMG_CROP_REQUEST) {
+			break;
+			
+		case CAMERA_REQUEST:
+			if (resultCode == RESULT_OK) {
+				// Perform crop
+				// If phone does not support image cropping, then simply squeeze image
+				if (!performCrop(tempImageUri)) {
+					performImageSqueeze(tempImageUri);
+				}
+			}
+			break;
+			
+		case IMG_CROP_REQUEST:
 			if (resultCode == RESULT_OK && data != null) {
 				// get the returned data
 				Bundle extras = data.getExtras();
@@ -293,6 +276,7 @@ public class EditActivity extends Activity implements
 					imageBtn.setImageBitmap(b);
 				}
 			}
+			break;
 		}
 	}
 
@@ -775,8 +759,7 @@ public class EditActivity extends Activity implements
 	/**
 	 * Performs a image crop by launching external image crop application
 	 * 
-	 * @param picUri
-	 *            Uri of the image you want to crop
+	 * @param picUri Uri of the image you want to crop
 	 * @return whether the crop is success. Returns false if cropping is not
 	 *         supported.
 	 */
@@ -811,6 +794,34 @@ public class EditActivity extends Activity implements
 	}
 
 	/**
+	 * 
+	 * @param picUri Uri of the image you want to crop
+	 * @return
+	 */
+	private boolean performImageSqueeze(Uri picUri) {
+		String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+		Cursor cursor = getContentResolver().query(picUri,
+				filePathColumn, null, null, null);
+		cursor.moveToFirst();
+
+		int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+		String picturePath = cursor.getString(columnIndex);
+		cursor.close();
+
+		Bitmap b = BitmapFactory.decodeFile(picturePath);
+		if (b != null) {
+			displayPhoto = b;
+			imageBtn.setImageBitmap(Bitmap.createScaledBitmap(b,
+					IMAGE_SIZE, IMAGE_SIZE, false));
+		} else {
+			Toast.makeText(this, "Failed to load image!",
+					Toast.LENGTH_LONG).show();
+		}
+		return false;
+	}
+	
+	/**
 	 * This onComplete method is for ImageChooserDialog. It will react according
 	 * to what the user selected in the list dialog.
 	 */
@@ -824,9 +835,9 @@ public class EditActivity extends Activity implements
 			startActivityForResult(galleryIntent, GALLERY_REQUEST);
 			break;
 		case SELECTED_CAMERA:
-			uri = getOutputMediaFileUri(getApplicationContext());
+			tempImageUri = getOutputMediaFileUri(getApplicationContext(), "cepw.temp", ".jpg");
 			Intent captureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+			captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri);
 			startActivityForResult(captureIntent, CAMERA_REQUEST);
 			break;
 		}
@@ -884,12 +895,12 @@ public class EditActivity extends Activity implements
 	}
 	
 	/** Create a file Uri for saving an image or video */
-	private static Uri getOutputMediaFileUri(Context context){
-	      return Uri.fromFile(getOutputMediaFile(context));
+	private static Uri getOutputMediaFileUri(Context context, String prefix, String suffix){
+	      return Uri.fromFile(getOutputMediaFile(context, prefix, suffix));
 	}
 
 	/** Create a File for saving an image or video */
-	private static File getOutputMediaFile(Context context){
+	private static File getOutputMediaFile(Context context, String prefix, String suffix){
 	    // To be safe, you should check that the SDCard is mounted
 	    // using Environment.getExternalStorageState() before doing this.
 
@@ -908,10 +919,12 @@ public class EditActivity extends Activity implements
 	    }
 
 	    // Create a media file name
-//	    String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 	    File mediaFile = null;
-        mediaFile = new File(mediaStorageDir.getPath() + File.separator + "cepw.temp" + ".jpg");
+        mediaFile = new File(mediaStorageDir.getPath() + File.separator + prefix + suffix);
 
 	    return mediaFile;
 	}
+	
+
+	
 }

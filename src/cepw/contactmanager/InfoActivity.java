@@ -51,9 +51,6 @@ public class InfoActivity extends Activity implements
 	private static final String MODIFIED_CONTACT = "MODIFIED_CONTACT";
 	private static String ACTION;
 
-	// Request code
-	private static final int EDIT_CONTACT_REQUEST = 1;
-
 	// Bundle objects
 	protected static final String PH_NUMBER = "phoneNumber";
 	protected static final String PH_TYPE = "phoneType";
@@ -181,23 +178,6 @@ public class InfoActivity extends Activity implements
 	}
 
 	/**
-	 * @see android.app.Activity#onActivityResult(int, int, Intent)
-	 */
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-		// If the request code is EDIT_CONTACT_REQUEST, fetch contact object
-		// from data intent
-		// then re populate the updated values
-		if (requestCode == EDIT_CONTACT_REQUEST && resultCode == RESULT_OK) {
-			if (data != null) {
-				contact = (Contact) data.getExtras().getParcelable(
-						"EDITED_CONTACT");
-				populateData();
-			}
-		}
-	}
-
-	/**
 	 * Shows a dialog that prompt for deletion when the delete button is clicked
 	 */
 	public void showDeleteDialog() {
@@ -206,19 +186,19 @@ public class InfoActivity extends Activity implements
 				.setTitle("Delete?")
 				.setNegativeButton("Cancel", null)
 				.setPositiveButton("Yes",
-						new DialogInterface.OnClickListener() {
+				new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								Intent intent = new Intent();
-								ACTION = DELETE_CONTACT;
-								intent.putExtra("ACTION", ACTION);
-								intent.putExtra("POSITION", position);
-								setResult(RESULT_OK, intent);
-								finish();
-							}
-						});
+					@Override
+					public void onClick(DialogInterface dialog,
+							int which) {
+						Intent intent = new Intent();
+						ACTION = DELETE_CONTACT;
+						intent.putExtra("ACTION", ACTION);
+						intent.putExtra("POSITION", position);
+						setResult(RESULT_OK, intent);
+						finish();
+					}
+				});
 		AlertDialog alert = builder.create();
 		alert.show();
 	}
@@ -348,6 +328,7 @@ public class InfoActivity extends Activity implements
 	public void onComplete(PhoneAction action, int position) {
 		String number = contact.getPhones().get(position).getNumber();
 		switch (action) {
+		
 		case SELECTED_CALL:
 			Intent callIntent = new Intent(Intent.ACTION_CALL);
 			callIntent.setData(Uri.parse("tel:" + number));

@@ -1,5 +1,9 @@
 package cepw.contactmanager;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -96,6 +100,21 @@ public class Utilities {
 	public static void copyStringToClipboard(ClipboardManager clipboard, String string) {
 		ClipData clip = ClipData.newPlainText("simple text", string);
 		clipboard.setPrimaryClip(clip);
+	}
+	
+	/**
+	 * Get the String with the current time in the format of yyyyMMdd_HHmmss
+	 * @param prefix prefix of the string
+	 * @param suffix suffix of the string
+	 * @return prefix + timestamp + suffix
+	 */
+	@SuppressLint("SimpleDateFormat")
+	public static String getTimeStamp(String prefix, String suffix){
+		prefix = (prefix == null) ? "" : prefix;
+		suffix = (suffix == null) ? "" : suffix;
+		
+		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+		return prefix + timeStamp + suffix;
 	}
 
 }
