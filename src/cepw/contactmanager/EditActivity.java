@@ -864,7 +864,7 @@ public class EditActivity extends Activity implements
 		// Check if All email entries are empty
 		boolean emptyEmails = true;
 		for(int i = 0; i < dynamicEmailLayout.getChildCount(); i++){
-			editText = (EditText)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(1);
+			editText = (EditText)((ViewGroup)dynamicEmailLayout.getChildAt(i)).getChildAt(1);
 			if(editText.getText().length() != 0){
 				emptyPhones = false;
 			}
