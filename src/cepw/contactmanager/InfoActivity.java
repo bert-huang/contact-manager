@@ -12,6 +12,7 @@ import cepw.contactmanager.EmailPopupDialog.EmailAction;
 import cepw.contactmanager.PhonePopupDialog.PhoneAction;
 import cepw.contactmanager.database.DatabaseHandler;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -365,9 +366,9 @@ public class InfoActivity extends Activity implements
 							}else { // If not the primary number
 								contact.getPhones().remove(pos); // simply remove
 							}
-							db.updateContact(contact); // Update database
 							phoneAdapter.notifyDataSetChanged(); 
 							Utilities.setNoCollapseListView(phoneList); // Resize list view
+							new UpdateContactDbTask().execute(contact); // Update database
 							
 							// If the contact have no more phone, hide the phoneInfoLayout 
 							if(contact.getPhones().isEmpty()){ phoneInfo.setVisibility(View.GONE); } 
@@ -382,10 +383,11 @@ public class InfoActivity extends Activity implements
 				p.unsetDefault();
 			contact.getPhones().get(position).setDefault();
 			Collections.sort(contact.getPhones(), new Phone.PhoneComparator());
-			
-			db.updateContact(contact);
 			phoneAdapter.notifyDataSetChanged();
+			
 			ACTION = MODIFIED_CONTACT;
+			new UpdateContactDbTask().execute(contact);
+			
 			Toast.makeText(getApplicationContext(), number+" set as primary.", Toast.LENGTH_LONG).show();
 			break;
 		}
@@ -422,7 +424,7 @@ public class InfoActivity extends Activity implements
 						public void onClick(DialogInterface dialog, int which) {
 
 							contact.getEmails().remove(pos); // simply remove
-							db.updateContact(contact); // Update database
+							new UpdateContactDbTask().execute(contact);  // Update database
 							phoneAdapter.notifyDataSetChanged(); 
 							Utilities.setNoCollapseListView(emailList); // Resize list view
 							// If the contact have no more phone, hide the phoneInfoLayout 
@@ -467,7 +469,7 @@ public class InfoActivity extends Activity implements
 								int which) {
 
 							contact.getAddresses().remove(pos); // simply remove
-							db.updateContact(contact); // Update database
+							new UpdateContactDbTask().execute(contact); // Update database
 							phoneAdapter.notifyDataSetChanged(); 
 							Utilities.setNoCollapseListView(addressList); // Resize list view
 							// If the contact have no more phone, hide the phoneInfoLayout 
@@ -710,6 +712,17 @@ public class InfoActivity extends Activity implements
 		}
 	}
 
+	private class UpdateContactDbTask extends AsyncTask<Contact, Void, Void>{
 
+		@Override
+		protected Void doInBackground(Contact... params) {
+			for(Contact c : params)
+			db.updateContact(c);
+			return null;
+		}
+
+
+		
+	}
 
 }
