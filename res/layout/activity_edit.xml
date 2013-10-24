@@ -77,7 +77,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:ems="10"
-                        android:hint="@string/text_name_surname"
+                        android:hint="@string/text_name_last"
                         android:inputType="textPersonName|textCapWords" />
 
                     <EditText

@@ -67,8 +67,8 @@ public class MainActivity extends Activity implements
 	private DatabaseHandler db;
 	
 	// Individual components and list to store contacts.
-	private List<Contact> contacts; // The actual list that stores contacts
-	private List<Contact> contactList; // The list for display
+	private List<Contact> contactsList; // The actual list that stores contacts
+	private List<Contact> displayList; // The list for display
 	private ListView list;
 	private ArrayAdapter<Contact> adapter;
 	private EditText searchbar;
@@ -110,15 +110,15 @@ public class MainActivity extends Activity implements
 			}
 		});
 
-		contacts = db.getAllContacts();
-		contactList = new ArrayList<Contact>();
+		contactsList = db.getAllContacts();
+		displayList = new ArrayList<Contact>();
 		list = (ListView) findViewById(R.id.listview_contact_list);
-		adapter = new ContactListAdapter(MainActivity.this, contacts);
+		adapter = new ContactListAdapter(MainActivity.this, contactsList);
 		list.setAdapter(adapter);
 		list.setOnItemClickListener(new ListItemClickedListener());
 		list.setOnItemLongClickListener(new ListItemClickedListener());
 //		MainActivity.CURRENT_SORT_OPTION = SortType.SORT_BY_FIRST_NAME;
-		sortList(contacts, CURRENT_SORT_OPTION);
+		sortList(contactsList, CURRENT_SORT_OPTION);
 		adapter.notifyDataSetChanged();
 
 	}
@@ -173,13 +173,13 @@ public class MainActivity extends Activity implements
 
 				Contact c = (Contact) data.getExtras().getParcelable(
 						"NEW_CONTACT");
-				contacts.add(c);
-				sortList(contacts, CURRENT_SORT_OPTION);
+				contactsList.add(c);
+				sortList(contactsList, CURRENT_SORT_OPTION);
 				adapter.notifyDataSetChanged();
-				int position = contacts.indexOf(c);
+				int position = contactsList.indexOf(c);
 				Intent i = new Intent(getApplicationContext(),
 						InfoActivity.class);
-				i.putExtra("SELECTED_CONTACT", contacts.get(position));
+				i.putExtra("SELECTED_CONTACT", contactsList.get(position));
 				i.putExtra("POSITION", position);
 				startActivityForResult(i, CONTACT_INFO_REQUEST);
 
@@ -193,24 +193,24 @@ public class MainActivity extends Activity implements
 				String action = data.getStringExtra("ACTION");
 				int pos = data.getExtras().getInt("POSITION");
 
-				if (action.equals("EDIT_CONTACT")) {
-					contacts.set(pos, (Contact)data.getExtras().getParcelable("MODIFIED_CONTACT"));
+				if (action.equals(InfoActivity.EDIT_CONTACT)) {
+					contactsList.set(pos, (Contact)data.getExtras().getParcelable(InfoActivity.MODIFIED_CONTACT));
 					Intent intent = new Intent(this, EditActivity.class);
 					intent.putExtra("POSITION", pos);
-					intent.putExtra("SELECTED_CONTACT", contacts.get(pos));
+					intent.putExtra("SELECTED_CONTACT", contactsList.get(pos));
 					startActivityForResult(intent, EDIT_CONTACT_REQUEST);
 					
-				} else if (action.equals("MODIFIED_CONTACT")) {
-					contacts.set(pos, (Contact)data.getExtras().getParcelable("MODIFIED_CONTACT"));
-					sortList(contacts, CURRENT_SORT_OPTION);
+				} else if (action.equals(InfoActivity.MODIFIED_CONTACT)) {
+					contactsList.set(pos, (Contact)data.getExtras().getParcelable(InfoActivity.MODIFIED_CONTACT));
+					sortList(contactsList, CURRENT_SORT_OPTION);
 					adapter.notifyDataSetChanged();
-				} else if (action.equals("DELETE_CONTACT")) {
-					db.deleteContact(contacts.get(pos).getID());
+				} else if (action.equals(InfoActivity.DELETE_CONTACT)) {
+					db.deleteContact(contactsList.get(pos).getID());
 					Log.d(LOG, "Contacts Removed from DB");
-					contacts.remove(pos);
+					contactsList.remove(pos);
 					Toast.makeText(MainActivity.this, "Contact Removed!",
 							Toast.LENGTH_SHORT).show();
-					sortList(contacts, CURRENT_SORT_OPTION);
+					sortList(contactsList, CURRENT_SORT_OPTION);
 					adapter.notifyDataSetChanged();
 
 				}
@@ -226,18 +226,19 @@ public class MainActivity extends Activity implements
 			
 				case RESULT_OK:
 					Contact c = (Contact) data.getExtras().getParcelable("EDITED_CONTACT");
-					contacts.set(data.getExtras().getInt("POSITION"), c);
-					sortList(contacts, CURRENT_SORT_OPTION);
+					
+					contactsList.set(data.getExtras().getInt("POSITION"), c);
+					sortList(contactsList, CURRENT_SORT_OPTION);
 					adapter.notifyDataSetChanged();
-					position = contacts.indexOf(c);
-					i.putExtra("SELECTED_CONTACT", contacts.get(position));
+					position = contactsList.indexOf(c);
+					i.putExtra("SELECTED_CONTACT", contactsList.get(position));
 					i.putExtra("POSITION", position);
 					startActivityForResult(i, CONTACT_INFO_REQUEST);
 					break;
 					
 				case RESULT_CANCELED:
 					position = data.getExtras().getInt("POSITION");
-					i.putExtra("SELECTED_CONTACT", contacts.get(position));
+					i.putExtra("SELECTED_CONTACT", contactsList.get(position));
 					i.putExtra("POSITION", position);
 					startActivityForResult(i, CONTACT_INFO_REQUEST);
 					break;
@@ -282,8 +283,8 @@ public class MainActivity extends Activity implements
 	@Override
 	public void onComplete(SortType sortType) {
 		MainActivity.CURRENT_SORT_OPTION = sortType;
-		sortList(contacts, sortType);
-		sortList(contactList, sortType);
+		sortList(contactsList, sortType);
+		sortList(displayList, sortType);
 		adapter.notifyDataSetChanged();
 	}
 	
@@ -298,7 +299,7 @@ public class MainActivity extends Activity implements
 			final int pos = position;
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setMessage("Are you sure you want to delete " 
-			+ contacts.get(pos).getName().getFullName() + "?")
+			+ contactsList.get(pos).getName().getFullName() + "?")
 					.setTitle("Delete?")
 					.setNegativeButton("Cancel", null)
 					.setPositiveButton("Yes",
@@ -306,8 +307,8 @@ public class MainActivity extends Activity implements
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							db.deleteContact(contacts.get(pos).getID()); // Update database
-							contacts.remove(pos); // simply remove
+							db.deleteContact(contactsList.get(pos).getID()); // Update database
+							contactsList.remove(pos); // simply remove
 							adapter.notifyDataSetChanged(); 
 						}
 					});
@@ -317,7 +318,7 @@ public class MainActivity extends Activity implements
 		case SELECTED_EDIT:
 			Intent intent = new Intent(this, EditActivity.class);
 			intent.putExtra("POSITION", position);
-			intent.putExtra("SELECTED_CONTACT", contacts.get(position));
+			intent.putExtra("SELECTED_CONTACT", contactsList.get(position));
 			startActivityForResult(intent, EDIT_CONTACT_REQUEST);
 			break;
 		
@@ -414,7 +415,7 @@ public class MainActivity extends Activity implements
 					contacts);
 
 			this.context = context;
-			contactList = contacts;
+			displayList = contacts;
 		}
 
 		/**
@@ -423,7 +424,7 @@ public class MainActivity extends Activity implements
 		@Override
 		public void notifyDataSetChanged() {
 			super.notifyDataSetChanged();
-			if (contacts.isEmpty()) {
+			if (contactsList.isEmpty()) {
 				searchbar.setFocusable(false);
 				divider.setVisibility(View.GONE);
 				foreverAlone.setVisibility(View.VISIBLE);
@@ -449,7 +450,7 @@ public class MainActivity extends Activity implements
 			ViewGroup vg = (ViewGroup) inflater.inflate(
 					R.layout.contact_list_item, null);
 
-			Contact curContact = contactList.get(position);
+			Contact curContact = displayList.get(position);
 			String fullName = Name.parseName(null, curContact.getName()
 					.getFirstName(), curContact.getName().getMiddleName(),
 					curContact.getName().getLastName(), curContact.getName()
@@ -485,7 +486,7 @@ public class MainActivity extends Activity implements
 		 */
 		@Override
 		public int getCount() {
-			return contactList.size();
+			return displayList.size();
 		}
 
 		/**
@@ -499,8 +500,8 @@ public class MainActivity extends Activity implements
 				// We implement here the filter logic
 				if (constraint == null || constraint.length() == 0) {
 					// No filter implemented we return all the list
-					results.values = contacts;
-					results.count = contacts.size();
+					results.values = contactsList;
+					results.count = contactsList.size();
 				} else {
 					constraint = constraint.toString().trim()
 							.replaceAll("[\\s+]", " ");
@@ -508,7 +509,7 @@ public class MainActivity extends Activity implements
 
 					// Filter name
 					List<Contact> nContacts = new ArrayList<Contact>();
-					for (Contact c : contacts) {
+					for (Contact c : contactsList) {
 						String fullName = Name.parseName(null, c.getName()
 								.getFirstName(), c.getName().getMiddleName(), c
 								.getName().getLastName(), c.getName()
@@ -535,7 +536,7 @@ public class MainActivity extends Activity implements
 			protected void publishResults(CharSequence constraint,
 					FilterResults results) {
 				// Now we have to inform the adapter about the new list filtered
-				contactList = (List<Contact>) results.values;
+				displayList = (List<Contact>) results.values;
 				notifyDataSetChanged();
 			}
 		}
@@ -554,7 +555,7 @@ public class MainActivity extends Activity implements
 			
 			DialogFragment contactDialog = new ContactPopupDialog();
 			Bundle args = new Bundle();
-			args.putString(CONTACT_NAME, contacts.get(position).getName().getFullName());
+			args.putString(CONTACT_NAME, contactsList.get(position).getName().getFullName());
 			args.putInt(SELECTED_POS, position);
 			contactDialog.setArguments(args);
 			contactDialog.show(getFragmentManager(), "Contact Options");
@@ -565,8 +566,8 @@ public class MainActivity extends Activity implements
 		public void onItemClick(AdapterView<?> parent, View view, int position,
 				long id) {
 			Intent i = new Intent(getApplicationContext(), InfoActivity.class);
-			int realPosition = contacts.indexOf(contactList.get(position));
-			i.putExtra("SELECTED_CONTACT", contacts.get(realPosition));
+			int realPosition = contactsList.indexOf(displayList.get(position));
+			i.putExtra("SELECTED_CONTACT", contactsList.get(realPosition));
 			i.putExtra("POSITION", realPosition);
 			startActivityForResult(i, CONTACT_INFO_REQUEST);
 		}

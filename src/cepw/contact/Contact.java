@@ -316,14 +316,14 @@ public class Contact implements Parcelable {
 				Phone rhsPh = null;
 
 				for (Phone p : lhs.phones){
-					if (p.isDefault()){
+					if (p.isPrimary()){
 						lhsPh = p;
 						break;
 					}
 				}
 				
 				for (Phone p : rhs.phones){
-					if (p.isDefault()){
+					if (p.isPrimary()){
 						rhsPh = p;
 						break;
 					}

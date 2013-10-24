@@ -46,10 +46,10 @@ public class InfoActivity extends Activity implements
 		AddressPopupDialog.OnCompleteListener {
 
 	// Action identifier
-	private static final String NONE = "NONE";
-	private static final String DELETE_CONTACT = "DELETE_CONTACT";
-	private static final String EDIT_CONTACT = "EDIT_CONTACT";
-	private static final String MODIFIED_CONTACT = "MODIFIED_CONTACT";
+	protected static final String NONE = "NONE";
+	protected static final String DELETE_CONTACT = "DELETE_CONTACT";
+	protected static final String EDIT_CONTACT = "EDIT_CONTACT";
+	protected static final String MODIFIED_CONTACT = "MODIFIED_CONTACT";
 	private static String ACTION;
 
 	// Bundle objects
@@ -69,8 +69,8 @@ public class InfoActivity extends Activity implements
 	private ScrollView scrollView;
 	private ImageView image;
 	private TextView firstName, middleName, lastName, suffix, dobDate;
-	private LinearLayout phoneInfo, emailInfo, addressInfo, dobInfo;
-	private ListView phoneList, emailList, addressList;
+	private LinearLayout phoneInfoLayout, emailInfoLayout, addressInfoLayout, dobInfoLayout;
+	private ListView phoneListView, emailListView, addressListView;
 	private ArrayAdapter<Phone> phoneAdapter;
 	private ArrayAdapter<Email> emailAdapter;
 	private ArrayAdapter<Address> addressAdapter;
@@ -115,14 +115,14 @@ public class InfoActivity extends Activity implements
 		suffix = (TextView) findViewById(R.id.info_name_suffix);
 		dobDate = (TextView) findViewById(R.id.info_dob);
 
-		phoneInfo = (LinearLayout) findViewById(R.id.layout_phone_info);
-		emailInfo = (LinearLayout) findViewById(R.id.layout_email_info);
-		addressInfo = (LinearLayout) findViewById(R.id.layout_address_info);
-		dobInfo = (LinearLayout) findViewById(R.id.layout_dob_info);
+		phoneInfoLayout = (LinearLayout) findViewById(R.id.layout_phone_info);
+		emailInfoLayout = (LinearLayout) findViewById(R.id.layout_email_info);
+		addressInfoLayout = (LinearLayout) findViewById(R.id.layout_address_info);
+		dobInfoLayout = (LinearLayout) findViewById(R.id.layout_dob_info);
 
-		phoneList = (ListView) findViewById(R.id.listview_phone_info);
-		emailList = (ListView) findViewById(R.id.listview_email_info);
-		addressList = (ListView) findViewById(R.id.listview_address_info);
+		phoneListView = (ListView) findViewById(R.id.listview_phone_info);
+		emailListView = (ListView) findViewById(R.id.listview_email_info);
+		addressListView = (ListView) findViewById(R.id.listview_address_info);
 
 		// Invoke the populateData method to populate the data into components
 		populateData();
@@ -269,51 +269,51 @@ public class InfoActivity extends Activity implements
 		}
 
 		// Set phone
-		List<Phone> phones = contact.getPhones();
-		if (phones.isEmpty()) {
-			phoneInfo.setVisibility(View.GONE);
+		List<Phone> phoneList = contact.getPhones();
+		if (phoneList.isEmpty()) {
+			phoneInfoLayout.setVisibility(View.GONE);
 		} else {
-			phoneInfo.setVisibility(View.VISIBLE);
-			Collections.sort(phones, new Phone.PhoneComparator());
-			phoneAdapter = new PhoneListAdapter(InfoActivity.this, phones);
-			phoneList.setAdapter(phoneAdapter);
-			phoneList.setOnItemLongClickListener(new ListItemClickedListener());
-			phoneList.setOnItemClickListener(new ListItemClickedListener());
-			Utilities.setNoCollapseListView(phoneList);
+			phoneInfoLayout.setVisibility(View.VISIBLE);
+			Collections.sort(phoneList, new Phone.PhoneComparator());
+			phoneAdapter = new PhoneListAdapter(InfoActivity.this, phoneList);
+			phoneListView.setAdapter(phoneAdapter);
+			phoneListView.setOnItemLongClickListener(new ListItemClickedListener());
+			phoneListView.setOnItemClickListener(new ListItemClickedListener());
+			Utilities.setNoCollapseListView(phoneListView);
 		}
 
 		// Set email
-		List<Email> emails = contact.getEmails();
-		if (emails.isEmpty()) {
-			emailInfo.setVisibility(View.GONE);
+		List<Email> emailList = contact.getEmails();
+		if (emailList.isEmpty()) {
+			emailInfoLayout.setVisibility(View.GONE);
 		} else {
-			emailInfo.setVisibility(View.VISIBLE);
-			emailAdapter = new EmailListAdapter(InfoActivity.this, emails);
-			emailList.setAdapter(emailAdapter);
-			emailList.setOnItemLongClickListener(new ListItemClickedListener());
-			emailList.setOnItemClickListener(new ListItemClickedListener());
-			Utilities.setNoCollapseListView(emailList);
+			emailInfoLayout.setVisibility(View.VISIBLE);
+			emailAdapter = new EmailListAdapter(InfoActivity.this, emailList);
+			emailListView.setAdapter(emailAdapter);
+			emailListView.setOnItemLongClickListener(new ListItemClickedListener());
+			emailListView.setOnItemClickListener(new ListItemClickedListener());
+			Utilities.setNoCollapseListView(emailListView);
 		}
 
 		// Set address
-		List<Address> addresses = contact.getAddresses();
-		if (addresses.isEmpty()) {
-			addressInfo.setVisibility(View.GONE);
+		List<Address> addressList = contact.getAddresses();
+		if (addressList.isEmpty()) {
+			addressInfoLayout.setVisibility(View.GONE);
 		} else {
-			addressInfo.setVisibility(View.VISIBLE);
+			addressInfoLayout.setVisibility(View.VISIBLE);
 			addressAdapter = new AddressListAdapter(InfoActivity.this,
-					addresses);
-			addressList.setAdapter(addressAdapter);
-			addressList.setOnItemLongClickListener(new ListItemClickedListener());
-			addressList.setOnItemClickListener(new ListItemClickedListener());
-			Utilities.setNoCollapseListView(addressList);
+					addressList);
+			addressListView.setAdapter(addressAdapter);
+			addressListView.setOnItemLongClickListener(new ListItemClickedListener());
+			addressListView.setOnItemClickListener(new ListItemClickedListener());
+			Utilities.setNoCollapseListView(addressListView);
 		}
 
 		// Set Date of Birth
 		if (contact.getDateOfBirth().getValue().equals("")) {
-			dobInfo.setVisibility(View.GONE);
+			dobInfoLayout.setVisibility(View.GONE);
 		} else {
-			dobInfo.setVisibility(View.VISIBLE);
+			dobInfoLayout.setVisibility(View.VISIBLE);
 			dobDate.setText(contact.getDateOfBirth().getValue());
 		}
 
@@ -361,17 +361,17 @@ public class InfoActivity extends Activity implements
 							if(pos == 0) {
 								contact.getPhones().remove(pos); // Remove the phone
 								if(!contact.getPhones().isEmpty()){ // If the phone list is not empty
-									contact.getPhones().get(0).setDefault(); // Set the next one as primary
+									contact.getPhones().get(0).setPrimary(); // Set the next one as primary
 								}
 							}else { // If not the primary number
 								contact.getPhones().remove(pos); // simply remove
 							}
 							phoneAdapter.notifyDataSetChanged(); 
-							Utilities.setNoCollapseListView(phoneList); // Resize list view
+							Utilities.setNoCollapseListView(phoneListView); // Resize list view
 							new UpdateContactDbTask().execute(contact); // Update database
 							
 							// If the contact have no more phone, hide the phoneInfoLayout 
-							if(contact.getPhones().isEmpty()){ phoneInfo.setVisibility(View.GONE); } 
+							if(contact.getPhones().isEmpty()){ phoneInfoLayout.setVisibility(View.GONE); } 
 							ACTION = MODIFIED_CONTACT;
 						}
 					});
@@ -380,8 +380,8 @@ public class InfoActivity extends Activity implements
 			break;
 		case SELECTED_SET_PRIMARY:
 			for (Phone p : contact.getPhones())
-				p.unsetDefault();
-			contact.getPhones().get(position).setDefault();
+				p.unsetPrimary();
+			contact.getPhones().get(position).setPrimary();
 			Collections.sort(contact.getPhones(), new Phone.PhoneComparator());
 			phoneAdapter.notifyDataSetChanged();
 			
@@ -426,9 +426,9 @@ public class InfoActivity extends Activity implements
 							contact.getEmails().remove(pos); // simply remove
 							new UpdateContactDbTask().execute(contact);  // Update database
 							phoneAdapter.notifyDataSetChanged(); 
-							Utilities.setNoCollapseListView(emailList); // Resize list view
+							Utilities.setNoCollapseListView(emailListView); // Resize list view
 							// If the contact have no more phone, hide the phoneInfoLayout 
-							if(contact.getEmails().isEmpty()){ emailInfo.setVisibility(View.GONE); } 
+							if(contact.getEmails().isEmpty()){ emailInfoLayout.setVisibility(View.GONE); } 
 							ACTION = MODIFIED_CONTACT;
 						}
 					});
@@ -472,9 +472,9 @@ public class InfoActivity extends Activity implements
 							contact.getAddresses().remove(pos); // simply remove
 							new UpdateContactDbTask().execute(contact); // Update database
 							phoneAdapter.notifyDataSetChanged(); 
-							Utilities.setNoCollapseListView(addressList); // Resize list view
+							Utilities.setNoCollapseListView(addressListView); // Resize list view
 							// If the contact have no more phone, hide the phoneInfoLayout 
-							if(contact.getAddresses().isEmpty()){ addressInfo.setVisibility(View.GONE); } 
+							if(contact.getAddresses().isEmpty()){ addressInfoLayout.setVisibility(View.GONE); } 
 							ACTION = MODIFIED_CONTACT;
 						}
 					});
@@ -522,14 +522,14 @@ public class InfoActivity extends Activity implements
 	private class PhoneListAdapter extends ArrayAdapter<Phone> {
 
 		private Context context;
-		private List<Phone> phones;
+		private List<Phone> phoneList;
 
-		public PhoneListAdapter(Context context, List<Phone> phones) {
+		public PhoneListAdapter(Context context, List<Phone> phoneList) {
 			super(context, android.R.layout.simple_expandable_list_item_1,
-					phones);
+					phoneList);
 
 			this.context = context;
-			this.phones = phones;
+			this.phoneList = phoneList;
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -543,12 +543,12 @@ public class InfoActivity extends Activity implements
 			ViewGroup vg = (ViewGroup) inflater.inflate(R.layout.info_item,
 					null);
 
-			Phone curPhone = phones.get(position);
+			Phone curPhone = phoneList.get(position);
 
 			TextView type = (TextView) vg.getChildAt(0);
 			TextView number = (TextView) vg.getChildAt(1);
 
-			if (curPhone.isDefault()) {
+			if (curPhone.isPrimary()) {
 				type.setText(curPhone.getType() + " - Primary");
 			} else {
 				type.setText(curPhone.getType());
@@ -566,13 +566,13 @@ public class InfoActivity extends Activity implements
 	private class EmailListAdapter extends ArrayAdapter<Email> {
 
 		private Context context;
-		private List<Email> emails;
+		private List<Email> emailList;
 
-		public EmailListAdapter(Context context, List<Email> emails) {
+		public EmailListAdapter(Context context, List<Email> emailList) {
 			super(context, android.R.layout.simple_expandable_list_item_1,
-					emails);
+					emailList);
 			this.context = context;
-			this.emails = emails;
+			this.emailList = emailList;
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -586,7 +586,7 @@ public class InfoActivity extends Activity implements
 			ViewGroup vg = (ViewGroup) inflater.inflate(R.layout.info_item,
 					null);
 
-			Email curEmail = emails.get(position);
+			Email curEmail = emailList.get(position);
 
 			TextView type = (TextView) vg.getChildAt(0);
 			TextView email = (TextView) vg.getChildAt(1);
@@ -605,14 +605,14 @@ public class InfoActivity extends Activity implements
 	private class AddressListAdapter extends ArrayAdapter<Address> {
 
 		private Context context;
-		private List<Address> addresses;
+		private List<Address> addressList;
 
-		public AddressListAdapter(Context context, List<Address> addresses) {
+		public AddressListAdapter(Context context, List<Address> addressList) {
 			super(context, android.R.layout.simple_expandable_list_item_1,
-					addresses);
+					addressList);
 
 			this.context = context;
-			this.addresses = addresses;
+			this.addressList = addressList;
 		}
 
 		public View getView(int position, View convertView, ViewGroup parent) {
@@ -626,7 +626,7 @@ public class InfoActivity extends Activity implements
 			ViewGroup vg = (ViewGroup) inflater.inflate(R.layout.info_item,
 					null);
 
-			Address curAddr = addresses.get(position);
+			Address curAddr = addressList.get(position);
 
 			TextView type = (TextView) vg.getChildAt(0);
 			TextView address = (TextView) vg.getChildAt(1);
@@ -660,7 +660,7 @@ public class InfoActivity extends Activity implements
 				args = new Bundle();
 				args.putString(PH_NUMBER, p.getNumber());
 				args.putString(PH_TYPE, p.getType());
-				args.putBoolean(IS_DEFAULT, p.isDefault());
+				args.putBoolean(IS_DEFAULT, p.isPrimary());
 				args.putInt(SELECTED_POS, position);
 				phoneDialog.setArguments(args);
 				phoneDialog.show(getFragmentManager(), "Phone Options");
@@ -713,6 +713,10 @@ public class InfoActivity extends Activity implements
 		}
 	}
 
+	/**
+	 * Async task for updating database to prevent stall. Provides smoother user experience.
+	 *
+	 */
 	private class UpdateContactDbTask extends AsyncTask<Contact, Void, Void>{
 
 		@Override

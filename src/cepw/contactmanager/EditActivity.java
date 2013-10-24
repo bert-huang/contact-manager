@@ -68,10 +68,10 @@ public class EditActivity extends Activity implements
 	
 	// Individual components
 	private ImageView imageBtn;
-	private ImageButton expandName, collapseName, clearDob;
+	private ImageButton expandNameBtn, collapseNameBtn, clearDob;
 	private EditText fullName, firstName, middleName, lastName, nameSuffix;
 	private TextView dobField;
-	private LinearLayout dynamicPhoneLayout, dynamicEmailLayout, dynamicAddressLayout;
+	private LinearLayout dynPhoneLayout, dynEmailLayout, dynAddressLayout;
 	private Bitmap displayPhoto;
 
 	// Fields for Bundles
@@ -81,6 +81,7 @@ public class EditActivity extends Activity implements
 	
 	//Camera
 	private Uri tempImageUri;
+	private static final String TEMP_STORE_LOC = "cepw.temp";
 
 	/**
 	 * @see android.app.Activity#onCreate(Bundle)
@@ -102,23 +103,23 @@ public class EditActivity extends Activity implements
 		imageBtn = (ImageView) findViewById(R.id.button_change_display_image);
 		displayPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.ic_face);
 
-		expandName = (ImageButton) findViewById(R.id.button_name_expand);
-		collapseName = (ImageButton) findViewById(R.id.button_name_collapse);
+		expandNameBtn = (ImageButton) findViewById(R.id.button_name_expand);
+		collapseNameBtn = (ImageButton) findViewById(R.id.button_name_collapse);
 		fullName = (EditText) findViewById(R.id.textfield_name_full);
 		firstName = (EditText) findViewById(R.id.textfield_name_given);
 		middleName = (EditText) findViewById(R.id.textfield_name_middle);
 		lastName = (EditText) findViewById(R.id.textfield_name_last);
 		nameSuffix = (EditText) findViewById(R.id.textfield_name_suffix);
 
-		dynamicPhoneLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
-		dynamicEmailLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
-		dynamicAddressLayout = (LinearLayout) findViewById(R.id.layout_dynamic_addressfield);
+		dynPhoneLayout = (LinearLayout) findViewById(R.id.layout_dynamic_phonefield);
+		dynEmailLayout = (LinearLayout) findViewById(R.id.layout_dynamic_emailfield);
+		dynAddressLayout = (LinearLayout) findViewById(R.id.layout_dynamic_addressfield);
 
 		dobField = (TextView) findViewById(R.id.textview_dob);
 		clearDob = (ImageButton) findViewById(R.id.button_clear_dob);
 
 		// Set component visibilities
-		collapseName.setVisibility(View.GONE);
+		collapseNameBtn.setVisibility(View.GONE);
 		firstName.setVisibility(View.GONE);
 		middleName.setVisibility(View.GONE);
 		lastName.setVisibility(View.GONE);
@@ -340,9 +341,9 @@ public class EditActivity extends Activity implements
 				}
 
 				createNewField(FieldType.PHONE);
-				((Spinner) ((ViewGroup) dynamicPhoneLayout.getChildAt(i))
+				((Spinner) ((ViewGroup) dynPhoneLayout.getChildAt(i))
 						.getChildAt(0)).setSelection(type);
-				((EditText) ((ViewGroup) dynamicPhoneLayout.getChildAt(i))
+				((EditText) ((ViewGroup) dynPhoneLayout.getChildAt(i))
 						.getChildAt(1)).setText(p.getNumber());
 			}
 
@@ -360,9 +361,9 @@ public class EditActivity extends Activity implements
 				}
 
 				createNewField(FieldType.EMAIL);
-				((Spinner) ((ViewGroup) dynamicEmailLayout.getChildAt(i))
+				((Spinner) ((ViewGroup) dynEmailLayout.getChildAt(i))
 						.getChildAt(0)).setSelection(type);
-				((EditText) ((ViewGroup) dynamicEmailLayout.getChildAt(i))
+				((EditText) ((ViewGroup) dynEmailLayout.getChildAt(i))
 						.getChildAt(1)).setText(e.getEmail());
 			}
 
@@ -380,9 +381,9 @@ public class EditActivity extends Activity implements
 				}
 
 				createNewField(FieldType.ADDRESS);
-				((Spinner) ((ViewGroup) dynamicAddressLayout.getChildAt(i))
+				((Spinner) ((ViewGroup) dynAddressLayout.getChildAt(i))
 						.getChildAt(0)).setSelection(type);
-				((EditText) ((ViewGroup) dynamicAddressLayout.getChildAt(i))
+				((EditText) ((ViewGroup) dynAddressLayout.getChildAt(i))
 						.getChildAt(1)).setText(a.getAddress());
 			}
 
@@ -423,9 +424,9 @@ public class EditActivity extends Activity implements
 		Name name = null;
 		Photo photo = null;
 		int childCount = 0;
-		List<Phone> phones = new ArrayList<Phone>();
-		List<Email> emails = new ArrayList<Email>();
-		List<Address> addresses = new ArrayList<Address>();
+		List<Phone> phoneList = new ArrayList<Phone>();
+		List<Email> emailList = new ArrayList<Email>();
+		List<Address> addressList = new ArrayList<Address>();
 		DateOfBirth dob = null;
 
 		// Parsing contact name
@@ -444,9 +445,9 @@ public class EditActivity extends Activity implements
 		photo = new Photo(displayPhoto);
 
 		// Populating phones
-		childCount = dynamicPhoneLayout.getChildCount();
+		childCount = dynPhoneLayout.getChildCount();
 		for (int i = 0; i < childCount; i++) {
-			ViewGroup vg = (ViewGroup) dynamicPhoneLayout.getChildAt(i);
+			ViewGroup vg = (ViewGroup) dynPhoneLayout.getChildAt(i);
 			String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
 					.toString();
 			String number = ((EditText) vg.getChildAt(1)).getText().toString();
@@ -456,15 +457,15 @@ public class EditActivity extends Activity implements
 
 			if (phoneObject.getNumber().isEmpty())
 				continue;
-			phones.add(phoneObject);
+			phoneList.add(phoneObject);
 
 		}
-		Collections.sort(phones, new Phone.PhoneComparator());
+		Collections.sort(phoneList, new Phone.PhoneComparator());
 
 		// Populating emails
-		childCount = dynamicEmailLayout.getChildCount();
+		childCount = dynEmailLayout.getChildCount();
 		for (int i = 0; i < childCount; i++) {
-			ViewGroup vg = (ViewGroup) dynamicEmailLayout.getChildAt(i);
+			ViewGroup vg = (ViewGroup) dynEmailLayout.getChildAt(i);
 			String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
 					.toString();
 			String email = ((EditText) vg.getChildAt(1)).getText().toString();
@@ -474,14 +475,14 @@ public class EditActivity extends Activity implements
 
 			if (emailObject.getEmail().isEmpty())
 				continue;
-			emails.add(emailObject);
+			emailList.add(emailObject);
 
 		}
 
 		// Populating addresses
-		childCount = dynamicAddressLayout.getChildCount();
+		childCount = dynAddressLayout.getChildCount();
 		for (int i = 0; i < childCount; i++) {
-			ViewGroup vg = (ViewGroup) dynamicAddressLayout.getChildAt(i);
+			ViewGroup vg = (ViewGroup) dynAddressLayout.getChildAt(i);
 			String type = ((Spinner) vg.getChildAt(0)).getSelectedItem()
 					.toString();
 			String address = ((EditText) vg.getChildAt(1)).getText().toString();
@@ -489,7 +490,7 @@ public class EditActivity extends Activity implements
 			Address addressObject = new Address(type, address);
 			if (addressObject.getAddress().isEmpty())
 				continue;
-			addresses.add(addressObject);
+			addressList.add(addressObject);
 
 		}
 
@@ -502,9 +503,9 @@ public class EditActivity extends Activity implements
 				name.getMiddleName().length()+
 				name.getLastName().length() +
 				name.getSuffix().length() +
-				phones.size() +
-				emails.size() + 
-				addresses.size() + 
+				phoneList.size() +
+				emailList.size() + 
+				addressList.size() + 
 				dob.getValue().length()) == 0 
 				? true : false;
 		
@@ -516,9 +517,9 @@ public class EditActivity extends Activity implements
 		}else if (contact != null) {
 			contact.setPhoto(photo);
 			contact.setName(name);
-			contact.setPhones(phones);
-			contact.setEmail(emails);
-			contact.setAddresses(addresses);
+			contact.setPhones(phoneList);
+			contact.setEmail(emailList);
+			contact.setAddresses(addressList);
 			contact.setDateOfBirth(dob);
 			Log.d(LOG, "Contact Object Updated");
 			new UpdateContactDbTask().execute(contact);
@@ -526,7 +527,7 @@ public class EditActivity extends Activity implements
 			
 		// If contact is null (therefore creating new)
 		} else {
-			long contactId = db.createContact(name, photo, phones, emails, addresses, dob);
+			long contactId = db.createContact(name, photo, phoneList, emailList, addressList, dob);
 			Log.d(LOG, "Created Contact in DB");
 			contact = db.getContact(contactId, null);
 			Log.d(LOG, "Contact Object Created");
@@ -554,12 +555,12 @@ public class EditActivity extends Activity implements
 
 		// Expand name, hide full name edittext, display first, middle, last and
 		// suffix edittext
-		expandName.setOnClickListener(new View.OnClickListener() {
+		expandNameBtn.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				expandName.setVisibility(View.GONE);
-				collapseName.setVisibility(View.VISIBLE);
+				expandNameBtn.setVisibility(View.GONE);
+				collapseNameBtn.setVisibility(View.VISIBLE);
 
 				String[] splits = Name.parseName(fullName.getText().toString(),
 						null, null, null, null);
@@ -583,12 +584,12 @@ public class EditActivity extends Activity implements
 
 		// Collapse name, hide first, middle, last and suffix edittext, display
 		// full name edittext
-		collapseName.setOnClickListener(new View.OnClickListener() {
+		collapseNameBtn.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				expandName.setVisibility(View.VISIBLE);
-				collapseName.setVisibility(View.GONE);
+				expandNameBtn.setVisibility(View.VISIBLE);
+				collapseNameBtn.setVisibility(View.GONE);
 
 				String[] combine = Name.parseName(null, firstName.getText()
 						.toString(), middleName.getText().toString(), lastName
@@ -680,17 +681,17 @@ public class EditActivity extends Activity implements
 		switch (fieldType) {
 		case PHONE:
 			infl = R.layout.phone_field_item;
-			ll = dynamicPhoneLayout;
+			ll = dynPhoneLayout;
 			charSeq = R.array.phone_type;
 			break;
 		case EMAIL:
 			infl = R.layout.email_field_item;
-			ll = dynamicEmailLayout;
+			ll = dynEmailLayout;
 			charSeq = R.array.email_type;
 			break;
 		case ADDRESS:
 			infl = R.layout.address_field_item;
-			ll = dynamicAddressLayout;
+			ll = dynAddressLayout;
 			charSeq = R.array.address_type;
 			break;
 		default:
@@ -863,8 +864,8 @@ public class EditActivity extends Activity implements
 		// Check if All phone entries are empty
 		boolean emptyPhones = true;
 		EditText editText = null;
-		for(int i = 0; i < dynamicPhoneLayout.getChildCount(); i++){
-			editText = (EditText)((ViewGroup)dynamicPhoneLayout.getChildAt(i)).getChildAt(1);
+		for(int i = 0; i < dynPhoneLayout.getChildCount(); i++){
+			editText = (EditText)((ViewGroup)dynPhoneLayout.getChildAt(i)).getChildAt(1);
 			if(editText.getText().length() != 0){
 				emptyPhones = false;
 			}
@@ -872,8 +873,8 @@ public class EditActivity extends Activity implements
 		
 		// Check if All email entries are empty
 		boolean emptyEmails = true;
-		for(int i = 0; i < dynamicEmailLayout.getChildCount(); i++){
-			editText = (EditText)((ViewGroup)dynamicEmailLayout.getChildAt(i)).getChildAt(1);
+		for(int i = 0; i < dynEmailLayout.getChildCount(); i++){
+			editText = (EditText)((ViewGroup)dynEmailLayout.getChildAt(i)).getChildAt(1);
 			if(editText.getText().length() != 0){
 				emptyPhones = false;
 			}
@@ -881,8 +882,8 @@ public class EditActivity extends Activity implements
 		
 		// Check if All address entries are empty
 		boolean emptyAddress = true;
-		for(int i = 0; i < dynamicAddressLayout.getChildCount(); i++){
-			editText = (EditText)((ViewGroup)dynamicAddressLayout.getChildAt(i)).getChildAt(1);
+		for(int i = 0; i < dynAddressLayout.getChildCount(); i++){
+			editText = (EditText)((ViewGroup)dynAddressLayout.getChildAt(i)).getChildAt(1);
 			if(editText.getText().length() != 0){
 				emptyAddress = false;
 			}
@@ -915,7 +916,7 @@ public class EditActivity extends Activity implements
 
 	    File mediaStorageDir = new File(
 	    		context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), 
-	    		"cepw.temp");
+	    		TEMP_STORE_LOC);
 	    // This location works best if you want the created images to be shared
 	    // between applications and persist after your app has been uninstalled.
 
@@ -934,6 +935,10 @@ public class EditActivity extends Activity implements
 	    return mediaFile;
 	}
 	
+	/**
+	 * Async task for updating database to prevent stall. Provides smoother user experience.
+	 *
+	 */
 	private class UpdateContactDbTask extends AsyncTask<Contact, Void, Void>{
 
 		@Override

@@ -1,6 +1,7 @@
 package cepw.contactmanager;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -52,7 +53,9 @@ public class DateChooserDialog extends DialogFragment implements
 		}
 
 		// Create a new instance of DatePickerDialog and return it
-		return new DatePickerDialog(getActivity(), this, year, month, day);
+		DatePickerDialog dialog = new DatePickerDialog(getActivity(), this, year, month, day);
+		dialog.getDatePicker().setMaxDate(new Date().getTime());
+		return dialog;
 	}
 
 	/**

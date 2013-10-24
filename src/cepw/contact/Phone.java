@@ -13,7 +13,7 @@ public class Phone implements Parcelable, Comparable<Phone> {
 
 	private String type;
 	private String number;
-	private boolean defaultNumber;
+	private boolean primaryNumber;
 	
 	/**
 	 * Constructor of a phone object
@@ -29,7 +29,7 @@ public class Phone implements Parcelable, Comparable<Phone> {
 		}
 		String temp = number.replaceAll("[^0-9\\+]", "");
 		this.number = temp;
-		this.defaultNumber = defaultNumber;
+		this.primaryNumber = defaultNumber;
 	}
 
 	/**
@@ -54,22 +54,22 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	 * Return the value of the defaultNumber flag
 	 * @return
 	 */
-	public boolean isDefault() {
-		return defaultNumber;
+	public boolean isPrimary() {
+		return primaryNumber;
 	}
 
 	/**
 	 * Make the defaultNumber flag true
 	 */
-	public void setDefault() {
-		defaultNumber = true;
+	public void setPrimary() {
+		primaryNumber = true;
 	}
 
 	/**
 	 * Make the defaultNumber flag false
 	 */
-	public void unsetDefault() {
-		defaultNumber = false;
+	public void unsetPrimary() {
+		primaryNumber = false;
 	}
 
 	/**
@@ -87,7 +87,7 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	public void writeToParcel(Parcel out, int flags) {
 		out.writeString(type);
 		out.writeString(number);
-		out.writeByte((byte) (defaultNumber ? 1 : 0));
+		out.writeByte((byte) (primaryNumber ? 1 : 0));
 
 	}
 
@@ -113,7 +113,7 @@ public class Phone implements Parcelable, Comparable<Phone> {
 	private Phone(Parcel in) {
 		this.type = in.readString();
 		this.number = in.readString();
-		this.defaultNumber = in.readByte() == 1;
+		this.primaryNumber = in.readByte() == 1;
 	}
 
 
@@ -187,9 +187,9 @@ public class Phone implements Parcelable, Comparable<Phone> {
 
 		@Override
 		public int compare(Phone lhs, Phone rhs) {
-			if (lhs.isDefault()) {
+			if (lhs.isPrimary()) {
 				return -1;
-			} else if (rhs.isDefault()) {
+			} else if (rhs.isPrimary()) {
 				return 1;
 			} else {
 				return lhs.compareTo(rhs);

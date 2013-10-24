@@ -24,14 +24,12 @@ public class ImageChooserDialog extends DialogFragment {
 	 */
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-
-		String[] loadingType = getResources().getStringArray(
-				R.array.image_selection_type);
+		String[] selection = {"Gallery", "Take picture"};
 		onAttach(getActivity());
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle("Contact Photo")
-				.setItems(loadingType, new OnOptionSelected())
+				.setItems(selection, new OnOptionSelected())
 				.setNeutralButton("Cancel",
 						new DialogInterface.OnClickListener() {
 

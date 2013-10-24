@@ -25,7 +25,7 @@
     <string name="text_name_prefix">Name prefix</string>
     <string name="text_name_given">Given name</string>
     <string name="text_name_middle">Middle name</string>
-    <string name="text_name_surname">Family name</string>
+    <string name="text_name_last">Last name</string>
     <string name="text_name_suffix">Name suffix</string>
     <string name="text_phone">Phone</string>
     <string name="text_number">Number</string>

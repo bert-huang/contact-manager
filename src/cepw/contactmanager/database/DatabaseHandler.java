@@ -101,14 +101,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	 * 
 	 * @param name Name object
 	 * @param photo Photo object
-	 * @param phones A list of Phones
-	 * @param emails A list of Email
-	 * @param addresses A list of Address
+	 * @param phoneList A list of Phones
+	 * @param emailList A list of Email
+	 * @param addressList A list of Address
 	 * @param dob DateOfBirth object
 	 * @return The ID of the contact in the database
 	 */
-	public long createContact(Name name, Photo photo, List<Phone> phones, List<Email> emails,
-			List<Address> addresses, DateOfBirth dob) {
+	public long createContact(Name name, Photo photo, List<Phone> phoneList, List<Email> emailList,
+			List<Address> addressList, DateOfBirth dob) {
 
 		SQLiteDatabase db = this.getWritableDatabase();
 		ContentValues values = new ContentValues();
@@ -122,18 +122,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_IMAGE, photo.getByteArray());
 
 		// Put Phone data into ContentValues
-		String[] phoneData = createPhoneData(phones);
+		String[] phoneData = createPhoneData(phoneList);
 		values.put(KEY_PHONE_TYPE, phoneData[0]);
 		values.put(KEY_PHONE_NUMBER, phoneData[1]);
 		values.put(KEY_PHONE_PRIMARY, phoneData[2]);
 		
 		// Put Email data into ContentValues
-		String[] emailData = createEmailData(emails);
+		String[] emailData = createEmailData(emailList);
 		values.put(KEY_EMAIL_TYPE, emailData[0]);
 		values.put(KEY_EMAIL_VALUE, emailData[1]);
 		
 		// Put Address data into ContentValues
-		String[] addressData = createAddressData(addresses);
+		String[] addressData = createAddressData(addressList);
 		values.put(KEY_ADDRESS_TYPE, addressData[0]);
 		values.put(KEY_ADDRESS_VALUE, addressData[1]);
 		
@@ -164,7 +164,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		for (Phone p : phoneList) {
 			phoneType	.append(p.getType() + ";");
 			phoneNumber	.append(p.getNumber() + ";");
-			phonePrimary.append((p.isDefault()? "1" : "0") + ";");
+			phonePrimary.append((p.isPrimary()? "1" : "0") + ";");
 		}
 		
 		// Delete the last occurrence of ";"
