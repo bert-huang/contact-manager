@@ -96,7 +96,7 @@ public class InfoActivity extends Activity implements
 
 		// If nothing is passed in, display error, and close activity
 		if (extras == null) {
-			Toast.makeText(InfoActivity.this, "Error loading this contact!",
+			Toast.makeText(InfoActivity.this, "Error loading this contact",
 					Toast.LENGTH_LONG).show();
 			finish();
 		} else {
@@ -342,7 +342,7 @@ public class InfoActivity extends Activity implements
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, number);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
 			break;
 		case SELECTED_DELETE:
 			final int pos = position;
@@ -388,7 +388,7 @@ public class InfoActivity extends Activity implements
 			ACTION = MODIFIED_CONTACT;
 			new UpdateContactDbTask().execute(contact);
 			
-			Toast.makeText(getApplicationContext(), number+" set as primary.", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), number+" set as primary.", Toast.LENGTH_SHORT).show();
 			break;
 		}
 
@@ -408,7 +408,7 @@ public class InfoActivity extends Activity implements
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, email);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
 			break;
 		case SELECTED_DELETE:
 			final int pos = position;
@@ -449,10 +449,11 @@ public class InfoActivity extends Activity implements
 		switch (action) {
 		case SELECTED_MAP:
 			invokeMapIntent(address);
+			break;
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, address);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard!", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
 			break;
 		case SELECTED_DELETE:
 			final int pos = position;
@@ -720,9 +721,6 @@ public class InfoActivity extends Activity implements
 			db.updateContact(c);
 			return null;
 		}
-
-
-		
 	}
 
 }

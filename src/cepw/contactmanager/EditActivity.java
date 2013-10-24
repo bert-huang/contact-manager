@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -24,6 +25,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -62,6 +64,7 @@ public class EditActivity extends Activity implements
 	private enum FieldType { PHONE, EMAIL, ADDRESS }
 
 	private DatabaseHandler db;
+	private InputMethodManager kbm;
 	
 	// Individual components
 	private ImageView imageBtn;
@@ -93,6 +96,9 @@ public class EditActivity extends Activity implements
 		getActionBar().setDisplayShowTitleEnabled(false);
 
 		// Initializing
+		db = new DatabaseHandler(getApplicationContext());
+		kbm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+		
 		imageBtn = (ImageView) findViewById(R.id.button_change_display_image);
 		displayPhoto = BitmapFactory.decodeResource(getResources(), R.drawable.ic_face);
 
@@ -159,6 +165,10 @@ public class EditActivity extends Activity implements
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		// Force hide keyboard
+		kbm.toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS);
+		
 		switch (item.getItemId()) {
 
 		// Home button acts the same as the back button, which simply shows the
@@ -175,7 +185,7 @@ public class EditActivity extends Activity implements
 			// Done button creates || updates a contact, and pass the data back
 			// to source activity
 		case R.id.action_create_done:
-
+			
 			Contact contact;
 			try {
 				// Generate/update contact
@@ -194,6 +204,7 @@ public class EditActivity extends Activity implements
 						setResult(RESULT_OK, intent);
 						Toast.makeText(EditActivity.this, "Created",
 								Toast.LENGTH_SHORT).show();
+						db.closeDB();
 						finish();
 					}
 
@@ -498,7 +509,6 @@ public class EditActivity extends Activity implements
 				? true : false;
 		
 		// If all fields are empty, return null
-		db = new DatabaseHandler(getApplicationContext());
 		if (isEmpty) {
 			contact = null;
 			
@@ -511,7 +521,7 @@ public class EditActivity extends Activity implements
 			contact.setAddresses(addresses);
 			contact.setDateOfBirth(dob);
 			Log.d(LOG, "Contact Object Updated");
-			db.updateContact(contact);
+			new UpdateContactDbTask().execute(contact);
 			Log.d(LOG, "Updated Contact in DB");
 			
 		// If contact is null (therefore creating new)
@@ -522,7 +532,6 @@ public class EditActivity extends Activity implements
 			Log.d(LOG, "Contact Object Created");
 		}
 		
-		db.closeDB();
 		return contact;
 
 	}
@@ -925,6 +934,14 @@ public class EditActivity extends Activity implements
 	    return mediaFile;
 	}
 	
+	private class UpdateContactDbTask extends AsyncTask<Contact, Void, Void>{
 
+		@Override
+		protected Void doInBackground(Contact... params) {
+			for(Contact c : params)
+			db.updateContact(c);
+			return null;
+		}
+	}
 	
 }
