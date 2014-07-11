@@ -138,6 +138,7 @@ public class MainActivity extends Activity implements
 	 */
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
 		// Handle presses on the action bar items
 		switch (item.getItemId()) {
 		case R.id.action_add_new:

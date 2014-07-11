@@ -21,7 +21,7 @@ public class Email implements Parcelable {
 	 */
 	public Email(String type, String email) throws InvalidEmailException {
 		this.type = type;
-		if (!email.isEmpty() && !email.matches("[A-Za-z0-9_\\-]+[@]([A-Za-z]+[\\.])+[A-Za-z]+"))
+		if (!email.isEmpty() && !email.matches("([A-Za-z0-9]+[_\\-\\.]?)*[A-Za-z0-9]+[@]([A-Za-z]+[\\.])+[A-Za-z]+"))
 			throw new InvalidEmailException("Not a valid E-mail address");
 		this.email = email;
 	}
