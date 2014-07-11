@@ -331,18 +331,15 @@ public class InfoActivity extends Activity implements
 		switch (action) {
 		
 		case SELECTED_CALL:
-			Intent callIntent = new Intent(Intent.ACTION_CALL);
-			callIntent.setData(Uri.parse("tel:" + number));
-			startActivity(callIntent);
+			invokeCallIntent(number);
 			break;
 		case SELECTED_MESSAGE:
-			Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
-			startActivity(smsIntent);
+			invokeSmsIntent(number);
 			break;
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, number);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();
 			break;
 		case SELECTED_DELETE:
 			final int pos = position;
@@ -408,7 +405,7 @@ public class InfoActivity extends Activity implements
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, email);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();
 			break;
 		case SELECTED_DELETE:
 			final int pos = position;
@@ -453,7 +450,7 @@ public class InfoActivity extends Activity implements
 		case SELECTED_COPY:
 			ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
 			Utilities.copyStringToClipboard(clipboard, address);
-			Toast.makeText(getApplicationContext(), "Copied to clipboard", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getApplicationContext(), "Copied to Clipboard", Toast.LENGTH_SHORT).show();
 			break;
 		case SELECTED_DELETE:
 			final int pos = position;
@@ -483,6 +480,35 @@ public class InfoActivity extends Activity implements
 			break;
 		}
 
+	}
+	
+	/**
+	 * Opens up the Call Intent
+	 * @param number the phone number of the selected client
+	 */
+	private void invokeCallIntent(String number){
+		try {
+			Intent callIntent = new Intent(Intent.ACTION_CALL);
+			callIntent.setData(Uri.parse("tel:" + number));
+			startActivity(callIntent);
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(),
+					"Phone call not supported on this device.", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	/**
+	 * Opens up the SMS Intent
+	 * @param number the phone number of the selected client
+	 */
+	private void invokeSmsIntent(String number){
+		try {
+			Intent smsIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", number, null));
+			startActivity(smsIntent);
+		} catch (android.content.ActivityNotFoundException ex) {
+			Toast.makeText(getApplicationContext(),
+					"SMS not supported on this device.", Toast.LENGTH_SHORT).show();
+		}
 	}
 	
 	/**
@@ -697,9 +723,7 @@ public class InfoActivity extends Activity implements
 			
 			case R.id.listview_phone_info:
 				String number = contact.getPhones().get(position).getNumber();
-				Intent dialIntent = new Intent(Intent.ACTION_DIAL);
-				dialIntent.setData(Uri.parse("tel:" + number));
-				startActivity(dialIntent);
+				invokeCallIntent(number);
 				break;
 			case R.id.listview_email_info:
 				String email = contact.getEmails().get(position).getEmail();
