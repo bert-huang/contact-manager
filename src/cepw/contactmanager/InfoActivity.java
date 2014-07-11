@@ -498,6 +498,20 @@ public class InfoActivity extends Activity implements
 	}
 	
 	/**
+	 * Opens up the Dial Intent
+	 * @param number the phone number of the selected client
+	 */
+	private void invokeDialIntent(String number){
+		try {
+			Intent dialIntent = new Intent(Intent.ACTION_DIAL);
+			dialIntent.setData(Uri.parse("tel:" + number));
+			startActivity(dialIntent);
+		} catch (android.content.ActivityNotFoundException ex) {
+			invokeCallIntent(number);
+		}
+	}
+	
+	/**
 	 * Opens up the SMS Intent
 	 * @param number the phone number of the selected client
 	 */
@@ -723,7 +737,7 @@ public class InfoActivity extends Activity implements
 			
 			case R.id.listview_phone_info:
 				String number = contact.getPhones().get(position).getNumber();
-				invokeCallIntent(number);
+				invokeDialIntent(number);
 				break;
 			case R.id.listview_email_info:
 				String email = contact.getEmails().get(position).getEmail();
